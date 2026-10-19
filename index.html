@@ -2,173 +2,94 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
+  <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Safe Drive · 와이어프레임</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Safe Drive · 홈</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
 </head>
-<body>
+<body data-page="home" data-base="pages/">
 <div class="app">
-  <header class="top-bar">
-    <button class="ic back" data-go="list" style="display:none">←</button>
-    <b data-go="home" style="cursor:pointer">Safe Drive</b>
+  <header class="app-header">
+    <a class="logo" href="index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="pages/signup.html">가입</a>
   </header>
 
-  <!-- 1 홈 -->
-  <section class="screen" id="home">
-    <h2>초행길도 안심하고,<br>사고 위험도 낮은 길로</h2>
-    <p class="mu">출발지·도착지만 입력하면 위험 구간을 피해 알려드려요</p>
-    <div class="box">
-      <span class="mu">출발지</span>
+  <main class="page">
+    <!-- 상단 : 액션 (경로 입력 → 비교) -->
+    <section class="hero">
+      <h2>초행길도 안심하고,<br>안전한 길로 안내해요</h2>
+      <p class="mu">빠른 길과 안전한 길을 비교하고, 안전한 길로 안내받아요. 위험 구간 앞에서는 음성으로 미리 알려드려요</p>
+    </section>
+    <section class="box search-box">
+      <div class="row" style="margin-top:0"><span class="mu">출발지</span><button class="chip" id="myLoc" style="margin-left:auto">📍 내 위치로</button></div>
       <input class="in" id="origin" placeholder="출발지 입력 (예: 강남역)">
       <span class="mu">도착지</span>
       <input class="in" id="destination" placeholder="도착지 입력 (예: 잠실역)">
-      <div class="row" id="routeMode">
-        <span class="chip" data-mode="default">기본</span>
-        <span class="chip on" data-mode="safe">안전우선</span>
-        <span class="chip" data-mode="noRed">4등급 제외</span>
-      </div>
-      <button class="btn dk" id="find" data-go="list">경로 탐색하기</button>
-    </div>
-    <p class="mu" style="margin-top:16px">최근 검색 / 즐겨찾기 경로</p>
-    <div id="homePreview">
-      <div class="card" data-go="detail"><div><b>강남역 → 잠실역</b><p class="mu">안전우선 모드 · 위험 구간 0곳</p></div></div>
-      <div class="card" data-go="detail"><div><b>역삼동 → 선릉역</b><p class="mu">기본 모드 · 위험 구간 2곳 포함</p></div><span>★</span></div>
-    </div>
-  </section>
+      <button class="btn dk" id="find" disabled>안전 경로 비교하기</button>
+    </section>
 
-  <!-- 2 위험 구간 -->
-  <section class="screen" id="list">
-    <div class="row" style="margin:0">
-      <b id="conditionSummary">강남역 → 잠실역</b>
-      <button class="chip" data-go="home" style="margin-left:auto">수정</button>
-    </div>
-    <div class="row">
-      <div class="dropdown">
-        <button class="chip" id="filterRiskBtn">위험등급 ▾</button>
-        <div class="panel" id="filterRiskPanel">
-          <button class="chip opt" data-risk-opt="4">4등급</button>
-          <button class="chip opt" data-risk-opt="3">3등급</button>
-          <button class="chip opt" data-risk-opt="2">2등급</button>
-          <button class="chip opt" data-risk-opt="1">1등급</button>
-        </div>
-      </div>
-      <div class="dropdown">
-        <button class="chip" id="filterRoadBtn">도로유형 ▾</button>
-        <div class="panel" id="filterRoadPanel">
-          <button class="chip opt" data-road-opt="대로">대로</button>
-          <button class="chip opt" data-road-opt="이면도로">이면도로</button>
-          <button class="chip opt" data-road-opt="골목길">골목길</button>
-        </div>
-      </div>
-      <button class="chip" id="sortChip" data-sort="default">사고많은순 ▾</button>
-      <button class="chip bd" id="resetFilter" style="margin-left:auto">초기화</button>
-    </div>
+    <section class="section">
+      <div class="section-hd"><h3>최근 검색</h3><a class="more" href="pages/my.html">전체보기</a></div>
+      <div class="quick" id="quickRecent"></div>
+      <div class="state" id="state-quick-empty"><p class="mu">아직 검색한 경로가 없어요</p></div>
+    </section>
 
-    <div class="state" id="state-loading"><p class="mu">불러오는 중…</p></div>
+    <section class="section" id="favBox">
+      <div class="section-hd"><h3>즐겨찾기 경로</h3><a class="more" href="pages/my.html">전체보기</a></div>
+      <div class="list-box" id="favPreview"></div>
+      <div class="state" id="state-fav-empty"><p class="mu">저장한 경로가 없어요</p></div>
+    </section>
 
-    <div class="state" id="state-empty">
-      <p class="mu">조건에 맞는 구간이 없습니다</p>
-      <button class="btn" id="clearFilter">마지막 조건 해제</button>
-    </div>
+    <!-- 하단 : 큐레이션 -->
+    <section class="section">
+      <div class="section-hd"><h3>🚗 초보 연습 코스</h3><span class="mu">안전 경로 기준</span></div>
+      <div class="hscroll" id="courseList"></div>
+    </section>
 
-    <div class="state" id="state-error">
-      <p class="mu">경로·위험 구간 데이터를 불러오지 못했습니다</p>
-      <button class="btn" id="retryList">다시 시도</button>
-      <p class="note">오류 상태에서도 즐겨찾기·최근검색은 그대로 유지됩니다</p>
-    </div>
+    <section class="section">
+      <div class="section-hd"><h3>🔥 사고 많은 구간 TOP 5</h3><a class="more" href="pages/list.html">더보기</a></div>
+      <div class="list-box" id="topList"></div>
+    </section>
 
-    <div class="pane on" id="resultList">
-      <p class="mu" id="resultCount">총 6개 구간 · 위험 구간 2곳 포함</p>
-      <div class="card" data-go="detail" data-segment-id="seg-001">
-        <div><b class="roadName">테헤란로 1번 구간</b><p class="mu"><span class="roadType">대로</span> · 사고 <span class="accidentCount">12</span>건</p></div>
-        <span class="bg r4 riskLevel" data-risk="4">4등급</span>
-      </div>
-      <div class="card" data-go="detail" data-segment-id="seg-002">
-        <div><b class="roadName">언주로 교차 구간</b><p class="mu"><span class="roadType">이면도로</span> · 사고 <span class="accidentCount">3</span>건</p></div>
-        <span class="bg r2 riskLevel" data-risk="2">2등급</span>
-      </div>
-      <div class="card" data-go="detail" data-segment-id="seg-003">
-        <div><b class="roadName">잠실대로 구간</b><p class="mu"><span class="roadType">대로</span> · 사고 <span class="accidentCount">1</span>건</p></div>
-        <span class="bg r1 riskLevel" data-risk="1">1등급</span>
-      </div>
-    </div>
-  </section>
+    <section class="section">
+      <div class="section-hd"><h3>상황별 대처법</h3><span class="mu">미리 알아두면 덜 당황해요</span></div>
+      <div id="learnList"></div>
+    </section>
 
-  <!-- 3 구간상세 -->
-  <section class="screen" id="detail">
-    <div class="img" id="mapView" style="height:150px">MAP</div>
-    <h2 style="margin-top:10px"><span class="roadName">테헤란로 1번 구간</span> <span class="bg r4 riskLevel" data-risk="4">4등급</span></h2>
-    <p class="mu">사고건수 <span class="accidentCount">12</span>건(최근 3년) · <span class="roadType">대로</span> · 왕복 6차로</p>
-    <p class="mu address">서울 강남구 테헤란로 일대</p>
-    <div class="box">
-      <b>사고 유형 요약 (심화)</b>
-      <p class="mu">추돌 7건 · 좌회전 3건 · 보행자 2건</p>
-    </div>
-    <div class="row">
-      <button class="btn" style="flex:1" data-go="list">이 구간 피해서 재탐색</button>
-      <button class="btn dk" id="favBtn" style="flex:1" data-fav="false">☆ 즐겨찾기 저장</button>
-    </div>
-    <div class="state" id="state-save-done"><p class="note">즐겨찾기에 저장했어요</p></div>
-  </section>
+    <section class="section">
+      <div class="section-hd"><h3>구별 사고 건수</h3><span class="mu">샘플 구간 기준</span></div>
+      <div class="box" style="margin-top:0" id="guStats"></div>
+    </section>
 
-  <!-- 4 마이 -->
-  <section class="screen" id="my">
-    <h2>마이</h2>
-    <div class="tabs">
-      <button class="on" data-tab="fav">즐겨찾기</button>
-      <button data-tab="recent">최근검색</button>
-    </div>
+    <section class="section">
+      <div class="section-hd"><h3>안전운전 팁</h3></div>
+      <div id="tipList"></div>
+    </section>
+  </main>
 
-    <div class="pane on" data-pane="fav">
-      <div class="state" id="state-save-empty">
-        <p class="mu">저장한 경로가 없어요</p>
-        <button class="btn" data-go="list">위험 구간으로 이동</button>
-      </div>
-      <div id="favoriteList">
-        <div class="card" data-go="detail">
-          <div><b>강남역 → 잠실역</b><p class="mu">안전우선 모드 · 위험 구간 0곳 · 저장일 10/08</p></div>
-          <button class="chip del" aria-label="즐겨찾기 해제">해제</button>
-        </div>
-        <div class="card" data-go="detail">
-          <div><b>역삼동 → 선릉역</b><p class="mu">기본 모드 · 위험 구간 2곳 포함 · 저장일 10/05</p></div>
-          <button class="chip del" aria-label="즐겨찾기 해제">해제</button>
-        </div>
-      </div>
-    </div>
+  <footer class="foot">
+    Safe Drive · 도로교통공단 사고 데이터 기반<br>
+    현재 화면의 구간 값은 구조 확인용 샘플입니다
+  </footer>
 
-    <div class="pane" data-pane="recent">
-      <div class="state" id="state-recent-empty">
-        <p class="mu">최근 검색 기록이 없어요</p>
-        <button class="btn" data-go="home">홈에서 경로 검색하기</button>
-      </div>
-      <div id="recentList">
-        <div class="card" data-go="list">
-          <div><b>강남역 → 잠실역</b><p class="mu">검색 10/12 18:42</p></div>
-          <button class="chip del" aria-label="최근 검색 삭제">✕</button>
-        </div>
-        <div class="card" data-go="list">
-          <div><b>역삼동 → 선릉역</b><p class="mu">검색 10/10 09:15</p></div>
-          <button class="chip del" aria-label="최근 검색 삭제">✕</button>
-        </div>
-        <div class="card" data-go="list">
-          <div><b>잠실대로 → 송파구청</b><p class="mu">검색 10/07 21:03</p></div>
-          <button class="chip del" aria-label="최근 검색 삭제">✕</button>
-        </div>
-      </div>
-      <div class="row f">
-        <p class="mu" style="margin:0">최대 10건, 검색 시각순 보관</p>
-        <button class="chip" id="clearAllRecent" style="margin-left:auto">전체 삭제</button>
-      </div>
-    </div>
-  </section>
+  <nav class="tabbar">
+    <a href="index.html" class="on"><i>⌂</i>홈</a>
+    <a href="pages/list.html"><i>⚠</i>위험 구간</a>
+    <a href="pages/my.html"><i>☺</i>마이</a>
+  </nav>
 </div>
 
-<button class="totop" aria-label="맨 위로">↑<br>TOP</button>
-<nav class="tabbar">
-  <button data-go="home"><i>⌂</i>홈</button>
-  <button data-go="list"><i>⚠</i>위험 구간</button>
-  <button data-go="my"><i>☺</i>마이</button>
-</nav>
-<script src="js/app.js"></script>
+<script src="js/mock.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/config.js"></script>
+<script src="js/config.local.js"></script>
+<script src="js/common.js"></script>
+<script src="js/geo.js"></script>
+<script src="js/data.js"></script>
+<script src="js/route-api.js"></script>
+<script src="js/home.js"></script>
 </body>
 </html>

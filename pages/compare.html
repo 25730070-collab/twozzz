@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safe Drive · 경로 비교</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="compare" data-base="">
+<div class="app has-cta">
+  <header class="app-header">
+    <a class="logo" href="../index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="signup.html">가입</a>
+  </header>
+  <div class="subhead"><button class="ic" id="backBtn" data-fallback="../index.html" aria-label="뒤로">←</button><b id="headerTitle">경로 비교</b><span class="right"></span></div>
+
+  <main class="page">
+    <h2 id="summary">출발 → 도착</h2>
+    <p class="mu">빠른 경로와 안전 경로를 비교하고, 갈 길을 골라 안내를 시작해요</p>
+    <p class="mu" id="modeNote" hidden></p>
+    <p class="note err" id="errNote" hidden></p>
+    <div class="state" id="state-loading"><p class="mu">경로를 계산하는 중…</p></div>
+    <p class="note" id="sampleNote" hidden>입력하신 경로의 실제 데이터는 이후 주차에 연결돼요. 지금은 비슷한 샘플 경로로 보여줘요.</p>
+
+    <p class="verdict" id="verdict" hidden></p>
+    <div id="routeCards"></div>
+
+    <!-- 하단 큐레이션 -->
+    <section class="section" id="worstBox">
+      <div class="section-hd"><h3>이 경로에서 가장 조심할 곳</h3><span class="mu">빠른 경로 기준</span></div>
+      <div class="list-box" id="worstList"></div>
+    </section>
+    <section class="section">
+      <div class="section-hd"><h3>미리 알아두면 좋은 대처법</h3></div>
+      <div id="learnList"></div>
+    </section>
+    <section class="section">
+      <div class="section-hd"><h3>안전운전 팁</h3></div>
+      <div id="tipList"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Safe Drive · 도로교통공단 사고 데이터 기반<br>
+    현재 화면의 구간 값은 구조 확인용 샘플입니다
+  </footer>
+
+  <div class="cta-bar">
+    <a class="btn" id="goPreview" href="#">예습하기</a>
+    <a class="btn dk" id="goDrive" href="#">▶ 안내 시작</a>
+  </div>
+</div>
+
+<script src="../js/mock.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/config.local.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/route-api.js"></script>
+<script src="../js/compare.js"></script>
+</body>
+</html>

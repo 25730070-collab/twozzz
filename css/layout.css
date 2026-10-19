@@ -1,0 +1,40 @@
+/* layout.css — 앱 틀 · 헤더(스티키) · 하단 탭바 · 하단 고정 액션 · TOP */
+.app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:calc(var(--tab) + 8px);position:relative}
+.app.has-cta{padding-bottom:84px}
+
+/* 상단 헤더 : 항상 스티키 */
+.app-header{position:sticky;top:0;z-index:20;height:var(--hd);display:flex;align-items:center;gap:8px;padding:0 14px;background:var(--pn);border-bottom:2px solid var(--ln)}
+.app-header .logo{font-weight:800;font-size:16px;letter-spacing:-.3px;white-space:nowrap;margin-right:auto}
+.app-header .title{margin-right:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app-header .ic{border:1px solid var(--ln);background:var(--pn);padding:4px 10px;line-height:1.3}
+.app-header .logo:hover{opacity:.7}
+
+/* 서브 화면 : 로고 헤더는 그대로 두고, 그 아래에 뒤로가기 + 제목 바가 붙는다 */
+.subhead{position:sticky;top:var(--hd);z-index:19;height:var(--sub);display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--dk);color:#fff}
+.subhead .ic{border:1px solid #fff;background:none;color:#fff;padding:3px 10px;line-height:1.3}
+.subhead b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.subhead .right{flex:none;font-size:12px;opacity:.85}
+
+/* 헤더 아래에 붙는 스티키 바 (조건 요약 · 필터) */
+.subbar{position:sticky;top:var(--hd);z-index:15;background:var(--bg);padding:10px 14px 8px;border-bottom:1px solid var(--mu)}
+
+.page{padding:14px}
+.section{margin-top:22px}
+.section-hd{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.section-hd .more{margin-left:auto;font-size:12px;color:var(--mu);text-decoration:underline}
+
+/* 하단 탭바 */
+.tabbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:var(--tab);display:flex;background:var(--pn);border-top:2px solid var(--ln);z-index:20}
+.tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;color:var(--mu);white-space:nowrap}
+.tabbar a i{font-style:normal;font-size:18px;line-height:1.2}
+.tabbar a.on{color:var(--ln);font-weight:700;background:var(--ph)}
+
+/* 하단 고정 액션 (상세 · 가입) */
+.cta-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;display:flex;gap:8px;padding:10px 14px;background:var(--pn);border-top:2px solid var(--ln);z-index:20}
+.cta-bar .btn{margin-top:0;flex:1}
+
+.foot{margin-top:28px;padding:16px 14px;border-top:1px dashed var(--mu);text-align:center;color:var(--mu);font-size:11px;line-height:1.7}
+
+.totop{position:fixed;bottom:calc(var(--tab) + 14px);right:max(14px,calc(50vw - 201px));width:44px;height:44px;border-radius:50%;border:0;background:var(--dk);color:#fff;font-size:10px;line-height:1.1;display:none;z-index:25}
+.totop.show{display:block}
+.has-cta ~ .totop{bottom:84px}

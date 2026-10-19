@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safe Drive · 위험 구간</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="list" data-base="">
+<div class="app">
+  <header class="app-header">
+    <a class="logo" href="../index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="signup.html">가입</a>
+  </header>
+
+  <!-- 조건 + 필터 : 헤더 아래 스티키 -->
+  <div class="subbar">
+    <div class="row" style="margin:0">
+      <b>위험 구간</b><span class="mu">전체 구간 보기</span>
+      <a class="chip" href="../index.html" style="margin-left:auto">경로 비교하러 가기</a>
+    </div>
+    <div class="row">
+      <div class="dropdown">
+        <button class="chip" id="filterRiskBtn">위험등급 ▾</button>
+        <div class="panel" id="filterRiskPanel">
+          <button class="chip opt" data-risk-opt="4">4등급</button>
+          <button class="chip opt" data-risk-opt="3">3등급</button>
+          <button class="chip opt" data-risk-opt="2">2등급</button>
+          <button class="chip opt" data-risk-opt="1">1등급</button>
+        </div>
+      </div>
+      <div class="dropdown">
+        <button class="chip" id="filterRoadBtn">도로유형 ▾</button>
+        <div class="panel" id="filterRoadPanel">
+          <button class="chip opt" data-road-opt="대로">대로</button>
+          <button class="chip opt" data-road-opt="이면도로">이면도로</button>
+          <button class="chip opt" data-road-opt="골목길">골목길</button>
+        </div>
+      </div>
+      <button class="chip" id="sortChip">기본순 ▾</button>
+      <button class="chip bd" id="resetFilter" style="margin-left:auto">초기화</button>
+    </div>
+  </div>
+
+  <main class="page">
+    <p class="mu" id="resultCount" style="margin-bottom:6px"></p>
+
+    <div class="state" id="state-loading"><p class="mu">불러오는 중…</p></div>
+    <div class="state" id="state-empty">
+      <p class="mu">조건에 맞는 구간이 없습니다</p>
+      <button class="btn" id="clearFilter">마지막 조건 해제</button>
+    </div>
+    <div class="state" id="state-error">
+      <p class="mu">위험 구간 데이터를 불러오지 못했습니다</p>
+      <button class="btn" id="retryList">다시 시도</button>
+      <p class="note">오류 상태에서도 즐겨찾기·최근검색은 그대로 유지됩니다</p>
+    </div>
+
+    <div id="resultWrap">
+      <div class="list-box" id="resultList"></div>
+      <button class="btn" id="moreBtn" hidden>더 보기</button>
+    </div>
+
+    <!-- 하단 큐레이션 -->
+    <section class="section">
+      <div class="section-hd"><h3>경로로 비교해 보세요</h3><span class="mu">빠른 길 vs 안전한 길</span></div>
+      <div class="list-box" id="courseList"></div>
+    </section>
+    <section class="section">
+      <div class="section-hd"><h3>상황별 대처법</h3></div>
+      <div id="learnList"></div>
+    </section>
+    <section class="section">
+      <div class="section-hd"><h3>안전운전 팁</h3></div>
+      <div id="tipList"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Safe Drive · 도로교통공단 사고 데이터 기반<br>
+    현재 화면의 구간 값은 구조 확인용 샘플입니다
+  </footer>
+
+  <nav class="tabbar">
+    <a href="../index.html"><i>⌂</i>홈</a>
+    <a href="list.html" class="on"><i>⚠</i>위험 구간</a>
+    <a href="my.html"><i>☺</i>마이</a>
+  </nav>
+</div>
+
+<script src="../js/mock.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/config.local.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/route-api.js"></script>
+<script src="../js/list.js"></script>
+</body>
+</html>

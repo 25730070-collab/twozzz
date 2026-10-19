@@ -1,0 +1,15 @@
+/* base.css — 변수 · 리셋 · 기본 타이포 */
+:root{--bg:#ecece7;--pn:#fff;--ln:#222;--mu:#777;--ph:#d9d9d2;--dk:#161616;
+  --hd:50px;--tab:58px;--sub:46px;
+  --r1:#2e7d32;--r2:#f2c200;--r3:#ef7d1a;--r4:#c0282d}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#cfcfc9;color:var(--ln);font:14px/1.5 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all}
+a{color:inherit;text-decoration:none}
+[hidden]{display:none !important}
+h2{font-size:18px;margin:0 0 4px}
+h3{font-size:15px;margin:0}
+p{margin:0}
+.mu{color:var(--mu);font-size:12px}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}

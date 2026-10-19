@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safe Drive · 구간 상세</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="detail" data-base="">
+<div class="app has-cta">
+  <header class="app-header">
+    <a class="logo" href="../index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="signup.html">가입</a>
+  </header>
+  <div class="subhead"><button class="ic" id="backBtn" data-fallback="list.html" aria-label="뒤로">←</button><b id="headerTitle">구간 상세</b><span class="right"></span></div>
+
+  <main class="page">
+    <div class="img" id="mapView">MAP</div>
+    <h2 style="margin-top:12px"><span class="roadName"></span> <span class="bg r1 riskLevel" id="riskBadge" data-risk="1">1등급</span></h2>
+    <p class="mu"><span class="roadType"></span> · 최근 3년 기준</p>
+    <p class="mu address"></p>
+
+    <div class="kv">
+      <div><b class="accidentCount">0</b><span class="mu">사고건수</span></div>
+      <div><b class="roadType">-</b><span class="mu">도로유형</span></div>
+    </div>
+
+    <div class="box">
+      <b>이 구간 대처법</b>
+      <p class="advice" id="advice"></p>
+    </div>
+    <div class="box">
+      <b>사고 유형 요약 (심화)</b>
+      <p class="mu" id="typeSummary"></p>
+    </div>
+
+    <div class="state" id="state-save-done"><p class="note ok"></p></div>
+
+    <section class="section" id="throughBox">
+      <div class="section-hd"><h3>이 구간을 지나는 경로</h3></div>
+      <div class="list-box" id="throughList"></div>
+    </section>
+    <section class="section">
+      <div class="section-hd"><h3 id="relatedTitle">다른 구간</h3></div>
+      <div class="list-box" id="relatedList"></div>
+    </section>
+    <section class="section">
+      <div class="section-hd"><h3>상황별 대처법</h3></div>
+      <div id="learnList"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Safe Drive · 도로교통공단 사고 데이터 기반<br>
+    현재 화면의 구간 값은 구조 확인용 샘플입니다
+  </footer>
+
+  <div class="cta-bar">
+    <a class="btn" href="list.html">위험 구간 전체</a>
+    <button class="btn dk" id="favBtn" data-fav="false">☆ 구간 즐겨찾기</button>
+  </div>
+</div>
+
+<script src="../js/mock.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/config.local.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/route-api.js"></script>
+<script src="../js/detail.js"></script>
+</body>
+</html>
