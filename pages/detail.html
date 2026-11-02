@@ -19,44 +19,33 @@
   <div class="subhead"><button class="ic" id="backBtn" data-fallback="list.html" aria-label="뒤로">←</button><b id="headerTitle">구간 상세</b><span class="right"></span></div>
 
   <main class="page">
-    <div class="img" id="mapView">MAP</div>
-    <h2 style="margin-top:12px"><span class="roadName"></span> <span class="bg r1 riskLevel" id="riskBadge" data-risk="1">1등급</span></h2>
-    <p class="mu"><span class="roadType"></span> · 최근 3년 기준</p>
+    <div class="img" id="mapView"></div>
+    <h2 style="margin-top:12px"><span class="roadName"></span> <span class="bg r1 riskLevel" id="riskBadge" data-risk="1">1등급</span> <span id="srcBadge"></span></h2>
     <p class="mu address"></p>
 
     <div class="kv">
-      <div><b class="accidentCount">0</b><span class="mu">사고건수</span></div>
-      <div><b class="roadType">-</b><span class="mu">도로유형</span></div>
+      <div><b id="accCell">0</b><span class="mu">사고 건수</span></div>
+      <div><b id="yearCell">-</b><span class="mu">기준 연도</span></div>
     </div>
 
-    <div class="box">
-      <b>이 구간 대처법</b>
-      <p class="advice" id="advice"></p>
+    <div class="box" id="extraBox" hidden>
+      <b>피해 현황</b>
+      <div class="kv" id="extraList" style="margin-top:8px"></div>
     </div>
-    <div class="box">
-      <b>사고 유형 요약 (심화)</b>
-      <p class="mu" id="typeSummary"></p>
-    </div>
+
+    <p class="meta-sum">위험등급은 수집한 구간의 사고 건수를 비교한 상대 등급이에요</p>
 
     <div class="state" id="state-save-done"><p class="note ok"></p></div>
 
-    <section class="section" id="throughBox">
-      <div class="section-hd"><h3>이 구간을 지나는 경로</h3></div>
-      <div class="list-box" id="throughList"></div>
-    </section>
     <section class="section">
       <div class="section-hd"><h3 id="relatedTitle">다른 구간</h3></div>
       <div class="list-box" id="relatedList"></div>
     </section>
-    <section class="section">
-      <div class="section-hd"><h3>상황별 대처법</h3></div>
-      <div id="learnList"></div>
-    </section>
   </main>
 
   <footer class="foot">
-    Safe Drive · 도로교통공단 사고 데이터 기반<br>
-    현재 화면의 구간 값은 구조 확인용 샘플입니다
+    Safe Drive · 도로교통공단 지자체별 교통사고 다발지역 데이터 기반<br>
+    위험 구간은 공공데이터이며, 데이터에 없는 곳이 안전하다는 뜻은 아니에요
   </footer>
 
   <div class="cta-bar">
@@ -65,14 +54,9 @@
   </div>
 </div>
 
-<script src="../js/mock.js"></script>
 <script src="../js/storage.js"></script>
-<script src="../js/config.js"></script>
-<script src="../js/config.local.js"></script>
 <script src="../js/common.js"></script>
-<script src="../js/geo.js"></script>
 <script src="../js/data.js"></script>
-<script src="../js/route-api.js"></script>
 <script src="../js/detail.js"></script>
 </body>
 </html>

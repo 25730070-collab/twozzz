@@ -1,7 +1,7 @@
 /* drive.js — 안내(내비) 화면: 경로 지도 · 회전 안내 · 위험 구간 알림 · 재탐색
    모드: 시뮬레이션(가상 위치) / 실제 GPS(폰 위치). 위치가 바뀔 때마다 update()가 같은 로직으로 안내한다. */
 const q = qs();
-const o = q.get('origin') || ROUTES[0].origin, d = q.get('destination') || ROUTES[0].destination;
+const o = q.get('origin'), d = q.get('destination');
 const type = q.get('type') === 'fast' ? 'fast' : 'safe';
 
 let res, route, total = 0, xy, car = { pos: [0, 0], head: 0 };
@@ -46,10 +46,9 @@ function setup() {
   });
   $('#pointList').innerHTML = hz.map((x, i) =>
     `<div class="tl-item wait" id="pt${i}"><span class="tl-n r${x.h.seg.riskLevel}">${i + 1}</span>
-      <div><div class="tl-top"><b>${esc(x.h.seg.roadName)}</b>${levelBadge(x.h.seg.riskLevel)}</div>
-        <p class="mu">출발 후 ${(x.h.at / 1000).toFixed(1)}km · <span class="pt-state">대기</span></p></div></div>`).join('')
+      <div><div class="tl-top"><b>${esc(x.h.seg.roadName)}</b></div>
+        <p class="mu">출발 후 ${(x.h.at / 1000).toFixed(1)}km · 사고 ${x.h.seg.accidentCount}건 · <span class="pt-state">대기</span></p></div></div>`).join('')
     || '<p class="mu" style="padding:14px 0">이 경로에는 알려진 위험 구간이 없어요</p>';
-  $('#modeNote').textContent = res.mode === 'live' ? '실시간 경로(카카오 길찾기)' : '데모 경로(샘플)';
   paint();
 }
 
@@ -111,11 +110,10 @@ function update() {
     const dist = x.h.at - pos, s = x.h.seg;
     if (x.state === 'wait' && dist <= CONFIG.ALERT_M && dist > -50) {
       x.state = 'near';
-      const a = adviceOf(s);
-      $('#alertText').textContent = `${fmtDist(Math.max(dist, 0))} 앞 ${s.riskLevel}등급 구간 · ${s.roadName}`;
-      $('#alertAdvice').textContent = a.text;
+      $('#alertText').textContent = `${fmtDist(Math.max(dist, 0))} 앞 사고 다발지점 · ${s.roadName}`;
+      $('#alertAdvice').textContent = `${isNil(s.year) ? '' : s.year + '년 기준 '}사고 ${s.accidentCount}건`;
       $('#alert').dataset.lv = s.riskLevel;
-      speak(`${s.roadName}, ${s.riskLevel}등급 구간입니다. ${a.speak}`);
+      speak(`${s.roadName}, 사고 다발지점입니다. 주의하세요.`);
       if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
     }
     if (x.state !== 'done' && dist < -50) x.state = 'done';
@@ -130,8 +128,7 @@ function finish() {
   paint();
   $('#playBtn').textContent = '▶ 다시 시작';
   $('#state-done').classList.add('on');
-  $('#doneText').textContent = `도착했어요! ${TYPE_LABEL[type]}로 주의 지점 ${hz.length}곳을 지났어요.`;
-  addDrill(o, d, type, hz.length);
+  $('#doneText').textContent = `도착했어요! ${TYPE_LABEL[type]}로 사고 다발지점 ${hz.length}곳을 지났어요.`;
   speak('목적지에 도착했습니다. 안전 운전 하셨어요.');
 }
 
@@ -183,9 +180,9 @@ async function reroute() {
   if (rerouting) return;
   rerouting = true;
   $('#state-reroute').classList.add('on');
-  $('#rerouteText').textContent = LIVE() ? '경로를 벗어났어요. 새 경로를 찾는 중…' : '경로를 벗어났어요. (데모 모드에서는 재탐색을 지원하지 않아요)';
+  $('#rerouteText').textContent = '경로를 벗어났어요. 새 경로를 찾는 중…';
   speak('경로를 이탈했습니다.');
-  if (LIVE()) {
+  {
     try {
       const nr = await liveRoutes('내 위치', d);
       route = nr[type]; res = nr; pos = 0; said.clear(); setup();
@@ -222,6 +219,5 @@ $('#viewBtn').addEventListener('click', e => {
 });
 addEventListener('resize', () => route && paint());
 
-$('#learnList').innerHTML = LEARN.map(learnCard).join('');
-$('#state-loading').classList.add('on');
-buildRoutes(o, d).then(r => { res = r; route = r[type]; $('#state-loading').classList.remove('on'); setup(); });
+if (!o || !d) { $('main').innerHTML = emptyState({ title: '출발지와 도착지를 입력해 주세요', actions: [{ href: '../index.html', label: '홈으로' }] }); }
+else { $('#state-loading').classList.add('on'); buildRoutes(o, d).then(r => { res = r; route = r[type]; $('#state-loading').classList.remove('on'); setup(); }).catch(failView); }

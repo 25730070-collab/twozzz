@@ -1,30 +1,33 @@
-/* detail.js — 구간 상세 */
+/* detail.js — 구간 상세 (공공데이터 값만 표시) */
 const q = qs();
 (async () => {
-const seg = await findSegment(q.get('seg')) || SEGMENTS[0];
+const seg = await findSegment(q.get('seg'));
+if (!seg) { $('main').innerHTML = emptyState({ title: '구간 정보를 찾을 수 없어요', tips: ['삭제됐거나 데이터가 바뀐 구간일 수 있어요'], actions: [{ href: 'list.html', label: '목록으로' }] }); return; }
 
 $$('.roadName').forEach(el => { el.textContent = seg.roadName; });
-$$('.roadType').forEach(el => { el.textContent = seg.roadType; });
-$$('.accidentCount').forEach(el => { el.textContent = seg.accidentCount; });
-$('.address').textContent = seg.address;
+$('#accCell').innerHTML = isNil(seg.accidentCount) ? `정보 없음${typeTag('미입력', 'nil')}` : `${seg.accidentCount}건`;
+$('#yearCell').innerHTML = isNil(seg.year) ? `정보 없음${typeTag('미입력', 'nil')}` : `${seg.year}년`;
+$('.address').innerHTML = infoText(seg.address);
+/* 지도 이미지가 없을 때 : 좌표 또는 표준 대체 화면 */
+$('#mapView').innerHTML = isNil(seg.lat) || isNil(seg.lng)
+  ? `${EMPTY_ICON}<p class="mu">위치 정보가 없어 지도를 표시할 수 없어요</p>`
+  : `<p class="mu">📍 ${(+seg.lat).toFixed(4)}, ${(+seg.lng).toFixed(4)}</p>`;
 const badge = $('#riskBadge');
 badge.className = `bg r${seg.riskLevel} riskLevel`;
 badge.dataset.risk = seg.riskLevel;
 badge.textContent = `${seg.riskLevel}등급`;
+$('#srcBadge').innerHTML = srcBadge(seg);
 
-/* 사고 유형 요약 (샘플: 사고건수에서 비율로 나눔) */
-const n = seg.accidentCount, rear = Math.round(n * .5), left = Math.round(n * .3), walk = Math.max(n - rear - left, 0);
-$('#typeSummary').textContent = `추돌 ${rear}건 · 좌회전 ${left}건 · 보행자 ${walk}건`;
-$('#advice').textContent = adviceOf(seg).text;
+/* 응답에 있을 때만 보이는 실제 부가 필드 (없으면 영역 자체를 숨김) */
+const EXTRA_LABEL = { casualtyCount: '사상자', deathCount: '사망자', seriousCount: '중상자', minorCount: '경상자', injuryReportCount: '부상신고자' };
+const ex = Object.keys(EXTRA_LABEL).filter(k => !isNil(seg[k]));
+$('#extraList').innerHTML = ex.map(k => `<div><b>${seg[k]}명</b><span class="mu">${EXTRA_LABEL[k]}</span></div>`).join('');
+$('#extraBox').hidden = ex.length === 0;
 
-/* 이 구간을 지나는 경로 · 같은 구의 다른 구간 */
-const through = ROUTES.filter(r => r.segmentIds.includes(seg.segmentId));
-$('#throughList').innerHTML = through.map(r => routeCard(r)).join('');
-$('#throughBox').hidden = through.length === 0;
-const sameGu = SEGMENTS.filter(s => s.segmentId !== seg.segmentId && guOf(s) === guOf(seg));
+/* 같은 구의 다른 구간 */
+const sameGu = (await loadHazards()).filter(s => s.segmentId !== seg.segmentId && guOf(s) === guOf(seg));
 $('#relatedTitle').textContent = `${guOf(seg)}의 다른 구간`;
-$('#relatedList').innerHTML = sameGu.slice(0, 8).map(segCard).join('');
-$('#learnList').innerHTML = LEARN.slice(0, 2).map(learnCard).join('');
+$('#relatedList').innerHTML = sameGu.slice(0, 8).map(segCard).join('') || '<p class="mu" style="padding:12px 0">같은 지역의 다른 구간이 없어요</p>';
 
 /* 즐겨찾기 (구간) */
 const favBtn = $('#favBtn');

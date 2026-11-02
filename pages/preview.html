@@ -31,36 +31,19 @@
       <div class="list-box" id="timeline" style="padding-top:0;padding-bottom:0"></div>
     </section>
 
-    <div class="state" id="state-save-done"><p class="note ok"></p></div>
-
-    <section class="section">
-      <div class="section-hd"><h3>출발 전 체크</h3><span class="mu" id="chkCount">0/5</span></div>
-      <div class="list-box">
-        <label class="chk"><input type="checkbox"> 시트·사이드미러 위치 맞췄어요</label>
-        <label class="chk"><input type="checkbox"> 내비 음성 안내를 켰어요</label>
-        <label class="chk"><input type="checkbox"> 폰은 거치대에 고정했어요</label>
-        <label class="chk"><input type="checkbox"> 위 주의 지점 순서를 훑어봤어요</label>
-        <label class="chk"><input type="checkbox"> 시간 여유를 두고 출발해요</label>
-      </div>
-    </section>
-    <section class="section">
-      <div class="section-hd"><h3>안전운전 팁</h3></div>
-      <div id="tipList"></div>
-    </section>
   </main>
 
   <footer class="foot">
-    Safe Drive · 도로교통공단 사고 데이터 기반<br>
-    현재 화면의 구간 값은 구조 확인용 샘플입니다
+    Safe Drive · 도로교통공단 지자체별 교통사고 다발지역 데이터 기반<br>
+    위험 구간은 공공데이터이며, 데이터에 없는 곳이 안전하다는 뜻은 아니에요
   </footer>
 
   <div class="cta-bar">
-    <button class="btn" id="favBtn" data-fav="false">☆ 즐겨찾기</button>
+    <a class="btn" id="goCompare" href="javascript:history.back()">← 경로 비교</a>
     <a class="btn dk" id="goDrive" href="#">▶ 안내 시작</a>
   </div>
 </div>
 
-<script src="../js/mock.js"></script>
 <script src="../js/storage.js"></script>
 <script src="../js/config.js"></script>
 <script src="../js/config.local.js"></script>
