@@ -8,6 +8,38 @@ const HOME_URL = document.body.dataset.page === 'home' ? 'index.html' : '../inde
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const qs = () => new URLSearchParams(location.search);
 const guOf = s => (s.address || '').split(' ')[1] || '구 정보 없음';
+
+/* ---------- 아이콘 : 한 가지 선형 스타일 (24px · 선 1.9) ---------- */
+const ICON_PATH = {
+  home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-6h4v6"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  route: '<circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h6.5"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>',
+  login: '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',
+  menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  next: '<path d="m9 5 7 7-7 7"/>',
+  down: '<path d="m6 9 6 6 6-6"/>',
+  up: '<path d="m6 15 6-6 6 6"/>',
+  star: '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9Z"/>',
+  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  locate: '<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22"/>',
+  data: '<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  play: '<path d="M7 4.5v15l12-7.5Z"/>',
+  reset: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
+  volume: '<path d="M4 9v6h4l5 4V5L8 9Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/>',
+  mute: '<path d="M4 9v6h4l5 4V5L8 9Z"/><path d="m17 9 5 6M22 9l-5 6"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16Z"/>',
+  straight: '<path d="M12 20V5M6 11l6-6 6 6"/>',
+  left: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v5"/>',
+  right: '<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0-6 6v5"/>',
+  uturn: '<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
+  flag: '<path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/>'
+};
+const ico = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON_PATH[n] || ''}</svg>`;
+
 const segById = id => (typeof _hazards !== 'undefined' && _hazards ? _hazards : []).find(s => s.segmentId === id);
 
 /* ---------- 주소 ---------- */
@@ -49,7 +81,7 @@ const FIELD_LABEL = { real: '실제', derived: '가공', dummy: '더미', api: '
 const typeBadge = (s, key) => { const t = fieldType(s, key); return t ? `<span class="type-tag ft-${t}">${FIELD_LABEL[t]}</span>` : ''; };
 
 /* 표준 빈 화면 : 아이콘 + 한 줄 설명 + 해결 방법 안내 + 버튼 (검색 결과 없음·데이터 없음 공통) */
-const EMPTY_ICON = '<svg viewBox="0 0 120 80" width="120" height="80" aria-hidden="true"><rect x="2" y="2" width="116" height="76" fill="none" stroke="#999" stroke-dasharray="4 4"/><path d="M45 78 L55 10 M75 78 L65 10" stroke="#999" stroke-width="3" fill="none"/><path d="M60 70 V58 M60 48 V36 M60 26 V14" stroke="#999" stroke-width="3" fill="none"/><circle cx="92" cy="26" r="11" fill="none" stroke="#999" stroke-width="3"/><path d="M100 34 L110 44" stroke="#999" stroke-width="3"/></svg>';
+const EMPTY_ICON = '<svg viewBox="0 0 120 72" width="120" height="72" aria-hidden="true"><rect x="1" y="1" width="118" height="70" rx="14" fill="#f4f6f5"/><path d="M46 70 54 8M74 70 66 8" stroke="#ccd5d0" stroke-width="3" fill="none"/><path d="M60 62V52M60 42V32M60 22V12" stroke="#ccd5d0" stroke-width="3" stroke-linecap="round"/><circle cx="92" cy="26" r="11" fill="#fff" stroke="#0b8457" stroke-width="3"/><path d="m100 34 9 9" stroke="#0b8457" stroke-width="3" stroke-linecap="round"/></svg>';
 function emptyState({ title, tips = [], actions = [] }) {
   return `<div class="empty">${EMPTY_ICON}<b>${title}</b>
     ${tips.length ? `<ul>${tips.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}
@@ -71,6 +103,79 @@ document.addEventListener('click', e => {
   if (c) location.href = c.dataset.href;
 });
 
+/* ---------- 공통 셸 : 글로벌 헤더 · 드로어 · 하단 탭바 · 로그아웃 확인 · 토스트 (모든 화면이 같은 코드로 만든다) ---------- */
+const HOME_PAGE = document.body.dataset.page === 'home';
+const HREF = { home: HOME_URL, list: `${BASE}list.html`, route: `${HOME_PAGE ? '' : HOME_URL}#route`, my: `${BASE}my.html`, data: `${BASE}data.html`, signup: `${BASE}signup.html` };
+const PAGE_NAV = { home: 'home', list: 'list', detail: 'list', compare: 'route', preview: 'route', drive: 'route', my: 'my', report: 'my', data: 'data', signup: 'auth' };
+const TAB_ON = { home: 'home', list: 'list', detail: 'list', my: 'my', report: 'my', data: 'my', signup: 'my' };
+const curNav = PAGE_NAV[document.body.dataset.page];
+
+function toast(msg) {
+  const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
+}
+const flash = msg => { try { sessionStorage.setItem('sd_flash', msg); } catch {} };
+
+function logout() {                                   // 서버 인증이 없으므로 이 기기의 가입 정보만 지운다 (즐겨찾기·제보는 그대로)
+  store.remove(KEY.user);
+  flash('로그아웃했어요');
+  location.reload();
+}
+
+function buildShell() {
+  const user = store.get(KEY.user);
+  /* 헤더 : 로고 · 로그인/로그아웃 아이콘 · 메뉴 */
+  const hd = $('.app-header');
+  if (hd) {
+    hd.innerHTML = `<a class="logo" href="${HOME_URL}" aria-label="Safe Drive 홈"><span class="logo-mark">${ico('route')}</span>Safe Drive</a>
+      ${user ? `<button class="hd-btn on" id="authBtn" aria-label="로그아웃" title="${esc(user.nickname)} · 로그아웃">${ico('logout')}</button>`
+             : `<a class="hd-btn" id="authBtn" href="${HREF.signup}" aria-label="로그인·가입" title="로그인·가입">${ico('login')}</a>`}
+      <button class="hd-btn" id="menuBtn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="drawer">${ico('menu')}</button>`;
+  }
+  /* 드로어 */
+  const item = (id, label, icon, href) => `<a href="${href}" class="${curNav === id ? 'on' : ''}" ${curNav === id ? 'aria-current="page"' : ''}>${ico(icon)}${label}</a>`;
+  const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'overlay';
+  const dr = document.createElement('aside'); dr.className = 'drawer'; dr.id = 'drawer'; dr.setAttribute('aria-label', '메뉴');
+  dr.innerHTML = `<div class="dr-hd"><div style="flex:1;min-width:0">${user ? `<b>${esc(user.nickname)} 님</b><span class="mu">${esc(user.email)}</span>` : '<b>메뉴</b>'}</div>
+      <button class="hd-btn" id="menuClose" aria-label="메뉴 닫기">${ico('close')}</button></div>
+    <nav class="dr-nav">${item('home', '홈', 'home', HREF.home)}${item('list', '위험 구간', 'pin', HREF.list)}${item('route', '경로 비교', 'route', HREF.route)}${item('my', '마이페이지', 'user', HREF.my)}${item('data', '데이터 관리', 'data', HREF.data)}<hr>
+      ${user ? `<button id="drLogout">${ico('logout')}로그아웃</button>` : item('auth', '로그인 · 가입', 'login', HREF.signup)}</nav>`;
+  document.body.append(ov, dr);
+  const open = on => { dr.classList.toggle('on', on); ov.classList.toggle('on', on); document.body.classList.toggle('lock', on);
+    const mb = $('#menuBtn'); if (mb) mb.setAttribute('aria-expanded', String(on)); if (on) $('#menuClose').focus(); else if (mb) mb.focus(); };
+  $('#menuBtn').addEventListener('click', () => open(true));
+  $('#menuClose').addEventListener('click', () => open(false));
+  ov.addEventListener('click', () => open(false));
+  dr.addEventListener('click', e => { if (e.target.closest('a')) open(false); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') { open(false); closeConfirm(); } });
+  /* 로그아웃 확인 */
+  const md = document.createElement('div'); md.className = 'modal'; md.id = 'logoutModal'; md.setAttribute('role', 'dialog'); md.setAttribute('aria-modal', 'true'); md.setAttribute('aria-label', '로그아웃 확인');
+  md.innerHTML = `<div class="modal-box"><h3>로그아웃할까요?</h3><p class="mu">이 기기의 가입 정보만 지워져요. 즐겨찾기와 제보는 그대로 남아요.</p>
+    <div class="row"><button class="btn" id="lgNo">취소</button><button class="btn dk" id="lgYes">로그아웃</button></div></div>`;
+  document.body.appendChild(md);
+  const openConfirm = () => { open(false); md.classList.add('on'); $('#lgNo').focus(); };
+  window.closeConfirm = () => md.classList.remove('on');
+  md.addEventListener('click', e => { if (e.target === md) closeConfirm(); });
+  $('#lgNo').addEventListener('click', closeConfirm);
+  $('#lgYes').addEventListener('click', logout);
+  const ab = $('#authBtn'); if (user) ab.addEventListener('click', openConfirm);
+  const dl = $('#drLogout'); if (dl) dl.addEventListener('click', openConfirm);
+  window.openLogoutConfirm = openConfirm;
+  /* 하단 탭바 (모바일) */
+  const tb = $('.tabbar');
+  if (tb) {
+    const tab = (id, label, icon, href) => `<a href="${href}" class="${TAB_ON[document.body.dataset.page] === id ? 'on' : ''}">${ico(icon)}${label}</a>`;
+    tb.setAttribute('aria-label', '하단 메뉴');
+    tb.innerHTML = tab('home', '홈', 'home', HREF.home) + tab('list', '위험 구간', 'pin', HREF.list) + tab('my', '마이', 'user', HREF.my);
+  }
+  /* 서브 바 뒤로가기 아이콘 */
+  const bb = $('#backBtn'); if (bb) bb.innerHTML = ico('back');
+  /* 로그아웃 직후 안내 */
+  try { const m = sessionStorage.getItem('sd_flash'); if (m) { sessionStorage.removeItem('sd_flash'); toast(m); } } catch {}
+}
+buildShell();
+$$('.more').forEach(a => { a.innerHTML = ico('next'); });   // 더보기는 글자 대신 화살표 아이콘
+
 /* 서브 화면 뒤로가기 (로고는 항상 홈으로) */
 const backBtn = $('#backBtn');
 if (backBtn) backBtn.addEventListener('click', () => {
@@ -78,22 +183,11 @@ if (backBtn) backBtn.addEventListener('click', () => {
   else location.href = backBtn.dataset.fallback || HOME_URL;
 });
 
-/* 헤더 우측 : 가입 전 '가입' / 가입 후 닉네임 */
-const userChip = $('#userChip');
-if (userChip) {
-  const u = store.get(KEY.user);
-  userChip.textContent = '☺';                       // 모든 화면 동일한 로그인 아이콘 (상태는 색으로만 구분)
-  userChip.classList.add('hdr-ic');
-  userChip.setAttribute('aria-label', u ? `${u.nickname} 마이페이지` : '가입·로그인');
-  userChip.href = u ? `${BASE}my.html` : `${BASE}signup.html`;
-  userChip.classList.toggle('on', !!u);
-}
-
 /* TOP 버튼 */
 const topBtn = document.createElement('button');
 topBtn.className = 'totop';
 topBtn.setAttribute('aria-label', '맨 위로');
-topBtn.textContent = '↑';
+topBtn.innerHTML = ico('up');
 document.body.appendChild(topBtn);
 addEventListener('scroll', () => topBtn.classList.toggle('show', scrollY > 400));
 topBtn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
@@ -102,7 +196,7 @@ console.log('Safe Drive loaded —', document.body.dataset.page, '| state areas:
 
 /* ---------- 경로 ---------- */
 const routeCard = (r, extra = '') => `<div class="card" data-href="${BASE}compare.html?origin=${encodeURIComponent(r.origin)}&destination=${encodeURIComponent(r.destination)}">
-  <div><b>${esc(r.origin)} → ${esc(r.destination)}</b><p class="mu">빠른 경로 · 안전 경로 비교 ${extra}</p></div><span class="mu">›</span></div>`;
+  <div><b>${esc(r.origin)} → ${esc(r.destination)}</b><p class="mu">빠른 경로 · 안전 경로 비교 ${extra}</p></div><span class="go">${ico('next', 's')}</span></div>`;
 const TYPE_LABEL = { fast: '빠른 경로', safe: '안전 경로' };
 const pair = (o, d) => `origin=${encodeURIComponent(o)}&destination=${encodeURIComponent(d)}`;
 const compareUrl = r => `${BASE}compare.html?${pair(r.origin, r.destination)}`;

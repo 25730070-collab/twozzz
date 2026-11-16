@@ -2,6 +2,17 @@
 let _hazards = null;
 const DATA_STATUS = { static: 'wait', api: 'wait', user: 0 };   // static/api : ok | empty | fail
 
+function fromFallback(prefix, src) {
+  return new Promise(res => {
+    if (window.SD_FALLBACK) return res(window.SD_FALLBACK[src] || null);
+    const sc = document.createElement('script');
+    sc.src = prefix + 'segments.fallback.js';
+    sc.onload = () => res(window.SD_FALLBACK ? window.SD_FALLBACK[src] || null : null);
+    sc.onerror = () => res(null);
+    document.head.appendChild(sc);
+  });
+}
+
 async function loadHazards() {
   if (_hazards) return _hazards;
   const prefix = document.body.dataset.page === 'home' ? 'data/' : '../data/';
@@ -13,7 +24,12 @@ async function loadHazards() {
       const list = await r.json();
       DATA_STATUS[src] = list.length ? 'ok' : 'empty';
       rows.push(...list);
-    } catch (e) { DATA_STATUS[src] = 'fail'; console.warn('[데이터 불러오기 실패]', f, e.message); }   // file:// 에서는 fetch가 막혀 실패할 수 있음
+    } catch (e) {
+      // 파일을 더블클릭(file://)으로 열면 브라우저가 fetch를 막는다 → 같은 내용의 복사본(segments.fallback.js)으로 대신한다
+      const list = location.protocol === 'file:' ? await fromFallback(prefix, src) : null;
+      if (list) { DATA_STATUS[src] = list.length ? 'ok' : 'empty'; rows.push(...list); console.info('[데이터] file:// 에서 열어 복사본을 사용했습니다 —', f); }
+      else { DATA_STATUS[src] = 'fail'; console.warn('[데이터 불러오기 실패]', f, e.message); }
+    }
   }
   const mine = typeof getReports === 'function' ? getReports() : [];
   DATA_STATUS.user = mine.length;

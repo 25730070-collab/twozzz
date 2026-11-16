@@ -19,7 +19,7 @@ const contentOf = id => {
 function paint() {
   const by = { J: contentOf('segments_static').length, A: contentOf('segments_api').length };
   const u = ['reports_user', 'favorites_user', 'recent_searches_user'].reduce((n, id) => n + contentOf(id).length, 0);
-  $('#dsStats').innerHTML = `<div><b>${by.J + by.A}</b><span class="mu">위험 구간</span></div><div><b>${by.J}</b><span class="mu">J</span></div><div><b>${by.A}</b><span class="mu">A</span></div><div><b>${u}</b><span class="mu">내 데이터</span></div>`;
+  $('#dsStats').innerHTML = `<div><b>${by.J + by.A}</b><span class="mu">위험 구간</span></div><div><b>${by.J}</b><span class="mu">J 구간</span></div><div><b>${by.A}</b><span class="mu">A 구간</span></div><div><b>${u}</b><span class="mu">내 데이터</span></div>`;
 
   $('#dsList').innerHTML = manifest.datasets.map(d => {
     const n = contentOf(d.id).length;
@@ -42,7 +42,7 @@ function paint() {
        <p class="mu">총 ${c.total}건 · J ${c.by.static || 0} / A ${c.by.api || 0} / U ${c.by.user || 0}</p>
        <p class="mu">빈 값(null): ${Object.keys(c.nulls).length ? Object.entries(c.nulls).map(([k, v]) => `${k} ${v}건`).join(' · ') : '없음'}</p>
        ${c.warn.slice(0, 5).map(w => `<p class="note err">${esc(w)}</p>`).join('')}
-       <p class="mu">자세한 결과는 F12 → Console의 [데이터 점검]에서 볼 수 있어요</p>`
+`
     : '<p class="mu">점검 결과가 없어요</p>';
 }
 

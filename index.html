@@ -12,81 +12,68 @@
 </head>
 <body data-page="home" data-base="pages/">
 <div class="app">
-  <header class="app-header">
-    <a class="logo" href="index.html">Safe Drive</a>
-    <a class="chip" id="userChip" href="pages/signup.html">가입</a>
-  </header>
+  <header class="app-header"></header>
 
   <main class="page">
-    <!-- 상단 : 액션 (위험 구간 검색) -->
-    <section class="hero">
-      <div class="hero-x" role="img" aria-label="메인 비주얼 자리 (10주차에 실제 배너 이미지 삽입)"><span>메인 비주얼 · 10주차에 이미지 삽입</span></div>
-      <h2>가려는 동네,<br>사고가 많은 곳부터 확인해요</h2>
-    </section>
-    <section class="box search-box" id="routeBox">
-      <b>경로 비교</b>
-      <input class="in" id="ro" type="search" placeholder="출발지 (예: 강남역)" autocomplete="off">
-      <input class="in" id="rd" type="search" placeholder="도착지 (예: 잠실역)" autocomplete="off">
-      <button class="btn dk" id="goRoute" disabled>빠른 경로 · 안전 경로 비교</button>
-      <button class="chip" id="useMe" type="button" style="margin-top:8px">내 위치에서 출발</button>
-    </section>
-    <section class="box search-box">
-      <b>위험 구간 검색</b>
-      <input class="in" id="q" type="search" placeholder="동·도로명·구 이름 (예: 논현동, 강남구)" autocomplete="off">
-      <button class="btn dk" id="find" disabled>위험 구간 검색</button>
-    </section>
+    <div class="home-grid">
+      <div class="home-main">
+        <section class="hero">
+          <h1>초행길도 안심하고,<br><em>사고 위험이 낮은 경로</em>를<br>확인하세요</h1>
+          <p>사고 다발 구간 데이터로 빠른 경로와 안전 경로를 비교해요</p>
+          <svg viewBox="0 0 360 150" role="img" aria-label="빠른 경로와 사고 다발지점을 피해 가는 안전 경로 예시">
+            <g stroke="#cfe3d8" stroke-width="10" stroke-linecap="round" fill="none"><path d="M-10 118 L120 92 L250 112 L370 70"/><path d="M60 160 L96 60 L150 -10"/><path d="M210 160 L238 76 L300 -10"/></g>
+            <path d="M40 112 C110 96 190 96 322 52" fill="none" stroke="#8b938f" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round"/>
+            <path d="M40 112 C80 70 150 40 228 48 S290 50 322 52" fill="none" stroke="#0b8457" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="170" cy="92" r="15" fill="#c0282d" fill-opacity=".18"/><circle cx="170" cy="92" r="6" fill="#c0282d" stroke="#fff" stroke-width="2"/>
+            <circle cx="40" cy="112" r="9" fill="#fff" stroke="#0b8457" stroke-width="5"/>
+            <circle cx="322" cy="52" r="9" fill="#fff" stroke="#c0282d" stroke-width="5"/>
+          </svg>
+          <div class="legend"><span><i style="background:#0b8457"></i>안전 경로</span><span><i class="dash"></i>빠른 경로</span><span><i class="dot"></i>사고 다발지점</span></div>
+        </section>
 
-    <!-- 추천 영역 : 회색 카드 · 가로 넘김 (JSON에서 렌더링) -->
-    <section class="section">
-      <div class="strip-hd"><h3>사고 많은 구간</h3><button class="strip-btn" data-strip="stripTop" data-dir="-1" aria-label="이전">‹</button><button class="strip-btn" data-strip="stripTop" data-dir="1" aria-label="다음">›</button></div>
-      <div class="hstrip" id="stripTop" tabindex="0" aria-label="사고 많은 구간 (좌우 방향키로 이동)"></div>
-    </section>
-    <section class="section">
-      <div class="strip-hd"><h3>가장 최근 기준 구간</h3><button class="strip-btn" data-strip="stripNew" data-dir="-1" aria-label="이전">‹</button><button class="strip-btn" data-strip="stripNew" data-dir="1" aria-label="다음">›</button></div>
-      <div class="hstrip" id="stripNew" tabindex="0" aria-label="가장 최근 기준 연도 구간 (좌우 방향키로 이동)"></div>
-    </section>
+        <section class="box route-box" id="route" aria-label="경로 비교">
+          <div class="fld"><span class="dot" aria-hidden="true"></span><input class="in" id="ro" type="search" placeholder="출발지" aria-label="출발지" autocomplete="off"></div>
+          <div class="fld"><span class="dot end" aria-hidden="true"></span><input class="in" id="rd" type="search" placeholder="도착지" aria-label="도착지" autocomplete="off"></div>
+          <button class="btn dk" id="goRoute" disabled>경로 비교 시작</button>
+          <button class="me" id="useMe" type="button"><svg class="ico s" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22"/></svg>내 위치에서 출발</button>
+        </section>
 
-    <section class="section">
-      <div class="section-hd"><h3>최근 검색</h3><a class="more" href="pages/my.html" aria-label="더 보기">›</a></div>
-      <div class="quick" id="quickRecent"></div>
-      <div class="state" id="state-quick-empty"><p class="mu">아직 검색한 기록이 없어요</p></div>
-    </section>
+        <div class="find-row">
+          <label class="searchbar"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="위험 구간 검색 (동·도로명·구)" aria-label="위험 구간 검색" autocomplete="off"></label>
+          <button class="btn" id="find" disabled>검색</button>
+        </div>
 
-    <section class="section" id="favBox">
-      <div class="section-hd"><h3>즐겨찾기</h3><a class="more" href="pages/my.html" aria-label="더 보기">›</a></div>
-      <div class="list-box" id="favPreview"></div>
-      <div class="state" id="state-fav-empty"><p class="mu">저장한 경로·구간이 없어요</p></div>
-    </section>
+        <section class="section" id="recentBox" hidden>
+          <div class="section-hd"><h3>최근 검색</h3><a class="more" href="pages/my.html" aria-label="최근 검색 더 보기"></a></div>
+          <div class="quick" id="quickRecent"></div>
+        </section>
 
-    <!-- 하단 : 큐레이션 (모두 공공데이터에서 계산) -->
-    <section class="section">
-      <div class="section-hd"><h3>사고 많은 구간 TOP 10</h3><a class="more" href="pages/list.html" aria-label="더 보기">›</a></div>
-      <div class="list-box" id="topList"></div>
-    </section>
+        <section class="section" id="favBox" hidden>
+          <div class="section-hd"><h3>즐겨찾기</h3><a class="more" href="pages/my.html" aria-label="즐겨찾기 더 보기"></a></div>
+          <div class="list-box" id="favPreview"></div>
+        </section>
+      </div>
 
-    <section class="section">
-      <div class="section-hd"><h3>구별 사고 건수</h3><span class="mu">수집한 구간 합계</span></div>
-      <div class="box" style="margin-top:0" id="guStats"></div>
-    </section>
+      <div class="home-side">
+        <section class="section">
+          <div class="section-hd"><h3>사고 많은 구간</h3><a class="more" href="pages/list.html" aria-label="위험 구간 전체 보기"></a></div>
+          <div class="list-box" id="topList"></div>
+        </section>
 
-    <section class="section">
-      <div class="section-hd"><h3>지역으로 찾기</h3><span class="mu">구별 구간 수</span></div>
-      <div class="quick" id="guChips"></div>
-    </section>
-
-
+        <section class="section">
+          <div class="section-hd"><h3>지역별 사고 건수</h3><a class="more" href="pages/list.html" aria-label="지역별로 보기"></a></div>
+          <div class="box" style="margin-top:0" id="guStats"></div>
+        </section>
+      </div>
+    </div>
   </main>
 
   <footer class="foot">
-    Safe Drive · 도로교통공단 지자체별 교통사고 다발지역 데이터 기반<br>
-    위험 구간은 공공데이터이며, 데이터에 없는 곳이 안전하다는 뜻은 아니에요
+    출처 · 도로교통공단 지자체별 교통사고 다발지역<br>
+    데이터에 없는 곳이 안전하다는 뜻은 아니에요
   </footer>
 
-  <nav class="tabbar">
-    <a href="index.html" class="on">홈</a>
-    <a href="pages/list.html">위험 구간</a>
-    <a href="pages/my.html">마이</a>
-  </nav>
+  <nav class="tabbar"></nav>
 </div>
 
 <script src="js/storage.js"></script>

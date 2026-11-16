@@ -10,8 +10,8 @@ $('#yearCell').innerHTML = isNil(seg.year) ? `정보 없음${typeTag('미입력'
 $('.address').innerHTML = infoText(seg.address);
 /* 지도 이미지가 없을 때 : 좌표 또는 표준 대체 화면 */
 $('#mapView').innerHTML = isNil(seg.lat) || isNil(seg.lng)
-  ? `${EMPTY_ICON}<p class="mu">위치 정보가 없어 지도를 표시할 수 없어요</p>`
-  : `<p class="mu">${(+seg.lat).toFixed(4)}, ${(+seg.lng).toFixed(4)}</p>`;
+  ? `${ico('pin')}위치 정보가 없어요`
+  : `${ico('pin')}위도 ${(+seg.lat).toFixed(4)} · 경도 ${(+seg.lng).toFixed(4)}`;
 const badge = $('#riskBadge');
 badge.className = `bg r${seg.riskLevel} riskLevel`;
 badge.dataset.risk = seg.riskLevel;
@@ -35,7 +35,7 @@ const match = f => f.kind === 'segment' && f.segmentId === seg.segmentId;
 const paintFav = () => {
   const on = getFavs().some(match);
   favBtn.dataset.fav = String(on);
-  favBtn.textContent = on ? '★ 즐겨찾기 됨' : '☆ 구간 즐겨찾기';
+  favBtn.innerHTML = `${ico('star', on ? 'fill' : '')}${on ? '즐겨찾기 됨' : '구간 즐겨찾기'}`;
 };
 favBtn.addEventListener('click', () => {
   let favs = getFavs();
@@ -43,9 +43,7 @@ favBtn.addEventListener('click', () => {
   if (on) favs = favs.filter(f => !match(f));
   else favs.unshift({ id: 'fv' + Date.now(), kind: 'segment', segmentId: seg.segmentId, savedAt: nowText().slice(0, 5) });
   store.set(KEY.fav, favs); paintFav();
-  const done = $('#state-save-done'), msg = $('p', done);
-  msg.textContent = on ? '즐겨찾기를 해제했어요' : '즐겨찾기에 저장했어요';
-  done.classList.add('on'); setTimeout(() => done.classList.remove('on'), 1800);
+  toast(on ? '즐겨찾기를 해제했어요' : '즐겨찾기에 저장했어요');
 });
 paintFav();
 })();

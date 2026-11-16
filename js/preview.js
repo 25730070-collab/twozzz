@@ -17,7 +17,7 @@ function render() {
   $('#pvStats').innerHTML = `
     <div><b>${st.minutes}분</b><span class="mu">소요 시간</span></div>
     <div><b>${st.km}km</b><span class="mu">거리</span></div>
-    <div><b>${st.hazards.length}곳</b><span class="mu">사고 다발지점</span></div>
+    <div><b>${st.hazards.length}곳</b><span class="mu">다발지점</span></div>
     <div><b>${st.score}건</b><span class="mu">지나는 사고</span></div>`;
   $('#timeline').innerHTML = st.hazards.map((h, i) => {
     const s = h.seg, dt = detailText(s);

@@ -1,16 +1,40 @@
-/* base.css — 변수 · 리셋 · 기본 타이포 */
-:root{--bg:#ecece7;--pn:#fff;--ln:#222;--mu:#777;--ph:#d9d9d2;--dk:#161616;
-  --hd:50px;--tab:58px;
-  --fs-title:18px;--fs-sub:17px;--fs-body:15px;--fs-min:13px;--sub:46px;
-  --r1:#2e7d32;--r2:#f2c200;--r3:#ef7d1a;--r4:#c0282d}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:#cfcfc9;color:var(--ln);font:14px/1.5 -apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;word-break:keep-all}
+/* base.css — 디자인 토큰 · 리셋 · 타이포그래피 (모든 화면이 이 값만 쓴다) */
+:root{
+  /* 색 : 메인 그린 · 중립 배경 · 흰 표면 · 차콜 글자 */
+  --brand:#0b8457;--brand-d:#086846;--brand-t:#e6f4ed;
+  --bg:#f4f6f5;--pn:#fff;
+  --tx:#171c1a;--tx2:#5b6560;--line:#e3e8e5;--line2:#ccd5d0;--dis:#dde3e0;
+  /* 위험등급 색 (의미 전달 전용 — 다른 용도로 쓰지 않는다) */
+  --r1:#2e7d32;--r2:#f2c200;--r3:#ef7d1a;--r4:#c0282d;
+  /* 글자 크기 : 메인 헤드라인 28 · 페이지 24 · 섹션 18 · 카드 16 · 본문 15 · 보조 13 */
+  --fs-h1:28px;--fs-page:24px;--fs-sec:18px;--fs-card:16px;--fs-body:15px;--fs-cap:13px;
+  /* 모서리 · 그림자 · 간격 */
+  --rs:8px;--rm:12px;--rl:16px;--shadow:0 1px 2px rgba(16,24,20,.06);
+  --sp1:4px;--sp2:8px;--sp3:12px;--sp4:16px;--sp5:24px;--sp6:32px;
+  /* 레이아웃 : 화면 폭에 따라 콘텐츠 최대 폭이 커지고, 좌우 여백은 자동 계산 */
+  --w:480px;--gut:max(16px,calc((100% - var(--w)) / 2 + 16px));
+  --hd:56px;--sub:48px;--tab:60px;--bar:72px;
+  --z-top:95;--z-hd:100;--z-sub:90;--z-bar:80;--z-ov:200;--z-dr:210;--z-modal:300;--z-toast:310;
+}
+@media (min-width:768px){:root{--w:680px}}
+@media (min-width:1100px){:root{--w:960px}}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:var(--fs-body)/1.55 "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+body.lock{overflow:hidden}
 a{color:inherit;text-decoration:none}
 [hidden]{display:none !important}
-h2{font-size:18px;margin:0 0 4px}
-h3{font-size:15px;margin:0}
+h1{font-size:var(--fs-page);line-height:1.3;margin:0;font-weight:800;letter-spacing:-.4px}
+h2{font-size:var(--fs-sec);line-height:1.35;margin:0;font-weight:700;letter-spacing:-.2px}
+h3{font-size:var(--fs-sec);line-height:1.35;margin:0;font-weight:700;letter-spacing:-.2px}
 p{margin:0}
-.mu{color:var(--mu);font-size:13px}
-button,input{font:inherit;color:inherit}
+b,strong{font-weight:700}
+.mu{color:var(--tx2);font-size:var(--fs-cap);line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ico{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+.ico.s{width:18px;height:18px}
+.ico.fill{fill:currentColor}

@@ -14,7 +14,7 @@ function card(st, max) {
     <div class="rt-stats">
       <div><b>${st.minutes}분</b><span class="mu">소요 시간</span></div>
       <div><b>${st.km}km</b><span class="mu">거리</span></div>
-      <div><b>${st.hazards.length}곳</b><span class="mu">사고 다발지점</span></div>
+      <div><b>${st.hazards.length}곳</b><span class="mu">다발지점</span></div>
     </div>
     <div class="stat"><span class="nm">지나는 사고</span><span class="bar"><i style="width:${Math.round(st.score / max * 100)}%"></i></span><span class="v">${st.score}건</span></div>
     <p class="mu">${names ? '주요 지점 · ' + names : '지나는 사고 다발지점이 없어요'}</p></label>`;
@@ -23,6 +23,7 @@ function card(st, max) {
 function render() {
   const F = res.fast, S = res.safe, max = Math.max(F.score, S.score, 1);
   $('#routeCards').innerHTML = card(F, max) + card(S, max);
+  $('#ctaBar').hidden = false;   // 경로를 불러왔을 때만 예습·안내 버튼을 보여 준다
   $('#goPreview').href = previewUrl({ origin: o, destination: d }, sel);
   $('#goDrive').href = driveUrl({ origin: o, destination: d }, sel);
 }
@@ -42,13 +43,14 @@ async function run() {
 
   const worst = [...F.hazards, ...S.hazards.filter(h => !F.hazards.some(x => x.seg.segmentId === h.seg.segmentId))].sort((a, b) => b.seg.accidentCount - a.seg.accidentCount).slice(0, 3);
   $('#worstList').innerHTML = worst.map(h => `<div class="card" data-href="${segUrl(h.seg.segmentId)}"><div><b class="roadName">${esc(h.seg.roadName)}</b>
-      <p class="mu">${guOf(h.seg)} · 사고 ${h.seg.accidentCount}건</p></div><span class="mu">›</span></div>`).join('');
+      <p class="mu">${guOf(h.seg)} · 사고 ${h.seg.accidentCount}건</p></div><span class="go">${ico('next', 's')}</span></div>`).join('');
   $('#worstBox').hidden = worst.length === 0;
   render();
 }
 
-const paintFav = () => { const on = isRouteFav(o, d); $('#favRoute').dataset.fav = String(on); $('#favRoute').textContent = on ? '★ 즐겨찾기 됨' : '☆ 경로 즐겨찾기'; };
-$('#favRoute').addEventListener('click', () => { const on = toggleRouteFav(o, d); paintFav(); $('#favMsg').textContent = on ? '즐겨찾기에 저장했어요' : '즐겨찾기를 해제했어요'; });
+const favBtn = $('#favRoute');   // 경로를 못 불러와 실패 화면으로 바뀌면 버튼이 없을 수 있다
+const paintFav = () => { if (!favBtn) return; const on = isRouteFav(o, d); favBtn.dataset.fav = String(on); favBtn.classList.toggle('on', on); favBtn.innerHTML = `${ico('star', on ? 'fill' : '')}${on ? '즐겨찾기 됨' : '경로 즐겨찾기'}`; };
+if (favBtn) favBtn.addEventListener('click', () => { const on = toggleRouteFav(o, d); paintFav(); toast(on ? '즐겨찾기에 저장했어요' : '즐겨찾기를 해제했어요'); });
 if (o && d) paintFav();
 document.addEventListener('change', e => {
   if (e.target.name === 'routeType' && res) { sel = e.target.value; render(); }

@@ -13,7 +13,7 @@ $('#headerTitle').textContent = `${o} → ${d}`;
 $('#typeBadge').textContent = TYPE_LABEL[type];
 
 const fmtDist = m => m >= 1000 ? `${(m / 1000).toFixed(1)}km` : `${Math.max(Math.round(m / 10) * 10, 0)}m`;
-const iconOf = t => /유턴/.test(t) ? '↶' : /좌/.test(t) ? '↰' : /우/.test(t) ? '↱' : /도착|목적/.test(t) ? '⚑' : '↑';
+const iconOf = t => ico(/유턴/.test(t) ? 'uturn' : /좌/.test(t) ? 'left' : /우/.test(t) ? 'right' : /도착|목적/.test(t) ? 'flag' : 'straight');
 const NS = 'http://www.w3.org/2000/svg';
 const svg = $('#map');
 
@@ -79,8 +79,8 @@ function paint() {
 
   /* 다음 회전 안내 */
   const g = route.guides.find((x, i) => i > 0 && x.at > pos + 15);
-  if (g) { $('#turnIc').textContent = iconOf(g.text); $('#turnText').textContent = g.text; $('#turnDist').textContent = `${fmtDist(g.at - pos)} 앞`; }
-  else { $('#turnIc').textContent = '⚑'; $('#turnText').textContent = '목적지 근처예요'; $('#turnDist').textContent = fmtDist(total - pos); }
+  if (g) { $('#turnIc').innerHTML = iconOf(g.text); $('#turnText').textContent = g.text; $('#turnDist').textContent = `${fmtDist(g.at - pos)} 앞`; }
+  else { $('#turnIc').innerHTML = ico('flag'); $('#turnText').textContent = '목적지 근처예요'; $('#turnDist').textContent = fmtDist(total - pos); }
 
   const left = Math.max(1 - pos / total, 0);
   $('#pvLeft').textContent = `${(total * left / 1000).toFixed(1)}km`;
@@ -91,7 +91,7 @@ function paint() {
   hz.forEach((x, i) => {
     $('#hz' + i).classList.toggle('done', x.state === 'done');
     const li = $('#pt' + i); li.className = 'tl-item ' + x.state;
-    $('.pt-state', li).textContent = { wait: '대기', near: '접근 중', done: '통과 ✓' }[x.state];
+    $('.pt-state', li).textContent = { wait: '대기', near: '접근 중', done: '통과' }[x.state];
   });
   $('#alert').classList.toggle('on', hz.some(x => x.state === 'near'));
 }
@@ -126,10 +126,10 @@ function finish() {
   finished = true; stop();
   hz.forEach(x => { x.state = 'done'; });
   paint();
-  $('#playBtn').textContent = '▶ 다시 시작';
+  $('#playBtn').textContent = '다시 시작';
   $('#state-done').classList.add('on');
   $('#doneText').textContent = `도착했어요! ${TYPE_LABEL[type]}로 사고 다발지점 ${hz.length}곳을 지났어요.`;
-  speak('목적지에 도착했습니다. 안전 운전 하셨어요.');
+  speak('목적지에 도착했습니다. 수고하셨습니다.');
 }
 
 /* ---------- 시뮬레이션 ---------- */
@@ -138,15 +138,15 @@ function stop() { clearInterval(timer); timer = null; }
 function play() {
   if (mode === 'gps') return;
   if (finished) reset();
-  if (timer) { stop(); $('#playBtn').textContent = '▶ 계속'; paint(); return; }
+  if (timer) { stop(); $('#playBtn').textContent = '계속'; paint(); return; }
   timer = setInterval(tick, 100);
-  $('#playBtn').textContent = '⏸ 일시정지';
+  $('#playBtn').textContent = '일시정지';
 }
 function reset() {
   stop(); pos = 0; finished = false; said.clear(); off = 0;
   hz.forEach(x => { x.state = 'wait'; });
   $('#state-done').classList.remove('on'); $('#state-reroute').classList.remove('on');
-  $('#playBtn').textContent = '▶ 시작';
+  $('#playBtn').textContent = '시작';
   try { speechSynthesis.cancel(); } catch {}
   paint();
 }
@@ -154,7 +154,7 @@ function reset() {
 /* ---------- 실제 GPS ---------- */
 function startGps() {
   if (!navigator.geolocation) { $('#state-gps-denied').classList.add('on'); return setMode('sim'); }
-  stop(); reset(); $('#playBtn').textContent = '📡 GPS 추적 중';
+  stop(); reset(); $('#playBtn').textContent = 'GPS 추적 중';
   gpsId = navigator.geolocation.watchPosition(onFix, e => {
     if (e.code === 1) { $('#state-gps-denied').classList.add('on'); setMode('sim'); }      // 권한 거부일 때만 시뮬레이션으로 복귀
     else $('#pvSpeed').textContent = 'GPS 신호 약함';                                          // 일시적인 신호 오류는 계속 추적
@@ -209,13 +209,15 @@ $('#speedBox').addEventListener('click', e => {
   speedMult = Number(b.dataset.speed);
   $$('#speedBox .chip').forEach(c => c.classList.toggle('on', c === b));
 });
-$('#voiceBtn').addEventListener('click', e => {
-  voice = !voice; e.target.textContent = voice ? '🔊 음성 켬' : '🔇 음성 끔'; e.target.classList.toggle('on', voice);
+const paintVoice = () => { const b = $('#voiceBtn'); b.innerHTML = `${ico(voice ? 'volume' : 'mute', 's')}${voice ? '음성 안내 켬' : '음성 안내 끔'}`; b.classList.toggle('on', voice); };
+$('#voiceBtn').addEventListener('click', () => {
+  voice = !voice; paintVoice();
   if (!voice) try { speechSynthesis.cancel(); } catch {}
 });
+paintVoice();
 $('#viewBtn').addEventListener('click', e => {
   view = view === 'follow' ? 'all' : 'follow';
-  e.target.textContent = view === 'follow' ? '전체 보기' : '따라가기'; paint();
+  e.currentTarget.textContent = view === 'follow' ? '전체 보기' : '따라가기'; paint();
 });
 addEventListener('resize', () => route && paint());
 
