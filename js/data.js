@@ -33,13 +33,15 @@ function checkData(rows) {
     else if ((r.meta.dummy || []).length) warn.push(`[${i}] ${r.segmentId} 더미 필드 있음: ${r.meta.dummy}`);
     if (!['static', 'api', 'user'].includes(r.source)) warn.push(`[${i}] source 값 이상: ${r.source}`);
     if (![1, 2, 3, 4].includes(r.riskLevel)) warn.push(`[${i}] ${r.segmentId} riskLevel 이상: ${r.riskLevel}`);
-    ['roadName', 'address', 'accidentCount', 'lat', 'lng', 'year'].forEach(k => { if (r[k] === null || r[k] === undefined || r[k] === '') nulls[k] = (nulls[k] || 0) + 1; });
+    ['roadName', 'address', 'accidentCount', 'lat', 'lng', 'year'].forEach(k => { if (r.source === 'user' && ['lat', 'lng', 'year'].includes(k)) return;   // 제보는 좌표·연도를 받지 않음
+      if (r[k] === null || r[k] === undefined || r[k] === '') nulls[k] = (nulls[k] || 0) + 1; });
   });
   console.groupCollapsed(`[데이터 점검] 총 ${rows.length}건 · J ${by.static} / A ${by.api} / U ${by.user}${warn.length ? ' · 경고 ' + warn.length : ''}`);
   console.log('출처 건수', by, '| 상태', { ...DATA_STATUS });
   console.log('빈 값(null) 건수', nulls);
   warn.forEach(w => console.warn(w));
   console.groupEnd();
+  window.LAST_CHECK = { total: rows.length, by, nulls, warn, at: nowText() };
   return warn;
 }
 

@@ -19,13 +19,14 @@ goRoute.addEventListener('click', () => { location.href = `${BASE}compare.html?$
 
 /* 최근 검색 · 즐겨찾기 */
 const recent = getRecent();
-$('#quickRecent').innerHTML = recent.slice(0, 6).map(r =>
-  `<a class="chip" href="${BASE}list.html?q=${encodeURIComponent(r.q)}">${esc(r.q)}</a>`).join('');
+$('#quickRecent').innerHTML = recent.slice(0, 6).map(r => r.kind === 'route'
+  ? `<a class="chip" href="${BASE}compare.html?${pair(r.origin, r.destination)}">${esc(r.origin)} → ${esc(r.destination)}</a>`
+  : `<a class="chip" href="${BASE}list.html?q=${encodeURIComponent(r.q)}">${esc(r.q)}</a>`).join('');
 $('#state-quick-empty').classList.toggle('on', recent.length === 0);
 
 function paintFavs(rows) {
-  const favs = getFavs().filter(f => f.kind === 'segment').map(f => rows.find(s => s.segmentId === f.segmentId)).filter(Boolean);
-  $('#favPreview').innerHTML = favs.slice(0, 3).map(segCard).join('');
+  const favs = getFavs().map(f => f.kind === 'route' ? routeCard(f) : (rows.find(s => s.segmentId === f.segmentId) ? segCard(rows.find(s => s.segmentId === f.segmentId)) : '')).filter(Boolean);
+  $('#favPreview').innerHTML = favs.slice(0, 3).join('');
   $('#state-fav-empty').classList.toggle('on', favs.length === 0);
   $('#favBox').hidden = false;
   $('#favPreview').hidden = favs.length === 0;
@@ -48,7 +49,7 @@ function paintData(rows) {
   $('#stripTop').innerHTML = [...rows].sort((a, b) => b.accidentCount - a.accidentCount).slice(0, 12).map(gcard).join('');
   const lastYear = Math.max(...rows.map(s => Number(s.year) || 0));
   $('#stripNew').innerHTML = rows.filter(s => Number(s.year) === lastYear).sort((a, b) => b.accidentCount - a.accidentCount).slice(0, 12).map(gcard).join('');
-  $('#stripNew').previousElementSibling.querySelector('h3').textContent = `🕑 ${lastYear}년 기준 구간`;
+  $('#stripNew').previousElementSibling.querySelector('h3').textContent = `${lastYear}년 기준 구간`;
   syncStripBtns();
 
   /* TOP 10 */

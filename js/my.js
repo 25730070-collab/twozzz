@@ -11,27 +11,28 @@ const delBtn = (id, kind, label, text) => `<button class="chip del" data-id="${i
 
 /* 즐겨찾기 : 구간 데이터는 JSON에서 찾아 보여 준다 (JSON에서 사라진 구간은 '정보 없음' 카드) */
 function favCard(f) {
+  if (f.kind === 'route') return `<div class="card" data-href="${BASE}compare.html?${pair(f.origin, f.destination)}"><div><b>${esc(f.origin)} → ${esc(f.destination)}</b><p class="mu">경로 · 저장일 ${f.savedAt}</p></div><span class="tags"><span class="type-tag">경로</span></span>${delBtn(f.id, 'fav', '즐겨찾기 해제', '해제')}</div>`;
   const s = segById(f.segmentId);
   if (!s) return `<div class="card plain"><div><b>구간 정보를 찾을 수 없어요</b><p class="mu">${esc(f.segmentId)} · 저장일 ${f.savedAt}</p></div>${delBtn(f.id, 'fav', '즐겨찾기 해제', '해제')}</div>`;
   return `<div class="card" data-href="${segUrl(s.segmentId)}">
     <div><b>${esc(s.roadName)}</b><p class="mu">${guOf(s)} · ${isNil(s.accidentCount) ? '사고 건수 정보 없음' : `사고 ${s.accidentCount}건`} · 저장일 ${f.savedAt}</p></div>
     <span class="tags">${srcBadge(s)}${levelBadge(s.riskLevel)}</span>${delBtn(f.id, 'fav', '즐겨찾기 해제', '해제')}</div>`;
 }
-const recentCard = r => `<div class="card" data-href="${BASE}list.html?q=${encodeURIComponent(r.q)}">
-  <div><b>${esc(r.q)}</b><p class="mu">검색 ${r.at}</p></div>
+const recentCard = r => `<div class="card" data-href="${r.kind === 'route' ? `${BASE}compare.html?${pair(r.origin, r.destination)}` : `${BASE}list.html?q=${encodeURIComponent(r.q)}`}">
+  <div><b>${r.kind === 'route' ? `${esc(r.origin)} → ${esc(r.destination)}` : esc(r.q)}</b><p class="mu">${r.kind === 'route' ? '경로' : '구간'} 검색 ${r.at}</p></div>
   ${delBtn(r.id, 'recent', '최근 검색 삭제', '✕')}</div>`;
 const reportCard = s => `<div class="card" data-href="${segUrl(s.segmentId)}">
-  <div><b>${esc(s.roadName)}</b><p class="mu">${isNil(s.accidentCount) ? '사고 건수 정보 없음' : `사고 ${s.accidentCount}건`} · 제보 ${s.createdAt}</p></div>
-  <span class="tags">${srcBadge(s)}${levelBadge(s.riskLevel)}</span>${delBtn(s.segmentId, 'report', '제보 삭제', '✕')}</div>`;
+  <div><b>${esc(s.roadName)}</b><p class="mu">${isNil(s.accidentCount) ? '사고 건수 정보 없음' : `사고 ${s.accidentCount}건`} · 제보 ${s.createdAt}${s.updatedAt ? ` · 수정 ${s.updatedAt}` : ''}</p></div>
+  <span class="tags">${srcBadge(s)}${levelBadge(s.riskLevel)}</span><a class="chip" href="report.html?edit=${encodeURIComponent(s.segmentId)}" aria-label="제보 수정">수정</a>${delBtn(s.segmentId, 'report', '제보 삭제', '✕')}</div>`;
 
 function paint() {
-  const favs = getFavs().filter(f => f.kind === 'segment'), recent = getRecent(), reports = getReports();
+  const favs = getFavs(), recent = getRecent(), reports = getReports();
   $('#favoriteList').innerHTML = favs.map(favCard).join('');
   $('#recentList').innerHTML = recent.map(recentCard).join('');
   $('#reportList').innerHTML = reports.map(reportCard).join('');
-  $('#favCount').textContent = $('#statFav').textContent = favs.length;
+  $('#favCount').textContent = favs.length;
   $('#recentCount').textContent = recent.length;
-  $('#reportCount').textContent = $('#statReport').textContent = reports.length;
+  $('#reportCount').textContent = reports.length;
   $('#state-save-empty').classList.toggle('on', favs.length === 0);
   $('#state-recent-empty').classList.toggle('on', recent.length === 0);
   $('#state-report-empty').classList.toggle('on', reports.length === 0);

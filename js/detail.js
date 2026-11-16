@@ -11,7 +11,7 @@ $('.address').innerHTML = infoText(seg.address);
 /* 지도 이미지가 없을 때 : 좌표 또는 표준 대체 화면 */
 $('#mapView').innerHTML = isNil(seg.lat) || isNil(seg.lng)
   ? `${EMPTY_ICON}<p class="mu">위치 정보가 없어 지도를 표시할 수 없어요</p>`
-  : `<p class="mu">📍 ${(+seg.lat).toFixed(4)}, ${(+seg.lng).toFixed(4)}</p>`;
+  : `<p class="mu">${(+seg.lat).toFixed(4)}, ${(+seg.lng).toFixed(4)}</p>`;
 const badge = $('#riskBadge');
 badge.className = `bg r${seg.riskLevel} riskLevel`;
 badge.dataset.risk = seg.riskLevel;

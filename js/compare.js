@@ -32,6 +32,7 @@ async function run() {
   $('#state-loading').classList.add('on');
   try { res = await buildRoutes(o, d); } catch (e) { return failView(e); }
   $('#state-loading').classList.remove('on');
+  addRecentRoute(o, d);                                   // 경로를 만든 검색만 최근 검색에 기록
   const F = res.fast, S = res.safe, diff = S.minutes - F.minutes;
   $('#verdict').innerHTML = res.same
     ? (F.hazards.length ? `더 안전한 대안 경로가 없어요. 이 경로는 사고 다발지점 <b>${F.hazards.length}곳</b>(사고 ${F.score}건)을 지나요` : '이 경로 주변에는 데이터에 등록된 사고 다발지점이 없어요')
@@ -46,6 +47,9 @@ async function run() {
   render();
 }
 
+const paintFav = () => { const on = isRouteFav(o, d); $('#favRoute').dataset.fav = String(on); $('#favRoute').textContent = on ? '★ 즐겨찾기 됨' : '☆ 경로 즐겨찾기'; };
+$('#favRoute').addEventListener('click', () => { const on = toggleRouteFav(o, d); paintFav(); $('#favMsg').textContent = on ? '즐겨찾기에 저장했어요' : '즐겨찾기를 해제했어요'; });
+if (o && d) paintFav();
 document.addEventListener('change', e => {
   if (e.target.name === 'routeType' && res) { sel = e.target.value; render(); }
 });

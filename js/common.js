@@ -82,7 +82,9 @@ if (backBtn) backBtn.addEventListener('click', () => {
 const userChip = $('#userChip');
 if (userChip) {
   const u = store.get(KEY.user);
-  userChip.textContent = u ? u.nickname : '가입';
+  userChip.textContent = '☺';                       // 모든 화면 동일한 로그인 아이콘 (상태는 색으로만 구분)
+  userChip.classList.add('hdr-ic');
+  userChip.setAttribute('aria-label', u ? `${u.nickname} 마이페이지` : '가입·로그인');
   userChip.href = u ? `${BASE}my.html` : `${BASE}signup.html`;
   userChip.classList.toggle('on', !!u);
 }
@@ -91,7 +93,7 @@ if (userChip) {
 const topBtn = document.createElement('button');
 topBtn.className = 'totop';
 topBtn.setAttribute('aria-label', '맨 위로');
-topBtn.innerHTML = '↑<br>TOP';
+topBtn.textContent = '↑';
 document.body.appendChild(topBtn);
 addEventListener('scroll', () => topBtn.classList.toggle('show', scrollY > 400));
 topBtn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
@@ -99,6 +101,8 @@ topBtn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }))
 console.log('Safe Drive loaded —', document.body.dataset.page, '| state areas:', $$('.state').map(s => s.id));
 
 /* ---------- 경로 ---------- */
+const routeCard = (r, extra = '') => `<div class="card" data-href="${BASE}compare.html?origin=${encodeURIComponent(r.origin)}&destination=${encodeURIComponent(r.destination)}">
+  <div><b>${esc(r.origin)} → ${esc(r.destination)}</b><p class="mu">빠른 경로 · 안전 경로 비교 ${extra}</p></div><span class="mu">›</span></div>`;
 const TYPE_LABEL = { fast: '빠른 경로', safe: '안전 경로' };
 const pair = (o, d) => `origin=${encodeURIComponent(o)}&destination=${encodeURIComponent(d)}`;
 const compareUrl = r => `${BASE}compare.html?${pair(r.origin, r.destination)}`;
