@@ -12,16 +12,14 @@
   --rs:8px;--rm:12px;--rl:16px;--shadow:0 1px 2px rgba(16,24,20,.06);
   --sp1:4px;--sp2:8px;--sp3:12px;--sp4:16px;--sp5:24px;--sp6:32px;
   /* 레이아웃 : 화면 폭에 따라 콘텐츠 최대 폭이 커지고, 좌우 여백은 자동 계산 */
-  --w:480px;--gut:max(16px,calc((100% - var(--w)) / 2 + 16px));
+  --w:430px;--gut:16px;--st:env(safe-area-inset-top,0px);
   --hd:56px;--sub:48px;--tab:60px;--bar:72px;
   --z-top:95;--z-hd:100;--z-sub:90;--z-bar:80;--z-ov:200;--z-dr:210;--z-modal:300;--z-toast:310;
 }
-@media (min-width:768px){:root{--w:680px}}
-@media (min-width:1100px){:root{--w:960px}}
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--tx);font:var(--fs-body)/1.55 "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+body{margin:0;background:#e3e8e5;-webkit-text-size-adjust:100%;color:var(--tx);font:var(--fs-body)/1.55 "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:anywhere}
 body.lock{overflow:hidden}
 a{color:inherit;text-decoration:none}
 [hidden]{display:none !important}
