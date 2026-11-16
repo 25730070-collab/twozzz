@@ -39,9 +39,9 @@
 .page{padding:var(--sp4) var(--gut) 0}
 .page > h1{margin-bottom:var(--sp1)}
 .section{margin-top:var(--sp5)}
-.section-hd{display:flex;align-items:center;gap:var(--sp2);margin-bottom:var(--sp3)}
+.section-hd{display:flex;align-items:center;min-height:28px;gap:var(--sp2);margin-bottom:var(--sp3)}
 .section-hd h3{margin-right:auto}
-.more{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;margin:-4px -6px -4px 0;border-radius:50%;color:var(--tx2)}
+.more{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;margin:-8px -12px -8px 0;border-radius:50%;color:var(--tx2)}
 .more:hover{background:var(--line)}
 
 /* 하단 탭바 (모바일 전용 — 태블릿·데스크톱은 헤더 메뉴 사용) */

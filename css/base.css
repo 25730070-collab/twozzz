@@ -19,7 +19,7 @@
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{margin:0;background:#e3e8e5;-webkit-text-size-adjust:100%;color:var(--tx);font:var(--fs-body)/1.55 "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:anywhere}
+body{margin:0;background:#e3e8e5;-webkit-text-size-adjust:100%;color:var(--tx);font:var(--fs-body)/1.55 "Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;word-break:keep-all;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 body.lock{overflow:hidden}
 a{color:inherit;text-decoration:none}
 [hidden]{display:none !important}

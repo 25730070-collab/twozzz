@@ -31,9 +31,9 @@
 .chip .ico{width:16px;height:16px}
 
 /* 목록 카드 (한 줄 구간 · 경로) */
-.card{display:flex;gap:var(--sp3);padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
+.card{display:flex;gap:var(--sp3);min-height:68px;padding:var(--sp3) 0;box-sizing:border-box;border-bottom:1px solid var(--line);cursor:pointer;align-items:center}
 .card:last-child{border-bottom:0}
-.card > div:first-child{flex:1;min-width:0}
+.card > div{flex:1 1 0;min-width:0}
 .card b{display:block;font-size:var(--fs-card);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card .mu{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
 .card > span,.card > button,.card > a{flex:none}
@@ -41,12 +41,12 @@
 .card .go{color:var(--tx2);display:flex}
 
 /* 배지 */
-.bg{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:700;white-space:nowrap;line-height:1}
+.bg{display:inline-flex;align-items:center;justify-content:center;min-width:46px;box-sizing:border-box;height:22px;padding:0 8px;border-radius:6px;font-size:12px;font-weight:700;white-space:nowrap;line-height:1}
 .bg.r1{background:var(--r1);color:#fff}
 .bg.r2{background:var(--r2);color:#171c1a}
 .bg.r3{background:var(--r3);color:#fff}
 .bg.r4{background:var(--r4);color:#fff}
-.tags{display:inline-flex;align-items:center;gap:6px}
+.tags{display:inline-flex;align-items:center;justify-content:flex-end;gap:var(--sp2);flex:none}
 .src{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1px solid var(--line2);border-radius:6px;font-size:12px;font-weight:800;line-height:1;background:var(--pn);color:var(--tx2);flex:none}
 .src.a{background:var(--tx2);border-color:var(--tx2);color:#fff}
 .src.u{border-style:dashed;color:var(--tx)}
@@ -92,13 +92,14 @@
 .searchbar input:focus{background:var(--pn)}
 
 /* 막대 · 순위 */
-.rank-n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--bg);color:var(--tx2);text-align:center;font-weight:700;font-size:var(--fs-cap);line-height:26px}
+.rank-n{flex:none;width:28px;height:28px;box-sizing:border-box;border-radius:50%;background:var(--bg);color:var(--tx2);text-align:center;font-weight:700;font-size:var(--fs-cap);line-height:28px;font-variant-numeric:tabular-nums}
 .rank-n.top{background:var(--brand);color:#fff}
-.stat{display:flex;align-items:center;gap:var(--sp3);padding:10px 0;font-size:var(--fs-cap);cursor:pointer}
-.stat .nm{width:auto;white-space:nowrap;flex:none;color:var(--tx);font-weight:600;font-size:14px}
-.stat .bar{flex:1;height:8px;border-radius:99px;background:var(--bg);overflow:hidden}
+.stat{display:grid;grid-template-columns:var(--stat-nm,56px) minmax(0,1fr) 48px;align-items:center;column-gap:var(--sp3);min-height:44px;font-size:var(--fs-cap);cursor:pointer}
+.stat .nm{color:var(--tx);font-weight:600;font-size:14px;white-space:nowrap}
+.stat .bar{height:8px;border-radius:99px;background:var(--bg);overflow:hidden}
 .stat .bar i{display:block;height:100%;background:var(--brand);border-radius:99px}
-.stat .v{width:48px;text-align:right;color:var(--tx2);flex:none}
+.stat .v{text-align:right;color:var(--tx2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.rt-card .stat{--stat-nm:72px}
 
 /* 핵심 수치 두 칸 */
 .kv{display:flex;gap:var(--sp3);margin-top:var(--sp3)}
