@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safe Drive · 경로 비교</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="compare" data-base="">
+<div class="app has-cta">
+  <header class="app-header"></header>
+  <div class="subhead"><button class="ic" id="backBtn" data-fallback="../index.html" aria-label="뒤로">←</button><b id="headerTitle">경로 비교</b><span class="right"></span></div>
+
+  <main class="page">
+    <div class="route-title"><h1 id="summary">출발 → 도착</h1></div>
+    <div class="row"><button class="chip fav-btn" id="favRoute" data-fav="false">경로 즐겨찾기</button></div>
+    <div class="state" id="state-loading"><p class="mu">경로를 계산하는 중…</p></div>
+
+    <p class="verdict" id="verdict" hidden></p>
+    <div id="routeCards"></div>
+    <p class="mu" id="basis" hidden style="margin-top:var(--sp3)">안전 경로는 시간 제한 안에서 지나는 사고 다발지점의 사고 건수가 가장 적은 경로예요. 공공 사고 데이터 기준이며 안전을 보장하지는 않아요</p>
+
+    <section class="section" id="worstBox" hidden>
+      <div class="section-hd"><h3>사고가 많았던 곳</h3></div>
+      <div class="list-box" id="worstList"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    출처 · 도로교통공단 지자체별 교통사고 다발지역<br>
+    데이터에 없는 곳이 안전하다는 뜻은 아니에요
+  </footer>
+
+  <div class="cta-bar" id="ctaBar" hidden>
+    <a class="btn" id="goPreview" href="#">예습하기</a>
+    <a class="btn dk" id="goDrive" href="#">안내 시작</a>
+  </div>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/config.local.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/route-api.js"></script>
+<script src="../js/compare.js"></script>
+</body>
+</html>

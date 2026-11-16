@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safe Drive · 마이</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="my" data-base="">
+<div class="app">
+  <header class="app-header"></header>
+
+  <main class="page">
+    <h1>마이</h1>
+    <div class="profile">
+      <span class="avatar" id="avatar"></span>
+      <div><b id="profileName">비회원</b><span class="mu" id="profileSub">닉네임과 이메일로 가입할 수 있어요</span></div>
+      <button class="chip" id="profileBtn">가입</button>
+    </div>
+
+    <div class="tabs">
+      <button class="on" data-tab="fav">즐겨찾기 <span id="favCount">0</span></button>
+      <button data-tab="recent">최근 검색 <span id="recentCount">0</span></button>
+      <button data-tab="report">내 제보 <span id="reportCount">0</span></button>
+    </div>
+
+    <div class="pane on" data-pane="fav">
+      <div class="state" id="state-save-empty">
+        <p class="mu">저장한 경로·구간이 없어요</p>
+        <button class="btn" onclick="location.href='list.html'">위험 구간 보러 가기</button>
+      </div>
+      <div class="list-box" id="favoriteList" style="margin-top:var(--sp3)"></div>
+    </div>
+
+    <div class="pane" data-pane="recent">
+      <div class="state" id="state-recent-empty">
+        <p class="mu">최근 검색 기록이 없어요</p>
+        <button class="btn" onclick="location.href='../index.html'">홈에서 검색하기</button>
+      </div>
+      <div id="recentWrap" style="margin-top:var(--sp3)">
+        <div class="list-box" id="recentList"></div>
+        <div class="row"><button class="chip bd" id="clearAllRecent" style="margin-left:auto">전체 삭제</button></div>
+      </div>
+    </div>
+
+    <div class="pane" data-pane="report">
+      <div class="state" id="state-report-empty">
+        <p class="mu">아직 제보한 구간이 없어요</p>
+        <button class="btn" onclick="location.href='report.html'">위험 구간 제보하기</button>
+      </div>
+      <div id="reportWrap" style="margin-top:var(--sp3)">
+        <div class="list-box" id="reportList"></div>
+        <a class="btn" href="report.html">새 구간 제보하기</a>
+      </div>
+    </div>
+
+    <a class="menu-row" href="data.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg><span>데이터 관리</span><svg class="ico s" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></a>
+  </main>
+
+  <footer class="foot">
+    즐겨찾기·최근 검색·제보는 이 기기에만 저장돼요
+  </footer>
+
+  <nav class="tabbar"></nav>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/my.js"></script>
+</body>
+</html>
