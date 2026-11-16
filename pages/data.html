@@ -12,15 +12,12 @@
 </head>
 <body data-page="data" data-base="">
 <div class="app">
-  <header class="app-header">
-    <a class="logo" href="../index.html">Safe Drive</a>
-    <a class="chip" id="userChip" href="signup.html">가입</a>
-  </header>
+  <header class="app-header"></header>
   <div class="subhead"><button class="ic" id="backBtn" data-fallback="my.html" aria-label="뒤로">←</button><b>데이터 관리</b><span class="right"></span></div>
 
   <main class="page">
-    <h2>데이터 관리</h2>
-    <p class="mu">이 서비스가 쓰는 데이터와 내 데이터를 확인하고 내려받을 수 있어요</p>
+    <h1>데이터 관리</h1>
+    <p class="page-lead">서비스 데이터와 내 데이터를 확인하고 내려받을 수 있어요</p>
 
     <div class="state on" id="state-loading"><p class="mu">불러오는 중…</p></div>
     <div class="pv-stats" id="dsStats"></div>
@@ -28,7 +25,7 @@
     <section class="section">
       <div class="section-hd"><h3>데이터 파일</h3></div>
       <div class="list-box" id="dsList"></div>
-      <div class="row"><button class="btn dk" id="dlAll">전체 내려받기 (JSON 1개)</button></div>
+      <button class="btn dk" id="dlAll">전체 내려받기 (JSON)</button>
     </section>
 
     <section class="section">
@@ -49,14 +46,14 @@
     <section class="section">
       <div class="section-hd"><h3>내 데이터 관리</h3></div>
       <div class="box" style="margin-top:0">
-        <p class="mu">즐겨찾기·최근 검색·제보를 파일로 옮기거나 되돌릴 수 있어요. 가져오기는 형식이 맞는 항목만 추가하고, 이미 있는 항목은 건너뛰어요</p>
-        <div class="row">
-          <label class="btn" for="importFile" style="cursor:pointer">내 데이터 가져오기</label>
+        <p class="mu">즐겨찾기·최근 검색·제보를 파일로 옮기거나 되돌려요. 가져오기는 형식이 맞는 새 항목만 추가해요</p>
+        <div class="data-actions">
+          <label class="btn" for="importFile" style="cursor:pointer">가져오기</label>
           <input type="file" id="importFile" accept="application/json,.json" hidden>
-          <button class="btn" id="clearBtn">내 데이터 모두 삭제</button>
+          <button class="btn warn" id="clearBtn">모두 삭제</button>
         </div>
         <div class="state" id="state-confirm"><p class="note err">즐겨찾기·최근 검색·제보가 모두 삭제돼요. 계속할까요?</p>
-          <div class="row"><button class="btn dk" id="clearYes">삭제</button><button class="btn" id="clearNo">취소</button></div></div>
+          <div class="data-actions"><button class="btn" id="clearNo">취소</button><button class="btn dk" id="clearYes">삭제</button></div></div>
         <div class="state" id="state-result"><p class="note ok" id="resultMsg"></p></div>
         <div class="state" id="state-error"><p class="note err" id="errorMsg"></p></div>
       </div>
@@ -64,15 +61,10 @@
   </main>
 
   <footer class="foot">
-    Safe Drive · 도로교통공단 지자체별 교통사고 다발지역 데이터 기반<br>
-    내 데이터는 이 기기(LocalStorage)에만 저장돼요
+    내 데이터는 이 기기에만 저장돼요
   </footer>
 
-  <nav class="tabbar">
-    <a href="../index.html">홈</a>
-    <a href="list.html">위험 구간</a>
-    <a href="my.html" class="on">마이</a>
-  </nav>
+  <nav class="tabbar"></nav>
 </div>
 
 <script src="../js/storage.js"></script>
