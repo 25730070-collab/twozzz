@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <link rel="icon" href="data:,">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Safe Drive · 가는 길 예습</title>
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/layout.css">
@@ -12,7 +12,10 @@
 </head>
 <body data-page="preview" data-base="">
 <div class="app has-cta">
-  <header class="app-header"></header>
+  <header class="app-header">
+    <a class="logo" href="../index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="signup.html">가입</a>
+  </header>
   <div class="subhead"><button class="ic" id="backBtn" data-fallback="compare.html" aria-label="뒤로">←</button><b id="headerTitle">가는 길 예습</b><span class="right"></span></div>
 
   <main class="page">
@@ -24,19 +27,20 @@
     <div class="state" id="state-loading"><p class="mu">경로를 계산하는 중…</p></div>
 
     <section class="section">
-      <div class="section-hd"><h3>지나는 순서</h3></div>
-      <div class="list-box" id="timeline"></div>
+      <div class="section-hd"><h3>주행 순서대로 미리 보기</h3><span class="mu">눌러서 구간 상세</span></div>
+      <div class="list-box" id="timeline" style="padding-top:0;padding-bottom:0"></div>
     </section>
+
   </main>
 
   <footer class="foot">
-    출처 · 도로교통공단 지자체별 교통사고 다발지역<br>
-    데이터에 없는 곳이 안전하다는 뜻은 아니에요
+    Safe Drive · 도로교통공단 지자체별 교통사고 다발지역 데이터 기반<br>
+    위험 구간은 공공데이터이며, 데이터에 없는 곳이 안전하다는 뜻은 아니에요
   </footer>
 
   <div class="cta-bar">
-    <a class="btn" id="goCompare" href="javascript:history.back()">경로 비교</a>
-    <a class="btn dk" id="goDrive" href="#">안내 시작</a>
+    <a class="btn" id="goCompare" href="javascript:history.back()">← 경로 비교</a>
+    <a class="btn dk" id="goDrive" href="#">▶ 안내 시작</a>
   </div>
 </div>
 

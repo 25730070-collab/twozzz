@@ -1,5 +1,5 @@
-/* storage.js — LocalStorage (사용자 상태 전용: 즐겨찾기 · 최근검색 · 연습기록 · 가입 정보) */
-const KEY = { recent: 'sd_recent', fav: 'sd_favorites', drill: 'sd_drills', user: 'sd_user' };
+/* storage.js — LocalStorage (사용자 상태 전용: 즐겨찾기 · 최근검색 · 제보 · 가입 정보) */
+const KEY = { recent: 'sd_recent', fav: 'sd_favorites', user: 'sd_user', report: 'sd_reports' };
 
 const store = {
   get(key, seed) {
@@ -13,23 +13,26 @@ const store = {
   remove(key) { try { localStorage.removeItem(key); } catch {} }
 };
 
-const getRecent = () => store.get(KEY.recent, RECENT_SEED);
-const getFavs = () => store.get(KEY.fav, FAV_SEED);
-const getDrills = () => store.get(KEY.drill, DRILL_SEED);
+const getRecent = () => store.get(KEY.recent, []);
+const getFavs = () => store.get(KEY.fav, []);
+const getReports = () => store.get(KEY.report, []);   // 사용자가 제보한 위험 구간 (source: "user")
 
 const nowText = () => {
   const d = new Date(), p = n => String(n).padStart(2, '0');
   return `${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
 };
 
-function addRecent(origin, destination) {
-  const list = getRecent().filter(r => !(r.origin === origin && r.destination === destination));
-  list.unshift({ id: 'rc' + Date.now(), origin, destination, at: nowText() });
-  store.set(KEY.recent, list.slice(0, 10));            // 최대 10건, 최신순
+/* 최근 검색 : 위험 구간 검색어 (최대 10건, 최신순) */
+function addRecent(q) {
+  const list = getRecent().filter(r => r.q !== q);
+  list.unshift({ id: 'rc' + Date.now(), q, at: nowText() });
+  store.set(KEY.recent, list.slice(0, 10));
 }
 
-function addDrill(origin, destination, routeType, points) {
-  const list = getDrills();
-  list.unshift({ id: 'dr' + Date.now(), origin, destination, routeType, points, at: nowText() });
-  store.set(KEY.drill, list.slice(0, 30));
+/* 사용자 제보 저장 — 정적 웹/앱에서는 JSON 파일에 쓸 수 없어 LocalStorage에 저장한다 (서버가 생기면 POST로 교체) */
+function addReport(r) {
+  const list = getReports();
+  const row = { segmentId: 'user-' + Date.now(), ...r, source: 'user', createdAt: nowText(),
+    meta: { source: 'user', real: [], dummy: [], api: [], user: ['roadName', 'riskLevel', 'address', ...(r.accidentCount == null ? [] : ['accidentCount'])], note: '사용자가 직접 입력한 제보 — 검증 전' } };
+  list.unshift(row); store.set(KEY.report, list); return row;
 }

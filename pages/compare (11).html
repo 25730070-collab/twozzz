@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safe Drive · 경로 비교</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="compare" data-base="">
+<div class="app has-cta">
+  <header class="app-header">
+    <a class="logo" href="../index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="signup.html">가입</a>
+  </header>
+  <div class="subhead"><button class="ic" id="backBtn" data-fallback="../index.html" aria-label="뒤로">←</button><b id="headerTitle">경로 비교</b><span class="right"></span></div>
+
+  <main class="page">
+    <h2 id="summary">출발 → 도착</h2>
+    <p class="mu">빠른 경로와 안전 경로를 비교하고, 갈 길을 골라 안내를 시작해요</p>
+    <div class="row"><button class="chip" id="favRoute" data-fav="false">☆ 경로 즐겨찾기</button><span class="mu" id="favMsg"></span></div>
+        <div class="state" id="state-loading"><p class="mu">경로를 계산하는 중…</p></div>
+
+    <p class="verdict" id="verdict" hidden></p>
+    <div id="routeCards"></div>
+    <p class="mu" id="basis" hidden>빠른 경로는 소요 시간이 가장 짧은 경로, 안전 경로는 시간 제한 안에서 지나는 사고 다발지점의 사고 건수가 가장 적은 경로예요. 사고 다발 데이터 기준이며 안전을 보장하지는 않아요</p>
+
+    <!-- 하단 큐레이션 -->
+    <section class="section" id="worstBox" hidden>
+      <div class="section-hd"><h3>이 경로에서 사고가 많았던 곳</h3><span class="mu">사고 건수 순</span></div>
+      <div class="list-box" id="worstList"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Safe Drive · 도로교통공단 지자체별 교통사고 다발지역 데이터 기반<br>
+    위험 구간은 공공데이터이며, 데이터에 없는 곳이 안전하다는 뜻은 아니에요
+  </footer>
+
+  <div class="cta-bar">
+    <a class="btn" id="goPreview" href="#">예습하기</a>
+    <a class="btn dk" id="goDrive" href="#">▶ 안내 시작</a>
+  </div>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/config.local.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/route-api.js"></script>
+<script src="../js/compare.js"></script>
+</body>
+</html>
