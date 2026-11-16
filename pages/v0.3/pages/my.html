@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safe Drive · 마이</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="my" data-base="">
+<div class="app">
+  <header class="app-header">
+    <a class="logo" href="../index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="signup.html">가입</a>
+  </header>
+
+  <main class="page">
+    <h2>마이</h2>
+    <div class="profile" style="margin-top:10px">
+      <span class="avatar">☺</span>
+      <div><b id="profileName">비회원</b><span class="mu" id="profileSub">닉네임·이메일만으로 가입할 수 있어요</span></div>
+      <button class="chip" id="profileBtn">회원가입</button>
+    </div>
+    <div class="pv-stats">
+      <div><b id="statFav">0</b><span class="mu">즐겨찾기 구간</span></div>
+      <div><b id="statReport">0</b><span class="mu">내 제보</span></div>
+    </div>
+
+    <div class="tabs">
+      <button class="on" data-tab="fav">즐겨찾기 <span id="favCount">0</span></button>
+      <button data-tab="recent">최근검색 <span id="recentCount">0</span></button>
+      <button data-tab="report">내 제보 <span id="reportCount">0</span></button>
+    </div>
+
+    <div class="pane on" data-pane="fav">
+      <div class="state" id="state-save-empty">
+        <p class="mu">저장한 구간이 없어요</p>
+        <button class="btn" onclick="location.href='list.html'">위험 구간 보러 가기</button>
+      </div>
+      <div class="list-box" id="favoriteList" style="margin-top:10px"></div>
+    </div>
+
+    <div class="pane" data-pane="recent">
+      <div class="state" id="state-recent-empty">
+        <p class="mu">최근 검색 기록이 없어요</p>
+        <button class="btn" onclick="location.href='../index.html'">홈에서 검색하기</button>
+      </div>
+      <div id="recentWrap" style="margin-top:10px">
+        <div class="list-box" id="recentList"></div>
+        <div class="row">
+          <span class="mu">최대 10건, 검색 시각순 보관</span>
+          <button class="chip" id="clearAllRecent" style="margin-left:auto">전체 삭제</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="pane" data-pane="report">
+      <div class="state" id="state-report-empty">
+        <p class="mu">아직 제보한 구간이 없어요</p>
+        <button class="btn" onclick="location.href='report.html'">위험 구간 제보하기</button>
+      </div>
+      <div id="reportWrap" style="margin-top:10px">
+        <div class="list-box" id="reportList"></div>
+        <div class="row"><span class="mu">이 기기(LocalStorage)에만 저장돼요</span>
+          <a class="chip" href="report.html" style="margin-left:auto">+ 제보</a></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="foot">
+    즐겨찾기·최근검색·제보는 이 기기(LocalStorage)에만 저장돼요<br>
+    Safe Drive · 도로교통공단 사고 데이터 기반
+  </footer>
+
+  <nav class="tabbar">
+    <a href="../index.html"><i>⌂</i>홈</a>
+    <a href="list.html"><i>⚠</i>위험 구간</a>
+    <a href="my.html" class="on"><i>☺</i>마이</a>
+  </nav>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/my.js"></script>
+</body>
+</html>

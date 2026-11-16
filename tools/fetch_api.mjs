@@ -3,19 +3,19 @@
 //   data/segments_api.json     : 위 100건에 없는 나머지 (source: "api", A) — 두 파일에 겹치는 구간 없음
 // 더미 데이터는 사용하지 않는다.
 // 사용법:  SERVICE_KEY=공공데이터포털_인증키 node tools/fetch_api.mjs
-// 선택:    YEARS=2019,2020,2021,2022,2023  OUT=data/segments_api.json  ENDPOINT=...  (Node 18 이상)
+// 선택:    YEARS=2019,...,2025  OUT=data/segments_api.json  ENDPOINT=...  (Node 18 이상)
 // 서울 25개 구를 구 단위로 돌며 전부 모은 뒤 project 필드 구조로 변환한다.
 import { writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
 const ENDPOINT = process.env.ENDPOINT || 'https://apis.data.go.kr/B552061/frequentzoneLg/getRestFrequentzoneLg';
-const YEARS = (process.env.YEARS || process.env.YEAR || '2019,2020,2021,2022,2023').split(',').map(s => s.trim());   // 여러 해를 합쳐 200건 이상 확보
+const YEARS = (process.env.YEARS || process.env.YEAR || '2019,2020,2021,2022,2023,2024,2025').split(',').map(s => s.trim());   // 여러 해를 합쳐 200건 이상 확보
 const OUT = process.env.OUT || 'data/segments_api.json';
 const GUGUN = ['110','140','170','200','215','230','260','290','305','320','350','380','410','440','470','500','530','545','560','590','620','650','680','710','740'];
 
 export const level = n => n >= 10 ? 4 : n >= 6 ? 3 : n >= 3 ? 2 : 1;
 const num = v => (v === undefined || v === null || v === '' || !Number.isFinite(Number(v))) ? null : Number(v);
-// 응답에 있으면 그대로 쓰는 실제 부가 필드 (없으면 null → 화면에서 숨김). 필드명은 첫 응답의 키 목록(콘솔 출력)과 비교해 확인할 것
+// 응답에 있으면 그대로 쓰는 실제 부가 필드 (없으면 화면에서 숨김). 필드명은 활용가이드 응답 명세와 일치 확인함: 사상자 caslt_cnt · 사망 dth_dnv_cnt · 중상 se_dnv_cnt · 경상 sl_dnv_cnt · 부상신고 wnd_dnv_cnt
 export const EXTRA = { casualtyCount: 'caslt_cnt', deathCount: 'dth_dnv_cnt', seriousCount: 'se_dnv_cnt', minorCount: 'sl_dnv_cnt', injuryReportCount: 'wnd_dnv_cnt' };
 
 export function mapItem(it, year = '', src = 'api') {

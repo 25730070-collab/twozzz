@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safe Drive · 안내</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="drive" data-base="">
+<div class="app has-cta">
+  <header class="app-header">
+    <a class="logo" href="../index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="signup.html">가입</a>
+  </header>
+  <div class="subhead"><button class="ic" id="backBtn" data-fallback="preview.html" aria-label="뒤로">←</button><b id="headerTitle">안내</b><span class="right"><span id="typeBadge"></span></span></div>
+
+  <main class="page navpage">
+    <!-- 다음 회전 안내 : 스크롤해도 상단에 붙어 있음 -->
+    <div class="turn" id="turn">
+      <span class="turn-ic" id="turnIc">↑</span>
+      <div><b id="turnText">경로 준비 중…</b><span id="turnDist"></span></div>
+    </div>
+
+    <div class="navmap">
+      <svg id="map" viewBox="-600 -400 1200 800" preserveAspectRatio="xMidYMid slice"></svg>
+      <div class="alert" id="alert"><b id="alertText"></b><span id="alertAdvice"></span></div>
+      <button class="chip map-btn" id="viewBtn">전체 보기</button>
+    </div>
+
+    <div class="pv-stats">
+      <div><b id="pvLeft">-</b><span class="mu">남은 거리</span></div>
+      <div><b id="pvEta">-</b><span class="mu">도착까지</span></div>
+      <div><b id="pvSpeed">정지</b><span class="mu">속도</span></div>
+      <div><b id="pvPassed">0/0</b><span class="mu">통과 지점</span></div>
+    </div>
+
+    <div class="state" id="state-loading"><p class="mu">경로를 불러오는 중…</p></div>
+    <div class="state" id="state-reroute"><p class="note err" id="rerouteText"></p></div>
+    <div class="state" id="state-gps-denied"><p class="note err">위치 권한이 없어 GPS를 쓸 수 없어요. 시뮬레이션 모드로 돌아갑니다.</p></div>
+
+    <div class="row" id="modeBox" style="margin-top:12px">
+      <span class="mu">위치</span>
+      <button class="chip on" data-mode="sim">시뮬레이션</button>
+      <button class="chip" data-mode="gps">📡 실제 GPS</button>
+      <button class="chip on" id="voiceBtn" style="margin-left:auto">🔊 음성 켬</button>
+    </div>
+    <div class="row" id="speedBox">
+      <span class="mu">시뮬레이션 속도</span>
+      <button class="chip on" data-speed="1">1배</button>
+      <button class="chip" data-speed="2">2배</button>
+      <button class="chip" data-speed="4">4배</button>
+    </div>
+
+    <div class="state" id="state-done">
+      <p class="note ok" id="doneText"></p>
+      <button class="btn dk" onclick="location.href='my.html'">마이에서 주행 기록 보기</button>
+      <button class="btn" onclick="location.href='../index.html'">새 경로 검색하기</button>
+    </div>
+
+    <section class="section">
+      <div class="section-hd"><h3>이번 경로 주의 지점</h3><span class="mu">진행에 따라 바뀌어요</span></div>
+      <div class="list-box" id="pointList" style="padding-top:0;padding-bottom:0"></div>
+    </section>
+    <section class="section">
+      <div class="section-hd"><h3>상황별 대처법</h3></div>
+      <div id="learnList"></div>
+    </section>
+    <p class="note" id="modeNote"></p>
+  </main>
+
+  <footer class="foot">
+    Safe Drive · 도로교통공단 사고 데이터 기반<br>
+    현재 화면의 구간 값은 구조 확인용 샘플입니다
+  </footer>
+
+  <div class="cta-bar">
+    <button class="btn" id="resetBtn">↺ 처음부터</button>
+    <button class="btn dk" id="playBtn">▶ 시작</button>
+  </div>
+</div>
+
+<script src="../js/mock.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/config.local.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/route-api.js"></script>
+<script src="../js/drive.js"></script>
+</body>
+</html>

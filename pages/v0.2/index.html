@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safe Drive · 홈</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body data-page="home" data-base="pages/">
+<div class="app">
+  <header class="app-header">
+    <a class="logo" href="index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="pages/signup.html">가입</a>
+  </header>
+
+  <main class="page">
+    <!-- 상단 : 액션 (경로 입력 → 비교) -->
+    <section class="hero">
+      <h2>초행길도 안심하고,<br>안전한 길로 안내해요</h2>
+      <p class="mu">빠른 길과 안전한 길을 비교하고, 안전한 길로 안내받아요. 위험 구간 앞에서는 음성으로 미리 알려드려요</p>
+    </section>
+    <section class="box search-box">
+      <div class="row" style="margin-top:0"><span class="mu">출발지</span><button class="chip" id="myLoc" style="margin-left:auto">📍 내 위치로</button></div>
+      <input class="in" id="origin" placeholder="출발지 입력 (예: 강남역)">
+      <span class="mu">도착지</span>
+      <input class="in" id="destination" placeholder="도착지 입력 (예: 잠실역)">
+      <button class="btn dk" id="find" disabled>안전 경로 비교하기</button>
+    </section>
+
+    <section class="section">
+      <div class="section-hd"><h3>최근 검색</h3><a class="more" href="pages/my.html">전체보기</a></div>
+      <div class="quick" id="quickRecent"></div>
+      <div class="state" id="state-quick-empty"><p class="mu">아직 검색한 경로가 없어요</p></div>
+    </section>
+
+    <section class="section" id="favBox">
+      <div class="section-hd"><h3>즐겨찾기 경로</h3><a class="more" href="pages/my.html">전체보기</a></div>
+      <div class="list-box" id="favPreview"></div>
+      <div class="state" id="state-fav-empty"><p class="mu">저장한 경로가 없어요</p></div>
+    </section>
+
+    <!-- 하단 : 큐레이션 -->
+    <section class="section">
+      <div class="section-hd"><h3>🚗 초보 연습 코스</h3><span class="mu">안전 경로 기준</span></div>
+      <div class="hscroll" id="courseList"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-hd"><h3>🔥 사고 많은 구간 TOP 5</h3><a class="more" href="pages/list.html">더보기</a></div>
+      <div class="list-box" id="topList"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-hd"><h3>상황별 대처법</h3><span class="mu">미리 알아두면 덜 당황해요</span></div>
+      <div id="learnList"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-hd"><h3>구별 사고 건수</h3><span class="mu">샘플 구간 기준</span></div>
+      <div class="box" style="margin-top:0" id="guStats"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-hd"><h3>안전운전 팁</h3></div>
+      <div id="tipList"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Safe Drive · 도로교통공단 사고 데이터 기반<br>
+    현재 화면의 구간 값은 구조 확인용 샘플입니다
+  </footer>
+
+  <nav class="tabbar">
+    <a href="index.html" class="on"><i>⌂</i>홈</a>
+    <a href="pages/list.html"><i>⚠</i>위험 구간</a>
+    <a href="pages/my.html"><i>☺</i>마이</a>
+  </nav>
+</div>
+
+<script src="js/mock.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/config.js"></script>
+
+<script src="js/common.js"></script>
+<script src="js/geo.js"></script>
+<script src="js/data.js"></script>
+<script src="js/route-api.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safe Drive · 가는 길 예습</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="preview" data-base="">
+<div class="app has-cta">
+  <header class="app-header">
+    <a class="logo" href="../index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="signup.html">가입</a>
+  </header>
+  <div class="subhead"><button class="ic" id="backBtn" data-fallback="compare.html" aria-label="뒤로">←</button><b id="headerTitle">가는 길 예습</b><span class="right"></span></div>
+
+  <main class="page">
+    <div class="tabs" id="typeTabs" style="margin-top:0">
+      <button data-type="safe" class="on">안전 경로</button>
+      <button data-type="fast">빠른 경로</button>
+    </div>
+    <div class="pv-stats" id="pvStats"></div>
+    <div class="state" id="state-loading"><p class="mu">경로를 계산하는 중…</p></div>
+
+    <section class="section">
+      <div class="section-hd"><h3>주행 순서대로 미리 보기</h3><span class="mu">눌러서 구간 상세</span></div>
+      <div class="list-box" id="timeline" style="padding-top:0;padding-bottom:0"></div>
+    </section>
+
+    <div class="state" id="state-save-done"><p class="note ok"></p></div>
+
+    <section class="section">
+      <div class="section-hd"><h3>출발 전 체크</h3><span class="mu" id="chkCount">0/5</span></div>
+      <div class="list-box">
+        <label class="chk"><input type="checkbox"> 시트·사이드미러 위치 맞췄어요</label>
+        <label class="chk"><input type="checkbox"> 내비 음성 안내를 켰어요</label>
+        <label class="chk"><input type="checkbox"> 폰은 거치대에 고정했어요</label>
+        <label class="chk"><input type="checkbox"> 위 주의 지점 순서를 훑어봤어요</label>
+        <label class="chk"><input type="checkbox"> 시간 여유를 두고 출발해요</label>
+      </div>
+    </section>
+    <section class="section">
+      <div class="section-hd"><h3>안전운전 팁</h3></div>
+      <div id="tipList"></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Safe Drive · 도로교통공단 사고 데이터 기반<br>
+    현재 화면의 구간 값은 구조 확인용 샘플입니다
+  </footer>
+
+  <div class="cta-bar">
+    <button class="btn" id="favBtn" data-fav="false">☆ 즐겨찾기</button>
+    <a class="btn dk" id="goDrive" href="#">▶ 안내 시작</a>
+  </div>
+</div>
+
+<script src="../js/mock.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/config.local.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/route-api.js"></script>
+<script src="../js/preview.js"></script>
+</body>
+</html>

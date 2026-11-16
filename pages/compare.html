@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <link rel="icon" href="data:,">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Safe Drive · 경로 비교</title>
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/layout.css">
@@ -21,6 +21,7 @@
   <main class="page">
     <h2 id="summary">출발 → 도착</h2>
     <p class="mu">빠른 경로와 안전 경로를 비교하고, 갈 길을 골라 안내를 시작해요</p>
+    <div class="row"><button class="chip" id="favRoute" data-fav="false">☆ 경로 즐겨찾기</button><span class="mu" id="favMsg"></span></div>
         <div class="state" id="state-loading"><p class="mu">경로를 계산하는 중…</p></div>
 
     <p class="verdict" id="verdict" hidden></p>
