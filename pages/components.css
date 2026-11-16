@@ -1,0 +1,104 @@
+/* components.css — 칩 · 버튼 · 입력 · 카드 · 배지 · 탭 · 상태 영역 · 큐레이션 */
+.box{background:var(--pn);border:1px solid var(--ln);padding:12px;margin-top:12px}
+.in{display:block;width:100%;border:1px solid var(--mu);background:var(--ph);padding:9px 10px;margin-top:6px;white-space:nowrap;border-radius:0}
+.in:focus{outline:2px solid var(--ln);background:#fff}
+.row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+
+.chip{border:1px solid var(--ln);background:var(--pn);padding:3px 10px;font-size:12px;white-space:nowrap;appearance:none;-webkit-appearance:none;display:inline-block}
+.chip.on{background:var(--dk);color:#fff}
+.chip.bd{border-style:dashed;color:var(--mu);background:none}
+.chip.del{color:#a33;border-color:#a33;background:var(--pn);flex:none}
+
+.btn{display:block;width:100%;border:1px solid var(--ln);background:var(--ph);padding:10px;margin-top:10px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btn.dk{background:var(--dk);color:#fff}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+
+.img{background:var(--ph);border:1px solid var(--mu);min-height:60px;display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:10px}
+
+/* 카드 · 배지 */
+.card{display:flex;gap:10px;padding:11px 0;border-bottom:1px dashed var(--mu);cursor:pointer;align-items:center}
+.card:last-child{border-bottom:0}
+.card > div:first-child{flex:1;min-width:0}
+.card b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .mu{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card > span,.card > button{flex:none}
+.card.plain{cursor:default}
+.list-box{background:var(--pn);border:1px solid var(--ln);padding:2px 12px}
+
+.bg{display:inline-block;border:1px solid var(--ln);padding:0 7px;font-size:11px;font-weight:700;white-space:nowrap}
+.bg.r1{background:var(--r1);color:#fff;border-color:var(--r1)}
+.bg.r2{background:var(--r2);color:#111;border-color:var(--r2)}
+.bg.r3{background:var(--r3);color:#fff;border-color:var(--r3)}
+.bg.r4{background:var(--r4);color:#fff;border-color:var(--r4)}
+
+/* 탭 */
+.tabs{display:flex;border-bottom:2px solid var(--ln);margin-top:12px;background:var(--bg)}
+.tabs button{flex:1;border:0;background:none;padding:9px 0;color:var(--mu);white-space:nowrap}
+.tabs button.on{color:var(--ln);font-weight:700;border-bottom:3px solid var(--ln);margin-bottom:-2px}
+.pane{display:none}.pane.on{display:block}
+
+/* 필터 드롭다운 */
+.dropdown{position:relative}
+.panel{display:none;position:absolute;top:calc(100% + 4px);left:0;background:var(--pn);border:1px solid var(--ln);padding:8px;gap:6px;flex-wrap:wrap;min-width:150px;z-index:30;box-shadow:2px 2px 0 var(--ln)}
+.panel.on{display:flex}
+.panel .opt.on{background:var(--dk);color:#fff}
+
+/* 상태 영역 */
+.state{display:none;padding:20px 0;text-align:center}
+.state.on{display:block}
+.state .btn{max-width:260px;margin-left:auto;margin-right:auto}
+.note{border-left:3px solid var(--ln);background:var(--pn);padding:6px 10px;margin-top:12px;font-size:12px;color:var(--mu)}
+.note.ok{border-left-color:var(--r1);color:var(--r1)}
+.note.err{border-left-color:var(--r4);color:var(--r4)}
+
+/* 큐레이션 : 순위 · 가로 스크롤 · 막대 · 팁 */
+.rank-n{flex:none;width:24px;height:24px;border:1px solid var(--ln);background:var(--pn);text-align:center;font-weight:700;font-size:12px;line-height:22px}
+.rank-n.top{background:var(--dk);color:#fff}
+.hscroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin:0 -14px;padding-left:14px;padding-right:14px;scrollbar-width:none}
+.hscroll::-webkit-scrollbar{display:none}
+.mini{flex:none;width:158px;background:var(--pn);border:1px solid var(--ln);padding:10px;cursor:pointer}
+.mini b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:6px 0 2px}
+.stat{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:12px}
+.stat .nm{width:62px;flex:none}
+.stat .bar{flex:1;height:10px;background:var(--ph);border:1px solid var(--mu)}
+.stat .bar i{display:block;height:100%;background:var(--dk)}
+.stat .v{width:34px;text-align:right;color:var(--mu);flex:none}
+.tip{background:var(--pn);border:1px solid var(--ln);padding:10px 12px;margin-top:8px}
+.tip b{display:block}
+
+/* 학습 카드 · 연습 코스 */
+.learn{background:var(--pn);border:1px solid var(--ln);padding:10px 12px;margin-top:8px}
+.learn ol{margin:6px 0 0;padding-left:18px;color:var(--mu);font-size:12px}
+.learn li{margin:2px 0}
+.mini.course{width:200px;cursor:pointer}
+.mini.course b{white-space:normal;margin:0 0 4px}
+.mini.course .mu{white-space:normal;min-height:34px}
+.mini.course .row{margin-top:6px}
+
+/* 경로 비교 카드 */
+.rt-card{display:block;background:var(--pn);border:2px solid var(--mu);padding:12px;margin-top:10px;cursor:pointer;position:relative}
+.rt-card input{position:absolute;opacity:0;pointer-events:none}
+.rt-card.on{border-color:var(--ln);box-shadow:3px 3px 0 var(--ln)}
+.rt-hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.rt-hd b{font-size:15px;margin-right:auto}
+.rt-stats{display:flex;gap:6px;margin-bottom:6px}
+.rt-stats > div{flex:1;background:var(--bg);border:1px solid var(--mu);padding:6px;text-align:center}
+.rt-stats b{display:block;font-size:16px}
+.verdict{background:var(--dk);color:#fff;padding:10px 12px;margin-top:12px;line-height:1.5}
+
+/* 타임라인 (예습 · 모의주행 공통) */
+.tl-item{display:flex;gap:10px;padding:11px 0;border-bottom:1px dashed var(--mu);align-items:flex-start;cursor:pointer}
+.tl-item:last-child{border-bottom:0}
+.tl-item > div{flex:1;min-width:0}
+.tl-top{display:flex;align-items:center;gap:8px}
+.tl-top b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-n{flex:none;width:26px;height:26px;border-radius:50%;color:#fff;font-weight:700;font-size:12px;text-align:center;line-height:26px;background:var(--mu)}
+.tl-n.r1{background:var(--r1)}.tl-n.r2{background:var(--r2);color:#111}.tl-n.r3{background:var(--r3)}.tl-n.r4{background:var(--r4)}
+.advice{margin-top:4px;font-size:13px;line-height:1.5}
+.tl-item.near{background:#fff3e0;margin:0 -12px;padding-left:12px;padding-right:12px}
+.tl-item.done{opacity:.55}
+
+/* 체크리스트 */
+.chk{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--mu);cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk input{width:18px;height:18px;accent-color:var(--dk)}

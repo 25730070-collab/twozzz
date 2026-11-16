@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safe Drive · 경로 찾기</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="route" data-base="">
+<div class="app">
+  <header class="app-header"></header>
+
+  <main class="page">
+    <div class="list-head"><h1>경로 찾기</h1></div>
+    <p class="page-lead">출발지와 도착지를 넣으면 빠른 경로와 안전 경로를 비교해요</p>
+
+    <section class="box route-box" aria-label="경로 입력">
+      <div class="fld"><span class="dot" aria-hidden="true"></span><input class="in" id="ro" type="search" placeholder="출발지" aria-label="출발지" autocomplete="off"></div>
+      <div class="fld"><span class="dot end" aria-hidden="true"></span><input class="in" id="rd" type="search" placeholder="도착지" aria-label="도착지" autocomplete="off"></div>
+      <button class="btn dk" id="goRoute" disabled>경로 비교 시작</button>
+      <button class="me" id="useMe" type="button"><svg class="ico s" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22"/></svg>내 위치에서 출발</button>
+    </section>
+
+    <section class="section" id="recentBox" hidden>
+      <div class="section-hd"><h3>최근 경로</h3></div>
+      <div class="list-box" id="recentRoutes"></div>
+    </section>
+
+    <section class="section" id="favBox" hidden>
+      <div class="section-hd"><h3>즐겨찾기 경로</h3><a class="more" href="my.html" aria-label="즐겨찾기 더 보기"></a></div>
+      <div class="list-box" id="favRoutes"></div>
+    </section>
+  </main>
+
+  <nav class="tabbar"></nav>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/route.js"></script>
+</body>
+</html>

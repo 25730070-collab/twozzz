@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Safe Drive · 회원가입</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="signup" data-base="">
+<div class="app has-cta">
+  <header class="app-header">
+    <a class="logo" href="../index.html">Safe Drive</a>
+    <a class="chip" id="userChip" href="signup.html">가입</a>
+  </header>
+  <div class="subhead"><button class="ic" id="backBtn" data-fallback="../index.html" aria-label="뒤로">←</button><b id="headerTitle">회원가입</b><span class="right"></span></div>
+
+  <main class="page">
+    <h2>닉네임과 이메일만 있으면 돼요</h2>
+    <p class="mu">그 외 개인정보는 받지 않아요</p>
+
+    <div class="field">
+      <label for="nickname">닉네임</label>
+      <input class="in" id="nickname" maxlength="10" placeholder="닉네임 입력" autocomplete="off">
+      <p class="mu" id="nickHint">2~10자 (한글·영문·숫자)</p>
+    </div>
+
+    <div class="field">
+      <label for="email">이메일</label>
+      <div class="row">
+        <input class="in" id="email" type="email" placeholder="example@email.com" autocomplete="off">
+        <button class="chip" id="sendCode" disabled>인증번호 받기</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="row" style="margin-bottom:0"><label for="code">인증번호</label><span class="timer" id="timer"></span></div>
+      <div class="row">
+        <input class="in" id="code" inputmode="numeric" maxlength="6" placeholder="6자리 숫자" autocomplete="off">
+        <button class="chip" id="verify" disabled>확인</button>
+      </div>
+    </div>
+
+    <div class="state" id="state-code-sent"><p class="note"><span id="sentTo"></span> 로 인증번호를 보냈어요.<br>
+      (실습 화면이라 메일은 가지 않고, 인증번호 <b id="demoCode"></b> 를 직접 입력해 주세요)</p></div>
+    <div class="state" id="state-code-error"><p class="note err">인증번호가 맞지 않아요. 다시 확인해 주세요</p></div>
+    <div class="state" id="state-code-expired"><p class="note err">입력 시간이 지났어요. 인증번호를 다시 받아 주세요</p></div>
+    <div class="state" id="state-verified"><p class="note ok">이메일 인증이 완료됐어요</p></div>
+    <div class="state" id="state-join-done">
+      <p class="note ok">가입이 완료됐어요. 환영합니다!</p>
+      <button class="btn dk" onclick="location.href='my.html'">마이로 이동</button>
+    </div>
+
+    <p class="note">닉네임·이메일은 이 기기(LocalStorage)에만 저장되고 서버로 보내지 않아요.</p>
+  </main>
+
+  <div class="cta-bar"><button class="btn dk" id="join" disabled>가입하기</button></div>
+</div>
+
+<script src="../js/mock.js"></script>
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/config.local.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/route-api.js"></script>
+<script src="../js/signup.js"></script>
+</body>
+</html>

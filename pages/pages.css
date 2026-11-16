@@ -1,0 +1,55 @@
+/* pages.css — 화면별 전용 스타일 */
+.hero{padding:6px 0 2px}
+.hero h2{line-height:1.35}
+.search-box{margin-top:12px}
+.quick{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-top:8px}
+.quick::-webkit-scrollbar{display:none}
+
+#mapView{height:170px}
+.kv{display:flex;gap:16px;margin-top:6px}
+.kv div{flex:1;background:var(--pn);border:1px solid var(--ln);padding:8px;text-align:center}
+.kv b{display:block;font-size:18px}
+
+.profile{display:flex;align-items:center;gap:12px;background:var(--pn);border:1px solid var(--ln);padding:12px}
+.avatar{flex:none;width:44px;height:44px;border-radius:50%;background:var(--ph);border:1px solid var(--mu);display:flex;align-items:center;justify-content:center;font-weight:700}
+.profile > div{flex:1;min-width:0}
+.profile b,.profile .mu{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile .chip{flex:none}
+
+.field{margin-top:14px}
+.field label{font-weight:700;font-size:13px}
+.field .row{margin-top:0}
+.field .row .in{flex:1;margin-top:6px;width:auto}
+.field .row .chip{margin-top:6px;padding:9px 12px}
+.timer{font-variant-numeric:tabular-nums;color:var(--r4);font-weight:700;margin-left:auto}
+
+.pv-stats{display:flex;gap:6px;margin-top:10px}
+.pv-stats > div{flex:1;background:var(--pn);border:1px solid var(--ln);padding:8px 4px;text-align:center}
+.pv-stats b{display:block;font-size:16px}
+
+.alert{display:none;background:var(--r4);color:#fff;padding:12px;margin-top:12px;border:2px solid var(--ln)}
+.alert.on{display:block;animation:pulse .9s infinite}
+.alert[data-lv="1"]{background:var(--r1)}
+.alert[data-lv="2"]{background:var(--r2);color:#111}
+.alert[data-lv="3"]{background:var(--r3)}
+.alert b{display:block;font-size:15px}
+@keyframes pulse{50%{opacity:.82}}
+.ctrl{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.ctrl .btn{margin-top:0;width:auto;flex:1;min-width:120px}
+
+/* 안내(내비) 화면 */
+.navpage{padding-top:0}
+.turn{position:sticky;top:calc(var(--hd) + var(--sub));z-index:18;display:flex;align-items:center;gap:12px;margin:0 -14px;padding:12px 14px;background:#0b3d91;color:#fff}
+.turn-ic{flex:none;width:46px;height:46px;border-radius:8px;background:#fff;color:#0b3d91;font-size:30px;font-weight:700;text-align:center;line-height:46px}
+.turn b{display:block;font-size:17px;line-height:1.3}
+.turn span#turnDist{font-size:13px;opacity:.9}
+.navmap{position:relative;margin:0 -14px;height:340px;background:#e9efe4;border-bottom:2px solid var(--ln);overflow:hidden}
+.navmap svg{width:100%;height:100%;display:block}
+.navmap path{vector-effect:non-scaling-stroke}
+.hzc{stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke;fill:var(--mu)}
+.hzc.r1{fill:var(--r1)}.hzc.r2{fill:var(--r2)}.hzc.r3{fill:var(--r3)}.hzc.r4{fill:var(--r4)}
+.hzc.done{opacity:.3}
+.navmap .alert{position:absolute;left:8px;right:8px;top:8px;margin:0;z-index:2}
+.navmap .map-btn{position:absolute;right:8px;bottom:8px;z-index:2;background:#fff}
+.navpage .pv-stats{margin-top:12px}
+.navpage .pv-stats b{font-size:14px}
