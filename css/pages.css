@@ -19,11 +19,6 @@
 .route-box .dot.end{border-color:var(--r4)}
 .route-box .btn.dk{margin-top:var(--sp3)}
 .route-box .me{display:inline-flex;align-items:center;gap:6px;margin-top:var(--sp2);padding:0;height:36px;border:0;background:none;color:var(--brand);font-weight:600;font-size:var(--fs-cap)}
-.find-row{display:flex;gap:var(--sp2);margin-top:var(--sp3)}
-.find-row .searchbar{flex:1}
-.find-row .btn{width:auto;margin-top:0;padding:0 var(--sp4)}
-.quick{display:flex;gap:var(--sp2);overflow-x:auto;scrollbar-width:none;margin:0 calc(var(--gut) * -1);padding:0 var(--gut)}
-.quick::-webkit-scrollbar{display:none}
 
 /* ---------- 위험 구간 목록 ---------- */
 .list-head{display:flex;align-items:baseline;gap:var(--sp2);margin-bottom:var(--sp3)}

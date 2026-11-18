@@ -38,6 +38,7 @@ function paintNote() {
   n.hidden = !msg; n.className = 'note' + (msg ? ' err' : ''); n.textContent = msg;
 }
 $('#q').addEventListener('input', e => { st.q = e.target.value.trim(); st.shown = PAGE; render(); });
+$('#q').addEventListener('keydown', e => { if (e.key === 'Enter' && st.q) { addRecent(st.q); e.target.blur(); } });   // 검색어는 Enter로 확정할 때 최근 검색에 기록
 
 /* 필터 칩 : 선택 개수를 글자에 보여 주고, 선택돼 있으면 강조한다 */
 const FILTERS = { filterRiskBtn: () => st.risk, filterGuBtn: () => st.gu, filterYearBtn: () => st.year };

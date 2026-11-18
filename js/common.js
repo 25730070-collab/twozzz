@@ -103,12 +103,10 @@ document.addEventListener('click', e => {
   if (c) location.href = c.dataset.href;
 });
 
-/* ---------- 공통 셸 : 글로벌 헤더 · 드로어 · 하단 탭바 · 로그아웃 확인 · 토스트 (모든 화면이 같은 코드로 만든다) ---------- */
+/* ---------- 공통 셸 : 글로벌 헤더 · 하단 탭바 · 로그아웃 확인 · 토스트 (모든 화면이 같은 코드로 만든다) ---------- */
 const HOME_PAGE = document.body.dataset.page === 'home';
-const HREF = { home: HOME_URL, list: `${BASE}list.html`, route: `${HOME_PAGE ? '' : HOME_URL}#route`, my: `${BASE}my.html`, data: `${BASE}data.html`, signup: `${BASE}signup.html` };
-const PAGE_NAV = { home: 'home', list: 'list', detail: 'list', compare: 'route', preview: 'route', drive: 'route', my: 'my', report: 'my', data: 'data', signup: 'auth' };
-const TAB_ON = { home: 'home', list: 'list', detail: 'list', my: 'my', report: 'my', data: 'my', signup: 'my' };
-const curNav = PAGE_NAV[document.body.dataset.page];
+const HREF = { home: HOME_URL, list: `${BASE}list.html`, route: `${BASE}route.html`, my: `${BASE}my.html`, data: `${BASE}data.html`, signup: `${BASE}signup.html` };
+const TAB_ON = { home: 'home', route: 'route', compare: 'route', preview: 'route', drive: 'route', list: 'list', detail: 'list', my: 'my', report: 'my', data: 'my', signup: 'my' };
 
 function toast(msg) {
   const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg;
@@ -124,49 +122,32 @@ function logout() {                                   // 서버 인증이 없으
 
 function buildShell() {
   const user = store.get(KEY.user);
-  /* 헤더 : 로고 · 로그인/로그아웃 아이콘 · 메뉴 */
+  /* 헤더 : 로고 · 로그인/로그아웃 아이콘 */
   const hd = $('.app-header');
   if (hd) {
     hd.innerHTML = `<a class="logo" href="${HOME_URL}" aria-label="Safe Drive 홈"><span class="logo-mark">${ico('route')}</span>Safe Drive</a>
       ${user ? `<button class="hd-btn on" id="authBtn" aria-label="로그아웃" title="${esc(user.nickname)} · 로그아웃">${ico('logout')}</button>`
-             : `<a class="hd-btn" id="authBtn" href="${HREF.signup}" aria-label="로그인·가입" title="로그인·가입">${ico('login')}</a>`}
-      <button class="hd-btn" id="menuBtn" aria-label="메뉴 열기" aria-expanded="false" aria-controls="drawer">${ico('menu')}</button>`;
+             : `<a class="hd-btn" id="authBtn" href="${HREF.signup}" aria-label="로그인·가입" title="로그인·가입">${ico('login')}</a>`}`;
   }
-  /* 드로어 */
-  const item = (id, label, icon, href) => `<a href="${href}" class="${curNav === id ? 'on' : ''}" ${curNav === id ? 'aria-current="page"' : ''}>${ico(icon)}${label}</a>`;
-  const ov = document.createElement('div'); ov.className = 'overlay'; ov.id = 'overlay';
-  const dr = document.createElement('aside'); dr.className = 'drawer'; dr.id = 'drawer'; dr.setAttribute('aria-label', '메뉴');
-  dr.innerHTML = `<div class="dr-hd"><div style="flex:1;min-width:0">${user ? `<b>${esc(user.nickname)} 님</b><span class="mu">${esc(user.email)}</span>` : '<b>메뉴</b>'}</div>
-      <button class="hd-btn" id="menuClose" aria-label="메뉴 닫기">${ico('close')}</button></div>
-    <nav class="dr-nav">${item('home', '홈', 'home', HREF.home)}${item('list', '위험 구간', 'pin', HREF.list)}${item('route', '경로 비교', 'route', HREF.route)}${item('my', '마이페이지', 'user', HREF.my)}${item('data', '데이터 관리', 'data', HREF.data)}<hr>
-      ${user ? `<button id="drLogout">${ico('logout')}로그아웃</button>` : item('auth', '로그인 · 가입', 'login', HREF.signup)}</nav>`;
-  document.body.append(ov, dr);
-  const open = on => { dr.classList.toggle('on', on); ov.classList.toggle('on', on); document.body.classList.toggle('lock', on);
-    const mb = $('#menuBtn'); if (mb) mb.setAttribute('aria-expanded', String(on)); if (on) $('#menuClose').focus(); else if (mb) mb.focus(); };
-  $('#menuBtn').addEventListener('click', () => open(true));
-  $('#menuClose').addEventListener('click', () => open(false));
-  ov.addEventListener('click', () => open(false));
-  dr.addEventListener('click', e => { if (e.target.closest('a')) open(false); });
-  addEventListener('keydown', e => { if (e.key === 'Escape') { open(false); closeConfirm(); } });
+  addEventListener('keydown', e => { if (e.key === 'Escape') closeConfirm(); });
   /* 로그아웃 확인 */
   const md = document.createElement('div'); md.className = 'modal'; md.id = 'logoutModal'; md.setAttribute('role', 'dialog'); md.setAttribute('aria-modal', 'true'); md.setAttribute('aria-label', '로그아웃 확인');
   md.innerHTML = `<div class="modal-box"><h3>로그아웃할까요?</h3><p class="mu">이 기기의 가입 정보만 지워져요. 즐겨찾기와 제보는 그대로 남아요.</p>
     <div class="row"><button class="btn" id="lgNo">취소</button><button class="btn dk" id="lgYes">로그아웃</button></div></div>`;
   document.body.appendChild(md);
-  const openConfirm = () => { open(false); md.classList.add('on'); $('#lgNo').focus(); };
+  const openConfirm = () => { md.classList.add('on'); $('#lgNo').focus(); };
   window.closeConfirm = () => md.classList.remove('on');
   md.addEventListener('click', e => { if (e.target === md) closeConfirm(); });
   $('#lgNo').addEventListener('click', closeConfirm);
   $('#lgYes').addEventListener('click', logout);
   const ab = $('#authBtn'); if (user) ab.addEventListener('click', openConfirm);
-  const dl = $('#drLogout'); if (dl) dl.addEventListener('click', openConfirm);
   window.openLogoutConfirm = openConfirm;
   /* 하단 탭바 (모바일) */
   const tb = $('.tabbar');
   if (tb) {
     const tab = (id, label, icon, href) => `<a href="${href}" class="${TAB_ON[document.body.dataset.page] === id ? 'on' : ''}">${ico(icon)}${label}</a>`;
     tb.setAttribute('aria-label', '하단 메뉴');
-    tb.innerHTML = tab('home', '홈', 'home', HREF.home) + tab('list', '위험 구간', 'pin', HREF.list) + tab('my', '마이', 'user', HREF.my);
+    tb.innerHTML = tab('home', '홈', 'home', HREF.home) + tab('route', '경로 찾기', 'route', HREF.route) + tab('list', '위험 구간', 'pin', HREF.list) + tab('my', '마이', 'user', HREF.my);
   }
   /* 서브 바 뒤로가기 아이콘 */
   const bb = $('#backBtn'); if (bb) bb.innerHTML = ico('back');

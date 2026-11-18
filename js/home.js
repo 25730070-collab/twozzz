@@ -1,14 +1,4 @@
-/* home.js — 홈: 경로 비교(주 행동) · 위험 구간 검색 · 최근 검색 · 즐겨찾기 · 사고 많은 구간 · 지역별 (모두 data/*.json 의 실제 데이터에서 계산) */
-const qEl = $('#q'), find = $('#find');
-
-qEl.addEventListener('input', () => { find.disabled = !qEl.value.trim(); });
-qEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !find.disabled) find.click(); });
-find.addEventListener('click', () => {
-  const q = qEl.value.trim();
-  if (!q) return;
-  addRecent(q);
-  location.href = `${BASE}list.html?q=${encodeURIComponent(q)}`;
-});
+/* home.js — 홈: 경로 비교(주 행동) · 위험 구간 즐겨찾기 · 사고 많은 구간 · 지역별 (모두 data/*.json 의 실제 데이터에서 계산) */
 
 /* 경로 비교 : 출발지·도착지 → compare.html */
 const ro = $('#ro'), rd = $('#rd'), goRoute = $('#goRoute');
@@ -16,14 +6,6 @@ const syncRoute = () => { goRoute.disabled = !(ro.value.trim() && rd.value.trim(
 [ro, rd].forEach(el => { el.addEventListener('input', syncRoute); el.addEventListener('keydown', e => { if (e.key === 'Enter' && !goRoute.disabled) goRoute.click(); }); });
 $('#useMe').addEventListener('click', () => { ro.value = '내 위치'; syncRoute(); rd.focus(); });
 goRoute.addEventListener('click', () => { location.href = `${BASE}compare.html?${pair(ro.value.trim(), rd.value.trim())}`; });
-if (location.hash === '#route') ro.focus();                       // 메뉴의 '경로 비교'로 들어오면 바로 입력할 수 있게
-
-/* 최근 검색 · 즐겨찾기 : 없으면 영역 자체를 숨긴다 */
-const recent = getRecent();
-$('#quickRecent').innerHTML = recent.slice(0, 6).map(r => r.kind === 'route'
-  ? `<a class="chip" href="${BASE}compare.html?${pair(r.origin, r.destination)}">${esc(r.origin)} → ${esc(r.destination)}</a>`
-  : `<a class="chip" href="${BASE}list.html?q=${encodeURIComponent(r.q)}">${esc(r.q)}</a>`).join('');
-$('#recentBox').hidden = recent.length === 0;
 
 function paintFavs(rows) {
   const favs = getFavs().map(f => f.kind === 'route' ? routeCard(f) : (rows.find(s => s.segmentId === f.segmentId) ? segCard(rows.find(s => s.segmentId === f.segmentId)) : '')).filter(Boolean);
