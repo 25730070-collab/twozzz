@@ -49,7 +49,7 @@ function tilePaint(cp) {
   tm.done.setLatLngs(route.path.slice(0, k).concat([cp.pos]));
   tm.hz.forEach((c, j) => c.setStyle({ fillOpacity: hz[j] && hz[j].state === 'done' ? .35 : 1 }));
   if (view === 'follow') tm.map.setView(cp.pos, 17, { animate: false });
-  else if (tm.view !== 'all') tm.map.fitBounds(tm.L.latLngBounds(route.path), { padding: [30, 30], animate: false });
+  else if (view === 'all' && tm.view !== 'all') tm.map.fitBounds(tm.L.latLngBounds(route.path), { padding: [30, 30], animate: false });
   tm.view = view;
 }
 
@@ -76,9 +76,9 @@ function setup() {
     hz.push({ h, state: 'wait' });
   });
   $('#pointList').innerHTML = hz.map((x, i) =>
-    `<div class="tl-item wait" id="pt${i}"><span class="tl-n r${x.h.seg.riskLevel}">${i + 1}</span>
+    `<div class="tl-item wait" id="pt${i}" data-i="${i}"><span class="tl-n r${x.h.seg.riskLevel}">${i + 1}</span>
       <div><div class="tl-top"><b>${esc(x.h.seg.roadName)}</b></div>
-        <p class="mu">출발 후 ${(x.h.at / 1000).toFixed(1)}km · 사고 ${x.h.seg.accidentCount}건 · <span class="pt-state">대기</span></p></div></div>`).join('')
+        <p class="mu">출발 후 ${(x.h.at / 1000).toFixed(1)}km · 사고 ${x.h.seg.accidentCount}건 · <span class="pt-state">대기</span></p>${pntBrief(x.h.seg) ? `<p class="mu">${esc(pntBrief(x.h.seg))}</p>` : ''}</div></div>`).join('')
     || '<p class="mu" style="padding:14px 0">이 경로에는 알려진 위험 구간이 없어요</p>';
   paint();
   initTiles();
@@ -235,6 +235,19 @@ function setMode(m) {
   if (m === 'gps') startGps(); else { stopGps(); reset(); }
 }
 
+/* 다발지점을 누르면 지도에서 그 위치를 보여 준다 (지도를 못 불러온 경우엔 상세 화면으로) */
+$('#pointList').addEventListener('click', e => {
+  const it = e.target.closest('[data-i]'); if (!it) return;
+  const h = hz[Number(it.dataset.i)]; if (!h) return;
+  if (!tm) return void (location.href = segUrl(h.h.seg.segmentId));
+  view = 'free'; tm.view = 'free';
+  tm.map.setView([h.h.seg.lat, h.h.seg.lng], 17, { animate: false });
+  tm.hz.forEach((c, j) => c.setStyle(j === Number(it.dataset.i) ? { color: '#161616', weight: 4 } : { color: '#fff', weight: 2 }));
+  $('#viewBtn').textContent = '따라가기';
+  $('.navmap').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  toast(`${h.h.seg.roadName}${pntBrief(h.h.seg) ? ' · ' + pntBrief(h.h.seg) : ''}`);
+});
+
 /* ---------- 이벤트 ---------- */
 $('#playBtn').addEventListener('click', play);
 $('#resetBtn').addEventListener('click', reset);
@@ -251,7 +264,7 @@ $('#voiceBtn').addEventListener('click', () => {
 });
 paintVoice();
 $('#viewBtn').addEventListener('click', e => {
-  view = view === 'follow' ? 'all' : 'follow'; if (tm) tm.view = null;
+  view = view === 'follow' ? 'all' : 'follow'; if (tm) { tm.view = null; tm.hz.forEach(c => c.setStyle({ color: '#fff', weight: 2 })); }
   e.currentTarget.textContent = view === 'follow' ? '전체 보기' : '따라가기'; paint();
 });
 addEventListener('resize', () => { if (tm) tm.map.invalidateSize(); if (route) paint(); });

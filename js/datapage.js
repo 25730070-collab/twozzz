@@ -21,6 +21,8 @@ function paint() {
   const u = ['reports_user', 'favorites_user', 'recent_searches_user'].reduce((n, id) => n + contentOf(id).length, 0);
   $('#dsStats').innerHTML = `<div><b>${by.J + by.A}</b><span class="mu">위험 구간</span></div><div><b>${by.J}</b><span class="mu">J 구간</span></div><div><b>${by.A}</b><span class="mu">A 구간</span></div><div><b>${u}</b><span class="mu">내 데이터</span></div>`;
 
+  $('#dsPnt').textContent = DATA_STATUS.pnt === 'ok' ? `사고 유형·인명 피해를 연결한 구간 ${DATA_STATUS.pntMatched}곳 (구간 좌표 150m 안의 국토교통부 사고다발지점)` : DATA_STATUS.pnt === 'fail' ? '사고 유형·인명 피해 파일(pntfr_points.json)을 불러오지 못했어요' : '';
+
   $('#dsList').innerHTML = manifest.datasets.map(d => {
     const n = contentOf(d.id).length;
     const warn = d.expectedCount != null && n !== d.expectedCount ? `<p class="note err">예상 ${d.expectedCount}건과 달라요</p>` : '';

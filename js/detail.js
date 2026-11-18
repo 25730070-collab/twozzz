@@ -34,6 +34,16 @@ const ex = Object.keys(EXTRA_LABEL).filter(k => !isNil(seg[k]));
 $('#extraList').innerHTML = ex.map(k => `<div><b>${seg[k]}명</b><span class="mu">${EXTRA_LABEL[k]}</span></div>`).join('');
 $('#extraBox').hidden = ex.length === 0;
 
+/* 사고 유형 · 인명 피해 (국토교통부 사고다발지점, 구간 좌표 150m 안에서 가장 가까운 지점) */
+if (seg.pnt && seg.pnt.detail) {
+  const p = seg.pnt, dt = p.detail, types = Object.entries(dt.types || {}).sort((a, b) => b[1] - a[1]), top = types.length ? types[0][1] : 1;
+  $('#pntTypes').innerHTML = types.slice(0, 6).map(([n, c]) => `<div class="tb"><span class="tn">${esc(n)}</span><span class="tv">${c}건</span><span class="bar"><i style="width:${Math.max(c / top * 100, 4)}%"></i></span></div>`).join('')
+    || '<p class="mu">사고 유형 정보가 없어요</p>';
+  $('#pntCas').innerHTML = PNT_SUM.map(([k, l]) => `<div><b>${dt[k] ?? 0}명</b><span class="mu">${l}</span></div>`).join('');
+  $('#pntNote').textContent = `국토교통부 사고다발지점 「${p.name}」 기준 · ${p.year}년까지 과거 3년 · 개별 사고 ${dt.accidents}건 · 이 구간에서 약 ${p.distM}m`;
+  $('#pntBox').hidden = false; $('#pntSrc').hidden = false;
+}
+
 /* 같은 구의 다른 구간 */
 const sameGu = (await loadHazards()).filter(s => s.segmentId !== seg.segmentId && guOf(s) === guOf(seg));
 $('#relatedTitle').textContent = `${guOf(seg)}의 다른 구간`;

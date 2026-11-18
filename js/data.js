@@ -1,6 +1,6 @@
 /* data.js — 데이터셋 불러오기 : JSON(J) + API(A) + 사용자 제보(U), 상태 기록, 데이터 점검 */
 let _hazards = null;
-const DATA_STATUS = { static: 'wait', api: 'wait', user: 0 };   // static/api : ok | empty | fail
+const DATA_STATUS = { static: 'wait', api: 'wait', user: 0, pnt: 'wait', pntMatched: 0 };   // static/api : ok | empty | fail
 
 function fromFallback(prefix, src) {
   return new Promise(res => {
@@ -11,6 +11,33 @@ function fromFallback(prefix, src) {
     sc.onerror = () => res(null);
     document.head.appendChild(sc);
   });
+}
+
+/* 국토교통부 사고다발지점 + 지점별 개별 사고 요약 (tools/fetch_pntfr.mjs 가 만든 data/pntfr_points.json) */
+async function loadPnt(prefix) {
+  try { const r = await fetch(prefix + 'pntfr_points.json'); if (!r.ok) throw new Error('HTTP ' + r.status); const l = await r.json(); return Array.isArray(l) && l.length ? l : null; }
+  catch (e) { console.info('[사고 상세] pntfr_points.json 을 불러오지 못했어요 —', e.message); return null; }
+}
+function pntDist(a, b) {                                   // 두 점 사이 거리(m)
+  const R = 6371000, r = x => x * Math.PI / 180, dl = r(b[0] - a[0]), dg = r(b[1] - a[1]);
+  return 2 * R * Math.asin(Math.sqrt(Math.sin(dl / 2) ** 2 + Math.cos(r(a[0])) * Math.cos(r(b[0])) * Math.sin(dg / 2) ** 2));
+}
+function nearestPnt(seg, pts, maxM = 150) {
+  if (seg.source === 'user' || isNil(seg.lat) || isNil(seg.lng)) return null;
+  let best = null, bd = maxM;
+  for (const p of pts) { if (!p.detail || isNil(p.lat)) continue; const dd = pntDist([seg.lat, seg.lng], [p.lat, p.lng]); if (dd <= bd) { bd = dd; best = p; } }
+  return best ? { ...best, distM: Math.round(bd) } : null;
+}
+const PNT_SUM = [['death', '사망'], ['serious', '중상'], ['minor', '경상'], ['injured', '부상신고']];
+/* 목록용 한 줄 요약: 가장 많은 사고 유형 + 사망·중상 */
+function pntBrief(s) {
+  const p = s && s.pnt; if (!p || !p.detail) return '';
+  const top = Object.entries(p.detail.types || {}).sort((a, b) => b[1] - a[1])[0];
+  const parts = [];
+  if (top) parts.push(top[0].split(' · ').pop());
+  if (p.detail.death) parts.push(`사망 ${p.detail.death}`);
+  if (p.detail.serious) parts.push(`중상 ${p.detail.serious}`);
+  return parts.join(' · ');
 }
 
 async function loadHazards() {
@@ -31,6 +58,10 @@ async function loadHazards() {
       else { DATA_STATUS[src] = 'fail'; console.warn('[데이터 불러오기 실패]', f, e.message); }
     }
   }
+  /* 국토교통부 사고다발지점(사고 유형·인명 피해): 구간 좌표에서 150m 안의 가장 가까운 지점을 붙인다 (파일이 없으면 붙이지 않는다) */
+  const pts = await loadPnt(prefix);
+  DATA_STATUS.pnt = pts ? 'ok' : 'fail'; DATA_STATUS.pntMatched = 0;
+  if (pts) rows.forEach(r => { const m = nearestPnt(r, pts); if (m) { r.pnt = m; DATA_STATUS.pntMatched++; } });
   const mine = typeof getReports === 'function' ? getReports() : [];
   DATA_STATUS.user = mine.length;
   rows.push(...mine);

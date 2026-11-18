@@ -37,7 +37,7 @@ function render() {
       <span class="tl-n r${s.riskLevel}">${i + 1}</span>
       <div><div class="tl-top"><b class="roadName">${esc(s.roadName)}</b></div>
         <p class="mu">출발 후 ${(h.at / 1000).toFixed(1)}km · ${guOf(s)} · 사고 ${s.accidentCount}건${isNil(s.year) ? '' : ` (${s.year}년)`}</p>
-        ${dt ? `<p class="mu">${dt}</p>` : ''}</div></div>`;
+        ${dt ? `<p class="mu">${dt}</p>` : ''}${pntBrief(s) ? `<p class="mu">${esc(pntBrief(s))}</p>` : ''}</div></div>`;
   }).join('') || '<p class="mu" style="padding:14px 0">이 경로에는 등록된 사고 다발지점이 없어요</p>';
   paintMap(st);
   $('#goDrive').href = driveUrl({ origin: o, destination: d }, type);

@@ -144,3 +144,11 @@
 
 .meta-sum{font-size:var(--fs-cap);color:var(--tx2);margin-top:var(--sp3)}
 .timer{font-variant-numeric:tabular-nums;color:var(--r4);font-weight:700;margin-left:auto}
+
+/* 사고 유형 막대 : 이름(남는 폭, 말줄임) · 건수 / 아래 막대 */
+.tbars{margin-top:var(--sp2)}
+.tb{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--sp3);row-gap:6px;padding:10px 0;font-size:var(--fs-cap)}
+.tb .tn{min-width:0;color:var(--tx);font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tb .tv{color:var(--tx2);white-space:nowrap}
+.tb .bar{grid-column:1 / -1;height:8px;border-radius:99px;background:var(--bg);overflow:hidden}
+.tb .bar i{display:block;height:100%;background:var(--brand);border-radius:99px}
