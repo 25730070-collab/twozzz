@@ -12,6 +12,16 @@ $('.address').innerHTML = infoText(seg.address);
 $('#mapView').innerHTML = isNil(seg.lat) || isNil(seg.lng)
   ? `${ico('pin')}위치 정보가 없어요`
   : `${ico('pin')}위도 ${(+seg.lat).toFixed(4)} · 경도 ${(+seg.lng).toFixed(4)}`;
+if (!isNil(seg.lat) && !isNil(seg.lng)) {                 // 실제 지도를 불러오면 위 좌표 문구를 지도로 바꾼다 (실패하면 문구 유지)
+  const holder = document.createElement('div'); holder.className = 'pinmap'; holder.hidden = true;
+  $('#mapView').after(holder);
+  createMap(holder, { center: [seg.lat, seg.lng], zoom: 16, dragging: true }).then(m => {
+    if (!m) return holder.remove();
+    holder.hidden = false; $('#mapView').hidden = true;
+    m.L.circleMarker([seg.lat, seg.lng], { radius: 10, color: '#fff', weight: 3, fillColor: RISK_COLOR[seg.riskLevel] || '#5b6560', fillOpacity: 1 }).addTo(m.map);
+    m.map.invalidateSize();
+  });
+}
 const badge = $('#riskBadge');
 badge.className = `bg r${seg.riskLevel} riskLevel`;
 badge.dataset.risk = seg.riskLevel;

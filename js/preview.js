@@ -9,6 +9,18 @@ function detailText(s) {
   return ex.length ? ex.join(' · ') : '';
 }
 
+let pvm = null, pvLayers = [];
+async function paintMap(st) {                          // 실제 지도에 경로와 다발지점을 그린다 (지도를 못 불러오면 숨김)
+  const el = $('#pvMap');
+  if (!pvm) { el.hidden = false; pvm = await createMap(el, { center: st.path[0], zoom: 13 }); if (!pvm) { el.hidden = true; return; } }
+  pvLayers.forEach(l => l.remove()); pvLayers = [];
+  const { L, map } = pvm, before = new Set();
+  map.eachLayer(l => before.add(l));
+  drawRoute(pvm, st, h => { location.href = segUrl(h.seg.segmentId); });
+  map.eachLayer(l => { if (!before.has(l)) pvLayers.push(l); });
+  map.invalidateSize();
+}
+
 function render() {
   if (!res) return;
   const st = res[type];
@@ -27,6 +39,7 @@ function render() {
         <p class="mu">출발 후 ${(h.at / 1000).toFixed(1)}km · ${guOf(s)} · 사고 ${s.accidentCount}건${isNil(s.year) ? '' : ` (${s.year}년)`}</p>
         ${dt ? `<p class="mu">${dt}</p>` : ''}</div></div>`;
   }).join('') || '<p class="mu" style="padding:14px 0">이 경로에는 등록된 사고 다발지점이 없어요</p>';
+  paintMap(st);
   $('#goDrive').href = driveUrl({ origin: o, destination: d }, type);
   history.replaceState(null, '', `?${pair(o, d)}&type=${type}`);
 }

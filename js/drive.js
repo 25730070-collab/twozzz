@@ -7,6 +7,7 @@ const type = q.get('type') === 'fast' ? 'fast' : 'safe';
 let res, route, total = 0, xy, car = { pos: [0, 0], head: 0 };
 let pos = 0, speedMult = 1, mode = 'sim', timer = null, voice = true, finished = false, view = 'follow';
 let gpsId = null, off = 0, gpsSpeed = 0;
+let tm = null, tileGen = 0;                          // tm: 실제 지도(타일) 상태. 지도를 못 불러오면 null 이고 약식 경로 그림(SVG)을 쓴다
 const said = new Set(), hz = [];                      // hz[i].state: wait | near | done
 
 $('#headerTitle').textContent = `${o} → ${d}`;
@@ -20,6 +21,35 @@ const svg = $('#map');
 function speak(text) {
   if (!voice || !('speechSynthesis' in window)) return;
   try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; speechSynthesis.speak(u); } catch {}
+}
+
+/* ---------- 실제 지도 (OpenStreetMap 타일) ---------- */
+const CAR_SVG = '<svg viewBox="-14 -18 28 34" width="28" height="34" style="transform-origin:50% 50%"><polygon points="0,-16 11,12 0,6 -11,12" fill="#2b6fff" stroke="#fff" stroke-width="2.5"/></svg>';
+async function initTiles() {
+  const gen = ++tileGen, box = $('.navmap');
+  if (tm) { tm.map.remove(); tm = null; $('#tmap')?.remove(); box.classList.remove('tiles'); }
+  const el = document.createElement('div'); el.id = 'tmap'; box.prepend(el);
+  const m = await createMap(el, { center: route.path[0], zoom: 17 });
+  if (!m || gen !== tileGen) { if (!m) el.remove(); return; }
+  const { L, map } = m;
+  const t = { L, map, view: null, hz: [] };
+  L.polyline(route.path, { color: '#8f9a94', weight: 9, opacity: .95, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+  t.done = L.polyline([], { color: '#0b8457', weight: 9, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+  L.circleMarker(route.path[route.path.length - 1], { radius: 8, color: '#c0282d', weight: 4, fillColor: '#fff', fillOpacity: 1 }).addTo(map);
+  route.hazards.forEach(h => t.hz.push(L.circleMarker([h.seg.lat, h.seg.lng], { radius: 9, color: '#fff', weight: 2, fillColor: RISK_COLOR[h.seg.riskLevel] || '#5b6560', fillOpacity: 1 }).addTo(map)));
+  t.car = L.marker(route.path[0], { icon: L.divIcon({ className: 'carm', html: CAR_SVG, iconSize: [28, 34], iconAnchor: [14, 17] }), interactive: false, keyboard: false, zIndexOffset: 1000 }).addTo(map);
+  tm = t; box.classList.add('tiles');
+  map.invalidateSize(); paint();
+}
+function tilePaint(cp) {
+  tm.car.setLatLng(cp.pos);
+  const svgEl = tm.car.getElement()?.firstChild; if (svgEl) svgEl.style.transform = `rotate(${car.head}deg)`;
+  const i = route.cum.findIndex(v => v > pos), k = i < 0 ? route.path.length : i;
+  tm.done.setLatLngs(route.path.slice(0, k).concat([cp.pos]));
+  tm.hz.forEach((c, j) => c.setStyle({ fillOpacity: hz[j] && hz[j].state === 'done' ? .35 : 1 }));
+  if (view === 'follow') tm.map.setView(cp.pos, 17, { animate: false });
+  else if (tm.view !== 'all') tm.map.fitBounds(tm.L.latLngBounds(route.path), { padding: [30, 30], animate: false });
+  tm.view = view;
 }
 
 /* ---------- 준비 ---------- */
@@ -50,6 +80,7 @@ function setup() {
         <p class="mu">출발 후 ${(x.h.at / 1000).toFixed(1)}km · 사고 ${x.h.seg.accidentCount}건 · <span class="pt-state">대기</span></p></div></div>`).join('')
     || '<p class="mu" style="padding:14px 0">이 경로에는 알려진 위험 구간이 없어요</p>';
   paint();
+  initTiles();
 }
 
 /* ---------- 화면 갱신 ---------- */
@@ -60,22 +91,25 @@ function paint() {
   car.pos = cp.pos;
   const c = xy(cp.pos);
 
-  const w = svg.clientWidth || 390, h = svg.clientHeight || 300;
-  let vb;
-  if (view === 'follow') { const W = 1300, H = W * h / w; vb = [c[0] - W / 2, c[1] - H / 2, W, H]; }
+  if (tm) tilePaint(cp);
   else {
-    const all = route.path.map(xy), xs = all.map(p => p[0]), ys = all.map(p => p[1]);
-    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
-    let W = (maxX - minX) * 1.2 || 600, H = (maxY - minY) * 1.2 || 600;
-    if (W / H < w / h) W = H * w / h; else H = W * h / w;
-    vb = [(minX + maxX) / 2 - W / 2, (minY + maxY) / 2 - H / 2, W, H];
+    const w = svg.clientWidth || 390, h = svg.clientHeight || 300;
+    let vb;
+    if (view === 'follow') { const W = 1300, H = W * h / w; vb = [c[0] - W / 2, c[1] - H / 2, W, H]; }
+    else {
+      const all = route.path.map(xy), xs = all.map(p => p[0]), ys = all.map(p => p[1]);
+      const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+      let W = (maxX - minX) * 1.2 || 600, H = (maxY - minY) * 1.2 || 600;
+      if (W / H < w / h) W = H * w / h; else H = W * h / w;
+      vb = [(minX + maxX) / 2 - W / 2, (minY + maxY) / 2 - H / 2, W, H];
+    }
+    svg.setAttribute('viewBox', vb.join(' '));
+    const k = vb[2] / w;
+    $('#carG').setAttribute('transform', `translate(${c[0]} ${c[1]}) rotate(${car.head}) scale(${k * 1.1})`);
+    $('#pathDone').setAttribute('stroke-dasharray', `${pos} 1e9`);
+    $$('.hzc').forEach(e => e.setAttribute('r', 8 * k));
+    $('#endPt').setAttribute('r', 7 * k);
   }
-  svg.setAttribute('viewBox', vb.join(' '));
-  const k = vb[2] / w;
-  $('#carG').setAttribute('transform', `translate(${c[0]} ${c[1]}) rotate(${car.head}) scale(${k * 1.1})`);
-  $('#pathDone').setAttribute('stroke-dasharray', `${pos} 1e9`);
-  $$('.hzc').forEach(e => e.setAttribute('r', 8 * k));
-  $('#endPt').setAttribute('r', 7 * k);
 
   /* 다음 회전 안내 */
   const g = route.guides.find((x, i) => i > 0 && x.at > pos + 15);
@@ -89,7 +123,7 @@ function paint() {
   $('#pvPassed').textContent = `${hz.filter(x => x.state === 'done').length}/${hz.length}`;
 
   hz.forEach((x, i) => {
-    $('#hz' + i).classList.toggle('done', x.state === 'done');
+    const hzEl = $('#hz' + i); if (hzEl) hzEl.classList.toggle('done', x.state === 'done');
     const li = $('#pt' + i); li.className = 'tl-item ' + x.state;
     $('.pt-state', li).textContent = { wait: '대기', near: '접근 중', done: '통과' }[x.state];
   });
@@ -216,10 +250,10 @@ $('#voiceBtn').addEventListener('click', () => {
 });
 paintVoice();
 $('#viewBtn').addEventListener('click', e => {
-  view = view === 'follow' ? 'all' : 'follow';
+  view = view === 'follow' ? 'all' : 'follow'; if (tm) tm.view = null;
   e.currentTarget.textContent = view === 'follow' ? '전체 보기' : '따라가기'; paint();
 });
-addEventListener('resize', () => route && paint());
+addEventListener('resize', () => { if (tm) tm.map.invalidateSize(); if (route) paint(); });
 
 if (!o || !d) { $('main').innerHTML = emptyState({ title: '출발지와 도착지를 입력해 주세요', actions: [{ href: '../index.html', label: '홈으로' }] }); }
 else { $('#state-loading').classList.add('on'); buildRoutes(o, d).then(r => { res = r; route = r[type]; $('#state-loading').classList.remove('on'); setup(); }).catch(failView); }
