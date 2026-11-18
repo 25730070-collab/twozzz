@@ -75,7 +75,7 @@
 .turn b{display:block;font-size:var(--fs-sec);line-height:1.3}
 .turn #turnDist{font-size:var(--fs-body);opacity:.85}
 .navmap{position:relative;margin:0 calc(var(--gut) * -1);height:340px;background:#e8efe9;overflow:hidden}
-.navmap svg{width:100%;height:100%;display:block}
+.navmap > svg#map{width:100%;height:100%;display:block}
 .navmap svg#map path{vector-effect:non-scaling-stroke}
 .navmap #tmap{position:absolute;inset:0;z-index:0;isolation:isolate;background:#e8efe9}
 .navmap.tiles #map{display:none}

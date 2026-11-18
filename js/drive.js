@@ -33,8 +33,9 @@ async function initTiles() {
   if (!m || gen !== tileGen) { if (!m) el.remove(); return; }
   const { L, map } = m;
   const t = { L, map, view: null, hz: [] };
-  L.polyline(route.path, { color: '#8f9a94', weight: 9, opacity: .95, lineCap: 'round', lineJoin: 'round' }).addTo(map);
-  t.done = L.polyline([], { color: '#0b8457', weight: 9, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+  L.polyline(route.path, { color: '#fff', weight: 14, opacity: .95, lineCap: 'round', lineJoin: 'round' }).addTo(map);      // 흰 테두리로 지도 위에서 경로가 또렷하게 보이게
+  L.polyline(route.path, { color: '#5b8f7a', weight: 8, opacity: 1, lineCap: 'round', lineJoin: 'round' }).addTo(map);
+  t.done = L.polyline([], { color: '#0b8457', weight: 8, lineCap: 'round', lineJoin: 'round' }).addTo(map);
   L.circleMarker(route.path[route.path.length - 1], { radius: 8, color: '#c0282d', weight: 4, fillColor: '#fff', fillOpacity: 1 }).addTo(map);
   route.hazards.forEach(h => t.hz.push(L.circleMarker([h.seg.lat, h.seg.lng], { radius: 9, color: '#fff', weight: 2, fillColor: RISK_COLOR[h.seg.riskLevel] || '#5b6560', fillOpacity: 1 }).addTo(map)));
   t.car = L.marker(route.path[0], { icon: L.divIcon({ className: 'carm', html: CAR_SVG, iconSize: [28, 34], iconAnchor: [14, 17] }), interactive: false, keyboard: false, zIndexOffset: 1000 }).addTo(map);
