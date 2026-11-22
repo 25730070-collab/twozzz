@@ -8,17 +8,19 @@ $$('.roadName').forEach(el => { el.textContent = seg.roadName; });
 $('#accCell').innerHTML = isNil(seg.accidentCount) ? `정보 없음${typeTag('미입력', 'nil')}` : `${seg.accidentCount}건`;
 $('#yearCell').innerHTML = isNil(seg.year) ? `정보 없음${typeTag('미입력', 'nil')}` : `${seg.year}년`;
 $('.address').innerHTML = infoText(seg.address);
-/* 지도 이미지가 없을 때 : 좌표 또는 표준 대체 화면 */
+/* 지도 : 가장 위. 불러오는 동안 자리를 먼저 잡아 두고(깜빡임 방지), 못 불러오면 좌표 안내 카드를 보여 준다 */
 $('#mapView').innerHTML = isNil(seg.lat) || isNil(seg.lng)
   ? `${ico('pin')}위치 정보가 없어요`
   : `${ico('pin')}위도 ${(+seg.lat).toFixed(4)} · 경도 ${(+seg.lng).toFixed(4)}`;
-if (!isNil(seg.lat) && !isNil(seg.lng)) {                 // 실제 지도를 불러오면 위 좌표 문구를 지도로 바꾼다 (실패하면 문구 유지)
-  const holder = document.createElement('div'); holder.className = 'pinmap'; holder.hidden = true;
-  $('#mapView').after(holder);
-  createMap(holder, { center: [seg.lat, seg.lng], zoom: 16, dragging: true }).then(m => {
-    if (!m) return holder.remove();
-    holder.hidden = false; $('#mapView').hidden = true;
-    m.L.circleMarker([seg.lat, seg.lng], { radius: 10, color: '#fff', weight: 3, fillColor: RISK_COLOR[seg.riskLevel] || '#5b6560', fillOpacity: 1 }).addTo(m.map);
+if (!isNil(seg.lat) && !isNil(seg.lng)) {
+  const hero = $('#heroMap'); hero.hidden = false; $('#mapView').hidden = true;
+  createMap(hero, { center: [seg.lat, seg.lng], zoom: 15.5, lite: true }).then(async m => {
+    if (!m) { hero.hidden = true; $('#mapView').hidden = false; return; }          // 실패하면 좌표 문구로 되돌린다
+    hero.classList.remove('skel');
+    const near = (await loadHazards()).filter(s => s.segmentId !== seg.segmentId && !isNil(s.lat) && !isNil(s.lng) && hav([seg.lat, seg.lng], [+s.lat, +s.lng]) <= 1000);
+    near.forEach(s => hazardDot(m, s, { radius: 6 }));
+    hazardDot(m, seg, { current: true });
+    const cap = $('#heroCap'); cap.textContent = near.length ? `주변 1km 다발지점 ${near.length}곳` : '주변 1km에 다른 다발지점 없음'; cap.hidden = false;
     m.map.invalidateSize();
   });
 }

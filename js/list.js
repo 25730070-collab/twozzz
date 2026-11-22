@@ -27,6 +27,23 @@ function render() {
     tips: ['도로명이나 동 이름 일부만 입력해 보세요 (예: 테헤란, 논현)', '위험등급·지역·연도·데이터 필터를 해제해 보세요', '찾는 구간이 없다면 직접 제보할 수 있어요'],
     actions: [{ id: 'clearFilter', label: '조건 모두 해제' }, { href: 'report.html', label: '구간 제보하기' }] });
   $('#resultWrap').hidden = rows.length === 0;
+  paintListMap(rows);
+}
+
+/* 위에 놓는 지도 : 지금 조건에 맞는 구간 전부를 위험등급 색 점으로. 점을 누르면 이름·건수·상세 링크 (지도를 못 불러오면 숨김) */
+let lmP = null, lmLayer = null, lmSig = '';
+async function paintListMap(rows) {
+  const el = $('#listMap'), pts = rows.filter(s => !isNil(s.lat) && !isNil(s.lng));
+  el.hidden = pts.length === 0; if (!pts.length) return;
+  lmP = lmP || createMap(el, { center: [37.5665, 126.978], zoom: 11, lite: true, preferCanvas: true });
+  const m = await lmP;
+  if (!m) { el.hidden = true; return; }
+  el.classList.remove('skel'); m.map.invalidateSize();
+  if (lmLayer) lmLayer.remove();
+  lmLayer = m.L.layerGroup().addTo(m.map);
+  [...pts].sort((a, b) => a.riskLevel - b.riskLevel).forEach(s => hazardDot(m, s, { radius: 6, layer: lmLayer }));   // 위험한 점이 위에 오도록 낮은 등급부터
+  const sig = [st.q, [...st.risk], [...st.gu], [...st.src], [...st.year]].join('|');
+  if (sig !== lmSig) { lmSig = sig; m.map.fitBounds(m.L.latLngBounds(pts.map(s => [+s.lat, +s.lng])), { padding: [24, 24], maxZoom: 15 }); }   // 더 보기·정렬만 바뀔 땐 지도를 움직이지 않는다
 }
 
 /* 데이터 상태 안내 : API 연결 실패 · 0건일 때 표준 문구 */
@@ -47,7 +64,7 @@ function paintChips() {
   Object.entries(FILTERS).forEach(([id, get]) => {
     const b = $('#' + id), n = get().size, open = $('#' + b.dataset.panel).classList.contains('on');
     b.innerHTML = `${b.dataset.label}${n ? ` ${n}` : ''}${ico(open ? 'up' : 'down')}`;
-    b.classList.toggle('on', n > 0);
+    b.classList.toggle('on', n > 0); b.setAttribute('aria-expanded', String(open));
   });
   $('#sortChip').textContent = SORT_LABEL[st.sort];
   $('#sortChip').classList.toggle('on', st.sort !== 'default');

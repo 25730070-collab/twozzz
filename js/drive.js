@@ -219,7 +219,7 @@ async function reroute() {
   speak('경로를 이탈했습니다.');
   {
     try {
-      const nr = await liveRoutes('내 위치', d);
+      const nr = await liveRoutes('내 위치', d, null, { detours: type === 'safe' });   // 빠른 경로 안내 중이면 우회 탐색 없이 바로
       route = nr[type]; res = nr; pos = 0; said.clear(); setup();
       $('#rerouteText').textContent = '새 경로로 안내를 이어가요';
       speak('새 경로로 안내합니다.');

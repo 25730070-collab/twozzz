@@ -80,10 +80,22 @@
 .navmap #tmap{position:absolute;inset:0;z-index:0;isolation:isolate;background:#e8efe9}
 .navmap.tiles #map{display:none}
 .carm{background:none;border:0}
-.leaflet-container{font:inherit;-webkit-tap-highlight-color:transparent}
-.leaflet-control-attribution{font-size:10px}
-.routemap{position:relative;height:240px;margin-top:var(--sp3);border-radius:var(--rm);overflow:hidden;border:1px solid var(--line);background:#e8efe9;isolation:isolate}
-.routemap[hidden]{display:none}
+.app .leaflet-container{font:inherit;-webkit-tap-highlight-color:transparent}
+.app .leaflet-control-attribution{font-size:10px}
+.routemap,.listmap{position:relative;height:240px;margin-top:var(--sp3);border-radius:var(--rm);overflow:hidden;border:1px solid var(--line);background:#e8efe9;isolation:isolate}
+.routemap[hidden],.listmap[hidden]{display:none}
+.listmap{margin-top:0;height:220px}
+/* 구간 상세 맨 위 지도 : 화면 폭을 꽉 채운다 */
+.hero-map{position:relative;height:260px;margin:calc(var(--sp4) * -1) calc(var(--gut) * -1) 0;background:#e8efe9;border-bottom:1px solid var(--line);isolation:isolate;overflow:hidden}
+.hero-map[hidden]{display:none}
+.hero-map[hidden] + .where{margin-top:0}
+.hero-cap{position:absolute;left:var(--sp3);top:var(--sp3);z-index:500;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.95);box-shadow:0 1px 4px rgba(16,24,20,.18);font-size:var(--fs-cap);font-weight:600;color:var(--tx);pointer-events:none}
+/* 불러오는 자리 표시 (반짝이는 바탕) */
+.skel{background:linear-gradient(100deg,#e8efe9 30%,#f5f9f6 50%,#e8efe9 70%);background-size:300% 100%;animation:shimmer 1.4s linear infinite}
+@keyframes shimmer{from{background-position:100% 0}to{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
+.app .leaflet-popup-content-wrapper{border-radius:var(--rm)}
+.app .leaflet-popup-content{margin:10px 14px;font-size:var(--fs-cap);line-height:1.5}
 .pinmap{height:200px;margin-top:var(--sp3);border-radius:var(--rm);overflow:hidden;border:1px solid var(--line);isolation:isolate}
 .hzc{stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke;fill:var(--tx2)}
 .hzc.r1{fill:var(--r1)}.hzc.r2{fill:var(--r2)}.hzc.r3{fill:var(--r3)}.hzc.r4{fill:var(--r4)}
@@ -104,3 +116,5 @@
 /* ---------- 데이터 관리 ---------- */
 .data-actions{display:flex;gap:var(--sp2);flex-wrap:wrap}
 .data-actions .btn{flex:1;min-width:140px;margin-top:var(--sp2)}
+
+.page > .detail-hd{margin-top:var(--sp4)}

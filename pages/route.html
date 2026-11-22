@@ -2,7 +2,16 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <link rel="icon" href="data:,">
+  <link rel="icon" type="image/png" href="../asset/icon-192.png">
+  <link rel="apple-touch-icon" href="../asset/icon-180.png">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Safe Drive">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Safe Drive · 경로 찾기</title>
   <link rel="stylesheet" href="../css/base.css">
@@ -19,8 +28,8 @@
     <p class="page-lead">출발지와 도착지를 넣으면 빠른 경로와 안전 경로를 비교해요</p>
 
     <section class="box route-box" aria-label="경로 입력">
-      <div class="fld"><span class="dot" aria-hidden="true"></span><input class="in" id="ro" type="search" placeholder="출발지" aria-label="출발지" autocomplete="off"></div>
-      <div class="fld"><span class="dot end" aria-hidden="true"></span><input class="in" id="rd" type="search" placeholder="도착지" aria-label="도착지" autocomplete="off"></div>
+      <div class="fld"><span class="dot" aria-hidden="true"></span><input class="in" id="ro" type="search" enterkeyhint="next" placeholder="출발지" aria-label="출발지" autocomplete="off"></div>
+      <div class="fld"><span class="dot end" aria-hidden="true"></span><input class="in" id="rd" type="search" enterkeyhint="go" placeholder="도착지" aria-label="도착지" autocomplete="off"></div>
       <button class="btn dk" id="goRoute" disabled>경로 비교 시작</button>
       <button class="me" id="useMe" type="button"><svg class="ico s" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22"/></svg>내 위치에서 출발</button>
     </section>

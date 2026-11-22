@@ -36,7 +36,8 @@ const ICON_PATH = {
   left: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v5"/>',
   right: '<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0-6 6v5"/>',
   uturn: '<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
-  flag: '<path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/>'
+  flag: '<path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/>',
+  share: '<path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>'
 };
 const ico = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON_PATH[n] || ''}</svg>`;
 
@@ -145,7 +146,7 @@ function buildShell() {
   /* 하단 탭바 (모바일) */
   const tb = $('.tabbar');
   if (tb) {
-    const tab = (id, label, icon, href) => `<a href="${href}" class="${TAB_ON[document.body.dataset.page] === id ? 'on' : ''}">${ico(icon)}${label}</a>`;
+    const tab = (id, label, icon, href) => { const on = TAB_ON[document.body.dataset.page] === id; return `<a href="${href}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}>${ico(icon)}${label}</a>`; };
     tb.setAttribute('aria-label', '하단 메뉴');
     tb.innerHTML = tab('home', '홈', 'home', HREF.home) + tab('route', '경로 찾기', 'route', HREF.route) + tab('list', '위험 구간', 'pin', HREF.list) + tab('my', '마이', 'user', HREF.my);
   }
@@ -155,6 +156,7 @@ function buildShell() {
   try { const m = sessionStorage.getItem('sd_flash'); if (m) { sessionStorage.removeItem('sd_flash'); toast(m); } } catch {}
 }
 buildShell();
+$$('.state').forEach(el => { if (!el.hasAttribute('aria-live')) el.setAttribute('aria-live', 'polite'); });   // 불러오는 중·오류 문구가 바뀌면 보조기기가 읽어 준다
 $$('.more').forEach(a => { a.innerHTML = ico('next'); });   // 더보기는 글자 대신 화살표 아이콘
 
 /* 서브 화면 뒤로가기 (로고는 항상 홈으로) */
@@ -173,7 +175,6 @@ document.body.appendChild(topBtn);
 addEventListener('scroll', () => topBtn.classList.toggle('show', scrollY > 400));
 topBtn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
 
-console.log('Safe Drive loaded —', document.body.dataset.page, '| state areas:', $$('.state').map(s => s.id));
 
 /* ---------- 경로 ---------- */
 const routeCard = (r, extra = '') => `<div class="card" data-href="${BASE}compare.html?origin=${encodeURIComponent(r.origin)}&destination=${encodeURIComponent(r.destination)}">
@@ -186,9 +187,12 @@ const driveUrl = (r, type) => `${BASE}drive.html?${pair(r.origin, r.destination)
 /* 경로를 만들 수 없을 때 표준 안내 */
 function failView(e, back = '../index.html') {
   const l = $('#state-loading'); if (l) l.classList.remove('on');
-  const host = $('main') || document.body;
-  host.insertAdjacentHTML('afterbegin', emptyState({ title: '경로를 만들 수 없어요',
-    tips: [esc(e && e.message ? e.message : String(e)), '출발지와 도착지를 확인하고 다시 시도해 주세요'], actions: [{ href: back, label: '다시 입력하기' }] }));
+  const html = emptyState({ title: '경로를 만들 수 없어요',
+    tips: [esc(e && e.message ? e.message : String(e)), '출발지와 도착지를 확인하고 다시 시도해 주세요'], actions: [{ id: 'retryRoute', label: '다시 시도' }, { href: back, label: '다시 입력하기' }] });
+  const title = $('main .route-title'), bar = $('#favRow');             // 제목 아래에 놓는다 (제목이 오류 카드 뒤로 밀리지 않게)
+  if (bar) bar.hidden = true;                                           // 경로를 못 만들었으면 즐겨찾기·공유 버튼은 숨김
+  if (title) title.insertAdjacentHTML('afterend', html); else ($('main') || document.body).insertAdjacentHTML('afterbegin', html);
+  const retry = $('#retryRoute'); if (retry) retry.addEventListener('click', () => location.reload());
   console.warn('[경로 실패]', e);
 }
 /* 사고 다발지점 요약 문구 (실제 사고 건수 합) */
