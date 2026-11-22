@@ -191,3 +191,6 @@
 .cand-l li > div.r{text-align:right;align-items:flex-end}
 .cand-l li b{font-size:var(--fs-body)}
 .cand-l li.on b{color:var(--brand-d)}
+
+.pnt-none{margin-top:var(--sp3);text-align:center}
+.pnt-none[hidden]{display:none}

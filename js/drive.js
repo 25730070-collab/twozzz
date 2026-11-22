@@ -6,7 +6,7 @@ const o = q.get('origin'), d = q.get('destination');
 const type = q.get('type') === 'fast' ? 'fast' : 'safe';
 
 let res, route, total = 0, xy, car = { pos: [0, 0], head: 0 };
-let pos = 0, speedMult = 1, mode = 'sim', timer = null, voice = true, finished = false, view = 'follow';
+let pos = 0, speedMult = 1, mode = 'sim', timer = null, voice = true, finished = false, view = 'follow', headUp = true;
 let gpsId = null, off = 0, gpsSpeed = 0;
 let tm = null, tileGen = 0;                          // tm: 실제 지도(타일) 상태. 지도를 못 불러오면 null 이고 약식 경로 그림(SVG)을 쓴다
 const said = new Set(), hz = [];                      // hz[i].state: wait | near | done
@@ -24,16 +24,48 @@ function speak(text) {
   try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; speechSynthesis.speak(u); } catch {}
 }
 
-/* ---------- 실제 지도 (OpenStreetMap 타일) ---------- */
+/* ---------- 실제 지도 (OpenStreetMap 타일) ----------
+   '진행 방향이 위'(headUp): 실제 내비처럼 차는 늘 화면 위쪽을 보고, 지도가 차 방향에 맞춰 돈다.
+   화면보다 큰 정사각형 지도(#tmap)를 통째로 돌려서 어느 각도에서도 모서리가 비지 않게 하고, 차는 화면 아래쪽 ANCHOR 지점에 둔다.
+   전체 보기·다발지점 보기에서는 돌리지 않고 북쪽이 위인 지도로 보여 준다. 나침반 버튼으로 북쪽 고정을 고를 수 있다. */
 const CAR_SVG = '<svg viewBox="-14 -18 28 34" width="28" height="34" style="transform-origin:50% 50%"><polygon points="0,-16 11,12 0,6 -11,12" fill="#2b6fff" stroke="#fff" stroke-width="2.5"/></svg>';
+const ANCHOR = 0.62;                                          // 차가 놓이는 세로 위치 (0=맨 위, 1=맨 아래) — 앞길을 더 보여 주려고 아래쪽
+const spin = () => view === 'follow' && headUp;                // 지도를 돌리는 상태
+const wrap = x => ((x % 360) + 540) % 360 - 180;               // 각도 차이를 -180~180 으로: 350°→10° 가 340° 를 거꾸로 돌지 않고 20° 만 돈다
+
+function layoutTiles() {
+  const box = $('.navmap'), el = $('#tmap'); if (!box || !el) return;
+  const w = box.clientWidth, h = box.clientHeight;
+  if (!spin() || !w || !h) { el.classList.remove('rot'); ['width', 'height', 'left', 'top', 'transform'].forEach(k => { el.style[k] = ''; }); return; }
+  const cx = w / 2, cy = h * ANCHOR;
+  const D = Math.ceil(2 * Math.hypot(Math.max(cx, w - cx), Math.max(cy, h - cy)));   // 차를 중심으로 어느 각도로 돌려도 화면 네 모서리가 덮이는 크기
+  el.classList.add('rot');
+  Object.assign(el.style, { width: D + 'px', height: D + 'px', left: (cx - D / 2) + 'px', top: (cy - D / 2) + 'px' });
+}
+
+/* 크기·회전을 맞춘다. 돌리는 상태가 바뀔 때는 애니메이션 없이 한 번에 */
+function syncTiles() {
+  const sp = spin(), snap = sp !== tm.sp, ic = tm.car.getElement()?.firstChild, el = $('#tmap'), cp = $('#compassBtn');
+  tm.hd += wrap(car.head - tm.hd);                                       // 차 방향 (연속된 각도로 이어 가며 값만 갱신)
+  if (snap) { tm.sp = sp; tm.rot = sp ? tm.hd : 0; layoutTiles(); tm.map.invalidateSize({ animate: false }); }
+  else tm.rot += wrap((sp ? tm.hd : 0) - tm.rot);
+  const nodes = [el, ic, cp && cp.firstElementChild].filter(Boolean);
+  if (snap) nodes.forEach(n => { n.style.transition = 'none'; });
+  if (ic) ic.style.transform = `rotate(${tm.hd}deg)`;                    // 차 아이콘은 지도와 같은 각도만큼 돌려서, 지도가 돌아도 화면에서는 늘 위를 본다
+  if (el && sp) el.style.transform = `rotate(${-tm.rot}deg)`;
+  if (cp) { cp.hidden = view !== 'follow'; cp.firstElementChild.style.transform = `rotate(${-tm.rot}deg)`; }
+  if (snap) { void el?.offsetWidth; nodes.forEach(n => { n.style.transition = ''; }); }
+}
+
 async function initTiles() {
   const gen = ++tileGen, box = $('.navmap');
   if (tm) { tm.map.remove(); tm = null; $('#tmap')?.remove(); box.classList.remove('tiles'); }
   const el = document.createElement('div'); el.id = 'tmap'; box.prepend(el);
+  layoutTiles();                                                          // 지도를 만들기 전에 크기를 정해 둔다 (Leaflet 은 만들 때 크기를 잰다)
   const m = await createMap(el, { center: route.path[0], zoom: 17 });
   if (!m || gen !== tileGen) { if (!m) el.remove(); return; }
   const { L, map } = m;
-  const t = { L, map, view: null, hz: [] };
+  const t = { L, map, view: null, hz: [], sp: null, hd: 0, rot: 0 };
   L.polyline(route.path, { color: '#fff', weight: 14, opacity: .95, lineCap: 'round', lineJoin: 'round' }).addTo(map);      // 흰 테두리로 지도 위에서 경로가 또렷하게 보이게
   L.polyline(route.path, { color: '#5b8f7a', weight: 8, opacity: 1, lineCap: 'round', lineJoin: 'round' }).addTo(map);
   t.done = L.polyline([], { color: '#0b8457', weight: 8, lineCap: 'round', lineJoin: 'round' }).addTo(map);
@@ -44,8 +76,8 @@ async function initTiles() {
   map.invalidateSize(); paint();
 }
 function tilePaint(cp) {
+  syncTiles();
   tm.car.setLatLng(cp.pos);
-  const svgEl = tm.car.getElement()?.firstChild; if (svgEl) svgEl.style.transform = `rotate(${car.head}deg)`;
   const i = route.cum.findIndex(v => v > pos), k = i < 0 ? route.path.length : i;
   tm.done.setLatLngs(route.path.slice(0, k).concat([cp.pos]));
   tm.hz.forEach((c, j) => c.setStyle({ fillOpacity: hz[j] && hz[j].state === 'done' ? .35 : 1 }));
@@ -53,6 +85,18 @@ function tilePaint(cp) {
   else if (view === 'all' && tm.view !== 'all') tm.map.fitBounds(tm.L.latLngBounds(route.path), { padding: [30, 30], animate: false });
   tm.view = view;
 }
+
+/* ---------- 화면 꺼짐 방지 (주행 중 화면이 꺼지면 안내가 멈춘 것처럼 보이므로) ---------- */
+let wake = null;
+async function keepAwake(on) {
+  try {
+    if (!on) { const w = wake; wake = null; await w?.release(); return; }
+    if (!('wakeLock' in navigator) || wake) return;
+    wake = await navigator.wakeLock.request('screen');
+    wake.addEventListener('release', () => { wake = null; });
+  } catch { wake = null; }                                                 // 지원하지 않거나 거부되면 조용히 넘어간다
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && (mode === 'gps' || timer) && !finished) keepAwake(true); });
 
 /* ---------- 준비 ---------- */
 function setup() {
@@ -160,7 +204,7 @@ function update() {
 }
 
 function finish() {
-  finished = true; stop();
+  finished = true; stop(); keepAwake(false);
   hz.forEach(x => { x.state = 'done'; });
   paint();
   $('#playBtn').textContent = '다시 시작';
@@ -171,12 +215,12 @@ function finish() {
 
 /* ---------- 시뮬레이션 ---------- */
 function tick() { pos = Math.min(pos + (total / 60) * speedMult * 0.1, total); update(); }
-function stop() { clearInterval(timer); timer = null; }
+function stop() { clearInterval(timer); timer = null; if (mode !== 'gps') keepAwake(false); }
 function play() {
   if (mode === 'gps') return;
   if (finished) reset();
   if (timer) { stop(); $('#playBtn').textContent = '계속'; paint(); return; }
-  timer = setInterval(tick, 100);
+  timer = setInterval(tick, 100); keepAwake(true);
   $('#playBtn').textContent = '일시정지';
 }
 function reset() {
@@ -191,13 +235,13 @@ function reset() {
 /* ---------- 실제 GPS ---------- */
 function startGps() {
   if (!navigator.geolocation) { $('#state-gps-denied').classList.add('on'); return setMode('sim'); }
-  stop(); reset(); $('#playBtn').textContent = 'GPS 추적 중';
+  stop(); reset(); $('#playBtn').textContent = 'GPS 추적 중'; keepAwake(true);
   gpsId = navigator.geolocation.watchPosition(onFix, e => {
     if (e.code === 1) { $('#state-gps-denied').classList.add('on'); setMode('sim'); }      // 권한 거부일 때만 시뮬레이션으로 복귀
     else $('#pvSpeed').textContent = 'GPS 신호 약함';                                          // 일시적인 신호 오류는 계속 추적
   }, { enableHighAccuracy: true });
 }
-function stopGps() { if (gpsId !== null) navigator.geolocation.clearWatch(gpsId); gpsId = null; }
+function stopGps() { if (gpsId !== null) navigator.geolocation.clearWatch(gpsId); gpsId = null; keepAwake(false); }
 
 async function onFix(p) {
   const ll = [p.coords.latitude, p.coords.longitude];
@@ -243,7 +287,7 @@ $('#pointList').addEventListener('click', e => {
   const it = e.target.closest('[data-i]'); if (!it) return;
   const h = hz[Number(it.dataset.i)]; if (!h) return;
   if (!tm) return void (location.href = segUrl(h.h.seg.segmentId));
-  view = 'free'; tm.view = 'free';
+  view = 'free'; tm.view = 'free'; syncTiles();                    // 회전을 풀고(북쪽이 위) 그 지점으로 이동
   tm.map.setView([h.h.seg.lat, h.h.seg.lng], 17, { animate: false });
   tm.hz.forEach((c, j) => c.setStyle(j === Number(it.dataset.i) ? { color: '#161616', weight: 4 } : { color: '#fff', weight: 2 }));
   $('#viewBtn').textContent = '따라가기';
@@ -270,7 +314,15 @@ $('#viewBtn').addEventListener('click', e => {
   view = view === 'follow' ? 'all' : 'follow'; if (tm) { tm.view = null; tm.hz.forEach(c => c.setStyle({ color: '#fff', weight: 2 })); }
   e.currentTarget.textContent = view === 'follow' ? '전체 보기' : '따라가기'; paint();
 });
-addEventListener('resize', () => { if (tm) tm.map.invalidateSize(); if (route) paint(); });
+$('#compassBtn').addEventListener('click', () => {
+  headUp = !headUp;
+  const b = $('#compassBtn');
+  b.setAttribute('aria-pressed', String(headUp));
+  b.setAttribute('aria-label', headUp ? '지도 방향: 진행 방향이 위예요. 누르면 북쪽을 위로 고정해요' : '지도 방향: 북쪽이 위예요. 누르면 진행 방향을 위로 돌려요');
+  toast(headUp ? '진행 방향이 위로 가요' : '북쪽이 위로 고정돼요');
+  if (route) paint();
+});
+addEventListener('resize', () => { if (tm) { layoutTiles(); tm.map.invalidateSize(); } if (route) paint(); });
 
 if (!o || !d) { $('main').innerHTML = emptyState({ title: '출발지와 도착지를 입력해 주세요', actions: [{ href: '../index.html', label: '홈으로' }] }); }
 else { $('#state-loading').classList.add('on'); buildRoutes(o, d).then(r => { res = r; route = r[type]; $('#state-loading').classList.remove('on'); setup(); }).catch(failView); }

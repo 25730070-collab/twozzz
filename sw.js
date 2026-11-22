@@ -3,7 +3,7 @@
    · 같은 사이트의 파일은 '네트워크 우선' : 연결되면 항상 최신 파일을 받아 저장하고(새 버전이 바로 보임), 끊기거나 4초 넘게 응답이 없으면 저장본을 쓴다.
    · 다른 사이트(카카오 길찾기·장소 검색, 지도 타일, Leaflet)는 건드리지 않는다. 그래서 오프라인에서는 경로 만들기와 실제 지도 타일은 되지 않는다.
    · 파일을 추가하면 아래 SHELL 에 넣고 VERSION 을 올린다. */
-const VERSION = 'sd-v0.5-2';
+const VERSION = 'sd-v0.5-3';
 const SHELL = [
   './',
   'index.html',
@@ -25,6 +25,7 @@ const SHELL = [
   'css/components.css',
   'css/layout.css',
   'css/pages.css',
+  'js/account.js',
   'js/common.js',
   'js/compare.js',
   'js/config.js',
@@ -69,7 +70,8 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
-  if (new URL(req.url).origin !== location.origin) return;
+  const u = new URL(req.url);
+  if (u.origin !== location.origin || u.pathname.includes('/api/')) return;      // 회원 서버(/api/)의 응답은 저장하지 않는다 (로그인 정보가 오래된 채로 남으면 안 되므로)
   e.respondWith(networkFirst(req));
 });
 

@@ -8,6 +8,33 @@ if (user) {
   $('#profileBtn').dataset.action = 'logout';
 }
 
+/* 회원 서버 계정이면: 로그인이 아직 유효한지 확인하고, 회원 탈퇴를 보여 준다 */
+if (user && user.server) {
+  $('#withdrawRow').hidden = false;
+  $('#storeNote').textContent = '닉네임·이메일은 회원 서버에 저장돼요. 즐겨찾기 · 최근 검색 · 제보는 이 기기에만 저장돼요';
+  Account.me().catch(e => {                            // 만료·삭제된 계정이면 이 기기의 로그인 정보를 정리한다 (네트워크 오류일 땐 그대로 둔다)
+    if (e.status === 401) { Account.clearSession(); flash('로그인이 만료됐어요. 다시 로그인해 주세요'); location.reload(); }
+  });
+  const md = document.createElement('div'); md.className = 'modal'; md.id = 'withdrawModal'; md.setAttribute('role', 'dialog'); md.setAttribute('aria-modal', 'true'); md.setAttribute('aria-label', '회원 탈퇴 확인');
+  md.innerHTML = `<div class="modal-box"><h3>정말 탈퇴할까요?</h3><p class="mu">서버에 저장된 닉네임·이메일과 로그인 기록이 바로 삭제돼요. 되돌릴 수 없어요. 이 기기의 즐겨찾기·제보는 그대로 남아요.</p>
+    <p class="note err" id="wdErr" role="alert" hidden></p>
+    <div class="row"><button class="btn" id="wdNo">취소</button><button class="btn dk" id="wdYes">탈퇴하기</button></div></div>`;
+  document.body.appendChild(md);
+  const close = () => md.classList.remove('on');
+  $('#withdrawRow').addEventListener('click', e => { e.preventDefault(); $('#wdErr').hidden = true; md.classList.add('on'); $('#wdNo').focus(); });
+  $('#wdNo').addEventListener('click', close);
+  md.addEventListener('click', e => { if (e.target === md) close(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  $('#wdYes').addEventListener('click', async () => {
+    const b = $('#wdYes'); b.disabled = true;
+    try { await Account.withdraw(); Account.clearSession(); flash('탈퇴했어요. 서버의 계정 정보를 삭제했어요'); location.reload(); }
+    catch (e) {
+      if (e.status === 401) { Account.clearSession(); flash('이미 로그아웃된 상태예요'); return location.reload(); }
+      $('#wdErr').textContent = e.message; $('#wdErr').hidden = false; b.disabled = false;
+    }
+  });
+}
+
 const delBtn = (id, kind, label) => `<button class="chip del" data-id="${id}" data-kind="${kind}" aria-label="${label}">${ico('close', 's')}</button>`;
 
 /* 즐겨찾기 : 구간 데이터는 JSON에서 찾아 보여 준다 (JSON에서 사라진 구간은 '정보 없음' 카드) */

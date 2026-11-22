@@ -3,7 +3,9 @@
   "private": true,
   "description": "Safe Drive — 서울 교통사고 다발지점을 피해 가는 경로 안내 (정적 웹앱)",
   "scripts": {
-    "test": "node tests/e2e.mjs"
+    "test": "node tests/e2e.mjs",
+    "test:server": "node --test tests/server.test.mjs",
+    "serve": "node server/index.js"
   },
   "devDependencies": {
     "playwright": "^1.48.0"

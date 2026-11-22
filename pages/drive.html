@@ -35,6 +35,10 @@
       <svg id="map" viewBox="-600 -400 1200 800" preserveAspectRatio="xMidYMid slice"></svg>
       <div class="alert" id="alert"><b id="alertText"></b><span id="alertAdvice"></span></div>
       <button class="chip map-btn" id="viewBtn">전체 보기</button>
+      <button class="compass" id="compassBtn" type="button" aria-pressed="true" aria-label="지도 방향: 진행 방향이 위예요. 누르면 북쪽을 위로 고정해요" hidden>
+        <svg viewBox="-17 -17 34 34" width="38" height="38" aria-hidden="true"><circle r="15.5" fill="#fff" stroke="#cfd6d2"/><polygon points="0,-12 5.5,0 -5.5,0" fill="#161616"/><polygon points="0,12 5.5,0 -5.5,0" fill="#c9d1cc"/></svg>
+      </button>
+      <span class="osm-attr">© OpenStreetMap</span>
     </div>
 
     <div class="pv-stats">

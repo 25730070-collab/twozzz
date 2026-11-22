@@ -116,7 +116,17 @@ function toast(msg) {
 }
 const flash = msg => { try { sessionStorage.setItem('sd_flash', msg); } catch {} };
 
-function logout() {                                   // 서버 인증이 없으므로 이 기기의 가입 정보만 지운다 (즐겨찾기·제보는 그대로)
+/* 회원 서버 주소·로그인 토큰 (account.js 와 로그아웃이 같이 쓴다) */
+const TOKEN_KEY = 'sd_token';
+const apiBase = () => (typeof CONFIG !== 'undefined' && CONFIG.API_URL ? String(CONFIG.API_URL).replace(/\/+$/, '') : '');
+const getToken = () => { try { return localStorage.getItem(TOKEN_KEY); } catch { return null; } };
+
+function logout() {                                   // 이 기기의 로그인 정보를 지운다 (즐겨찾기·제보는 그대로). 서버 계정이면 서버의 로그인 기록도 함께 지운다
+  const tk = getToken();
+  if (tk) {
+    try { fetch(apiBase() + '/api/auth/logout', { method: 'POST', headers: { Authorization: 'Bearer ' + tk }, keepalive: true }).catch(() => {}); } catch {}
+    try { localStorage.removeItem(TOKEN_KEY); } catch {}
+  }
   store.remove(KEY.user);
   flash('로그아웃했어요');
   location.reload();
@@ -134,7 +144,7 @@ function buildShell() {
   addEventListener('keydown', e => { if (e.key === 'Escape') closeConfirm(); });
   /* 로그아웃 확인 */
   const md = document.createElement('div'); md.className = 'modal'; md.id = 'logoutModal'; md.setAttribute('role', 'dialog'); md.setAttribute('aria-modal', 'true'); md.setAttribute('aria-label', '로그아웃 확인');
-  md.innerHTML = `<div class="modal-box"><h3>로그아웃할까요?</h3><p class="mu">이 기기의 가입 정보만 지워져요. 즐겨찾기와 제보는 그대로 남아요.</p>
+  md.innerHTML = `<div class="modal-box"><h3>로그아웃할까요?</h3><p class="mu">이 기기의 로그인 정보가 지워져요. 즐겨찾기와 제보는 그대로 남아요.</p>
     <div class="row"><button class="btn" id="lgNo">취소</button><button class="btn dk" id="lgYes">로그아웃</button></div></div>`;
   document.body.appendChild(md);
   const openConfirm = () => { md.classList.add('on'); $('#lgNo').focus(); };
@@ -177,7 +187,7 @@ function buildInfoSheet() {
       <li>과거 사고 기록이라 지금의 위험이나 교통 상황을 알려 주지는 않아요.</li>
       <li>위험등급은 수집한 구간끼리 비교한 상대 등급이에요.</li>
       <li>구간 옆 J · A · U 표시는 데이터를 받은 방식이에요. J는 저장된 JSON 파일, A는 공공 API, U는 사용자 제보예요.</li>
-      <li>즐겨찾기 · 최근 검색 · 제보 · 가입 정보는 서버가 아니라 이 기기에만 저장돼요.</li>
+      <li>즐겨찾기 · 최근 검색 · 제보는 이 기기에만 저장돼요. 회원 서버가 연결된 경우에만 가입 정보(닉네임 · 이메일)가 서버에 저장되고, 탈퇴하면 삭제돼요.</li>
     </ul>
     <a class="btn" href="${BASE}data.html" style="margin-top:var(--sp4)">데이터 현황 보기</a></div>`;
   document.body.appendChild(sh);

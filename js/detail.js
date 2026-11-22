@@ -48,6 +48,12 @@ if (seg.pnt && seg.pnt.detail) {
   $('#pntBox').hidden = false;
 }
 
+else if (seg.source !== 'user') {                          // 사고 유형 칸이 없는 이유를 숨기지 않고 알려 준다
+  const n = $('#pntNone');
+  n.textContent = DATA_STATUS.pnt === 'fail' ? '사고 유형·인명 피해 데이터를 불러오지 못했어요' : '이 구간 가까이(150m 안)에 연결된 사고 유형·인명 피해 정보가 없어요';
+  n.hidden = false;
+}
+
 /* 출처 한 줄 (구간 데이터의 종류에 맞게) */
 $('#metaSum').textContent = seg.source === 'user'
   ? '사용자가 제보한 구간이에요. 확인되지 않은 정보일 수 있어요'
