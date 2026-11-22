@@ -166,3 +166,28 @@
 
 .skel-card{height:68px;border-radius:var(--rm);margin-bottom:var(--sp2)}
 .state .skel-card{text-align:left}
+
+.tip{background:var(--brand-t);color:var(--brand-d);border-radius:var(--rm);padding:var(--sp3) var(--sp4);margin:0 0 var(--sp4);font-size:var(--fs-cap);font-weight:600;line-height:1.5}
+.tip[hidden]{display:none}
+
+/* 장소 자동완성 목록 */
+.sug{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:60;margin:0;padding:var(--sp1);list-style:none;background:var(--pn);border:1px solid var(--line);border-radius:var(--rm);box-shadow:0 6px 20px rgba(16,24,20,.14);max-height:300px;overflow-y:auto}
+.sug[hidden]{display:none}
+.sug li{padding:10px var(--sp3);border-radius:var(--rs);cursor:pointer;min-height:44px}
+.sug li b{display:block;font-size:var(--fs-body);font-weight:600}
+.sug li span{display:block;font-size:var(--fs-cap);color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sug li.on,.sug li:active{background:var(--brand-t)}
+
+/* 비교한 후보 경로 (펼치기) */
+.cand{margin-top:var(--sp3);background:var(--pn);border:1px solid var(--line);border-radius:var(--rl)}
+.cand[hidden]{display:none}
+.cand summary{display:flex;align-items:center;min-height:48px;padding:0 var(--sp4);font-size:var(--fs-body);font-weight:600;color:var(--brand);cursor:pointer;list-style:none}
+.cand summary::-webkit-details-marker{display:none}
+.cand summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid var(--tx2);border-bottom:2px solid var(--tx2);transform:rotate(45deg);transition:transform .15s}
+.cand[open] summary::after{transform:rotate(-135deg)}
+.cand-l{list-style:none;margin:0;padding:0 var(--sp4) var(--sp2)}
+.cand-l li{display:flex;justify-content:space-between;gap:var(--sp3);padding:10px 0;border-top:1px solid var(--line)}
+.cand-l li > div{display:flex;flex-direction:column;min-width:0}
+.cand-l li > div.r{text-align:right;align-items:flex-end}
+.cand-l li b{font-size:var(--fs-body)}
+.cand-l li.on b{color:var(--brand-d)}

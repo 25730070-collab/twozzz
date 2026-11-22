@@ -43,6 +43,8 @@ if (seg.pnt && seg.pnt.detail) {
     || '<p class="mu">사고 유형 정보가 없어요</p>';
   $('#pntCas').innerHTML = PNT_SUM.map(([k, l]) => `<div><b>${dt[k] ?? 0}명</b><span class="mu">${l}</span></div>`).join('');
   $('#pntNote').textContent = `국토교통부 사고다발지점 「${p.name}」 기준 · ${p.year}년까지 과거 3년 · 개별 사고 ${dt.accidents}건 · 이 구간에서 약 ${p.distM}m`;
+  const tip = pntAdvice(seg), topName = types.length ? types[0][0].split(' · ').pop() : '';
+  if (tip) { $('#pntTip').textContent = `운전 팁 · ${tip} (가장 많은 사고 유형: ${topName})`; $('#pntTip').hidden = false; }
   $('#pntBox').hidden = false;
 }
 

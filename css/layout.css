@@ -74,3 +74,6 @@
 .info-list li > span{color:var(--tx2);font-size:var(--fs-cap);line-height:1.5}
 .info-list.plain li{display:block;padding:6px 0 6px 14px;position:relative;border:0;color:var(--tx2);font-size:var(--fs-cap);line-height:1.6}
 .info-list.plain li::before{content:"";position:absolute;left:2px;top:15px;width:4px;height:4px;border-radius:50%;background:var(--line2)}
+
+.offline{position:fixed;top:calc(var(--hd) + var(--st));left:50%;transform:translateX(-50%);width:100%;max-width:var(--w);z-index:var(--z-top);padding:8px var(--gut);background:#3a4540;color:#fff;font-size:var(--fs-cap);line-height:1.4;text-align:center}
+.offline[hidden]{display:none}

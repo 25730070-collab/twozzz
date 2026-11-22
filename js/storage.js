@@ -1,5 +1,5 @@
 /* storage.js — LocalStorage (사용자 상태 전용: 즐겨찾기 · 최근검색 · 제보 · 가입 정보) */
-const KEY = { recent: 'sd_recent', fav: 'sd_favorites', user: 'sd_user', report: 'sd_reports' };
+const KEY = { recent: 'sd_recent', fav: 'sd_favorites', user: 'sd_user', report: 'sd_reports', places: 'sd_places' };
 
 const store = {
   get(key, seed) {

@@ -40,6 +40,20 @@ async function paintMap() {
   cmp.update(sel);
 }
 
+/* 비교한 후보 경로 전부와, 각각이 왜 안전 경로로 뽑히거나 빠졌는지 */
+function paintCandidates() {
+  const F = res.fast, list = res.candidates || [];
+  if (!list.length) return;
+  let nb = 0, nd = 0;
+  const why = c => c.isFast && c.isSafe ? '빠른 경로 · 안전 경로' : c.isSafe ? '안전 경로로 선택' : c.isFast ? '빠른 경로' : c.over ? `시간 초과 (${res.limitMinutes}분 넘음)` : c.score >= F.score ? '사고가 줄지 않음' : '더 안전한 후보가 있음';
+  $('#candList').innerHTML = list.map(c => {
+    const name = c.via ? `우회 경로 ${++nd}` : `기본 경로 ${++nb}`;
+    return `<li class="${c.isSafe ? 'on' : ''}"><div><b>${name}</b><span class="mu">${c.minutes}분 · ${c.km}km</span></div>
+      <div class="r"><b>${c.hazards}곳 · ${c.score}건</b><span class="mu">${why(c)}</span></div></li>`;
+  }).join('');
+  $('#candBox').hidden = false;
+}
+
 async function run() {
   $('#summary').textContent = `${o} → ${d}`;
   $('#state-loading').classList.add('on');
@@ -50,7 +64,7 @@ async function run() {
   const over = Math.round((CONFIG.SAFE_TIME_LIMIT - 1) * 100);
   if (res.same) {
     $('#verdict').innerHTML = F.hazards.length
-      ? `<b>더 안전한 대안 경로를 찾지 못했어요</b><p>길찾기 후보 ${res.count}개를 비교했지만, 빠른 경로보다 ${over}% 넘게 오래 걸리지 않는 선에서 이보다 사고가 적은 길은 없었어요. 이 경로는 사고 다발지점 ${F.hazards.length}곳(사고 ${F.score}건)을 지나요</p>`
+      ? `<b>더 안전한 대안 경로를 찾지 못했어요</b><p>길찾기 후보 ${res.count}개를 비교했지만, 빠른 경로보다 ${over}% 넘게 오래 걸리지 않는 선에서 이보다 사고가 적은 길은 없었어요. 이 경로는 사고 다발지점 ${F.hazards.length}곳(사고 ${F.score}건)을 지나요${res.fixed && res.fixed.n ? `. 그중 ${res.fixed.n}곳(사고 ${res.fixed.score}건)은 출발지·도착지 300m 안에 있어 어떤 길로 가도 피하기 어려워요` : ''}</p>`
       : '<b>지나는 사고 다발지점이 없어요</b><p>이 경로 주변에는 데이터에 등록된 사고 다발지점이 없어요</p>';
   } else {
     const dh = F.hazards.length - S.hazards.length, ds = F.score - S.score;
@@ -64,6 +78,7 @@ async function run() {
   $('#verdict').hidden = false;
   $('#basis').textContent = `안전 경로는 빠른 경로보다 ${over}% 넘게 오래 걸리지 않는 후보 중, 지나는 사고 다발지점의 사고 건수가 가장 적은 경로예요. 길찾기 후보 ${res.count}개${res.detourCount ? `(위험 지점을 피해 경유지를 둔 우회 경로 ${res.detourCount}개 포함)` : ''}를 비교했어요. 공공 사고 데이터 기준이며 안전을 보장하지는 않아요`;
   $('#basis').hidden = false;
+  paintCandidates();
   paintMap();
 
   const worst = [...F.hazards, ...S.hazards.filter(h => !F.hazards.some(x => x.seg.segmentId === h.seg.segmentId))].sort((a, b) => b.seg.accidentCount - a.seg.accidentCount).slice(0, 3);

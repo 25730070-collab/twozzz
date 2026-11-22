@@ -147,9 +147,10 @@ function update() {
     if (x.state === 'wait' && dist <= CONFIG.ALERT_M && dist > -50) {
       x.state = 'near';
       $('#alertText').textContent = `${fmtDist(Math.max(dist, 0))} 앞 사고 다발지점 · ${s.roadName}`;
-      $('#alertAdvice').textContent = `${isNil(s.year) ? '' : s.year + '년 기준 '}사고 ${s.accidentCount}건`;
+      const tip = pntAdvice(s);                                    // 가장 많은 사고 유형에 맞춘 주의 안내 (없으면 생략)
+      $('#alertAdvice').textContent = `${isNil(s.year) ? '' : s.year + '년 기준 '}사고 ${s.accidentCount}건${tip ? ' · ' + tip : ''}`;
       $('#alert').dataset.lv = s.riskLevel;
-      speak(`${s.roadName}, 사고 다발지점입니다. 주의하세요.`);
+      speak(`${s.roadName}, 사고 다발지점입니다. ${tip || '주의하세요'}.`);
       if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
     }
     if (x.state !== 'done' && dist < -50) x.state = 'done';

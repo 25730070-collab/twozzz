@@ -28,7 +28,24 @@ function apiMessage(e) {
 const auth = () => ({ Authorization: `KakaoAK ${CONFIG.KAKAO_REST_KEY}` });
 
 /* ---------- 장소 → 좌표 ---------- */
+/* 자동완성에서 고른 장소는 좌표를 이 기기에 기억해 둔다 (같은 이름을 다시 검색해서 다른 곳이 잡히는 일을 막는다) */
+function rememberPlace(name, ll) {
+  const m = store.get(KEY.places, {}); delete m[name]; m[name] = ll;
+  const keys = Object.keys(m); if (keys.length > 60) delete m[keys[0]];
+  store.set(KEY.places, m);
+}
+const recalledPlace = name => { const m = store.get(KEY.places, {}), v = m && m[name]; return Array.isArray(v) && v.length === 2 ? v : null; };
+
+/* 자동완성 후보 (키가 없으면 빈 목록) */
+async function searchPlaces(q, size = 6) {
+  if (!LIVE()) return [];
+  const j = await http('GET', `${CONFIG.LOCAL_SEARCH_URL}?query=${encodeURIComponent(q)}&size=${size}`, { headers: auth() });
+  return (j.documents || []).map(d => ({ name: d.place_name, addr: d.road_address_name || d.address_name || '', ll: [Number(d.y), Number(d.x)] }));
+}
+
 async function resolvePlace(name) {
+  const known = name !== '내 위치' && recalledPlace(name);
+  if (known) return { name, ll: known };
   if (name === '내 위치') {
     return new Promise((ok, no) => navigator.geolocation
       ? navigator.geolocation.getCurrentPosition(p => ok({ name, ll: [p.coords.latitude, p.coords.longitude] }), () => no(new Error('위치 권한이 없어 내 위치를 쓸 수 없어요')), { enableHighAccuracy: true, timeout: 8000 })
@@ -157,13 +174,18 @@ async function liveRoutes(oName, dName, onStage, opts = {}) {
     fast: { ...fast, type: 'fast' }, safe: { ...safe, type: 'safe' },
     same: !better.length,
     count: routes.length, baseCount, detourCount: routes.length - baseCount,
+    /* 비교한 후보 전부 (화면의 '비교한 후보 경로 보기'용) */
+    candidates: routes.map(r => ({ minutes: r.minutes, km: r.km, hazards: r.hazards.length, score: r.score, via: r.via, over: r.minutes > limit, isFast: r === fast, isSafe: r === safe })).sort((a, b) => a.minutes - b.minutes || a.score - b.score),
+    limitMinutes: Math.floor(limit * 10) / 10,
+    /* 출발지·도착지 300m 안의 다발지점은 어떤 길로 가도 가까이 지나게 되어 피하기 어렵다 */
+    fixed: (() => { const total = fast.cum[fast.cum.length - 1], f = fast.hazards.filter(h => h.at <= 300 || h.at >= total - 300); return { n: f.length, score: f.reduce((a, h) => a + h.seg.accidentCount, 0) }; })(),
     origin: o.name, destination: d.name
   };
 }
 
 /* ---------- 진입점: 같은 출발·도착은 10분간 세션에 캐시 (API 호출 절약) ---------- */
 async function buildRoutes(oName, dName, onStage) {
-  const key = `sd_rt4|${oName}|${dName}`;
+  const key = `sd_rt5|${oName}|${dName}`;
   try { const c = JSON.parse(sessionStorage.getItem(key) || 'null'); if (c && Date.now() - c.t < 600000) return c.v; } catch {}
   const v = await liveRoutes(oName, dName, onStage);
   try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), v })); } catch {}

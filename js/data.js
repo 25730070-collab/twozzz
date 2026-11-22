@@ -40,6 +40,24 @@ function pntBrief(s) {
   return parts.join(' · ');
 }
 
+/* 가장 많은 사고 유형에 맞춘 한 줄 주의 안내.
+   유형 이름(국토교통부 분류)에 들어 있는 낱말로만 찾고, 맞는 게 없으면 빈 문자열을 돌려 준다.
+   유형은 데이터 값이고, 안내 문구는 일반적인 안전 운전 수칙이다 */
+const TYPE_ADVICE = [
+  [/횡단|보도|사람/, '보행자를 주의하세요'],
+  [/후미|추돌/, '앞차와 간격을 넓히세요'],
+  [/측면|직각|교차/, '교차로에서 좌우를 살피세요'],
+  [/정면/, '마주 오는 차량에 주의하세요'],
+  [/전도|전복|단독|이탈|공작물/, '속도를 줄이세요']
+];
+function pntAdvice(s) {
+  const p = s && s.pnt; if (!p || !p.detail) return '';
+  const top = Object.entries(p.detail.types || {}).sort((a, b) => b[1] - a[1])[0];
+  if (!top) return '';
+  const hit = TYPE_ADVICE.find(([re]) => re.test(top[0]));
+  return hit ? hit[1] : '';
+}
+
 async function loadHazards() {
   if (_hazards) return _hazards;
   const prefix = document.body.dataset.page === 'home' ? 'data/' : '../data/';

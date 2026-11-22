@@ -128,7 +128,6 @@ function buildShell() {
   const hd = $('.app-header');
   if (hd) {
     hd.innerHTML = `<a class="logo" href="${HOME_URL}" aria-label="Safe Drive 홈"><span class="logo-mark">${ico('route')}</span>Safe Drive</a>
-      <button class="hd-btn" id="infoBtn" data-info aria-label="데이터 안내" title="데이터 안내">${ico('info')}</button>
       ${user ? `<button class="hd-btn on" id="authBtn" aria-label="로그아웃" title="${esc(user.nickname)} · 로그아웃">${ico('logout')}</button>`
              : `<a class="hd-btn" id="authBtn" href="${HREF.signup}" aria-label="로그인·가입" title="로그인·가입">${ico('login')}</a>`}`;
   }
@@ -233,3 +232,15 @@ function failView(e, back = '../index.html') {
 }
 /* 사고 다발지점 요약 문구 (실제 사고 건수 합) */
 const hazardSum = st => st.hazards.length ? `사고 다발지점 ${st.hazards.length}곳 · 사고 ${st.score}건` : '지나는 사고 다발지점 없음';
+
+/* ---------- 오프라인 지원 : 서비스 워커 등록 + 오프라인 안내 띠 (https 또는 localhost 에서만 동작) ---------- */
+if ('serviceWorker' in navigator && window.isSecureContext) {                        // https · localhost · 127.0.0.1 에서만
+  addEventListener('load', () => navigator.serviceWorker.register((document.body.dataset.base ? '' : '../') + 'sw.js').catch(() => {}));
+}
+(() => {
+  const bar = document.createElement('div'); bar.className = 'offline'; bar.setAttribute('role', 'status'); bar.hidden = true;
+  bar.textContent = '오프라인이에요 · 저장된 사고 데이터는 볼 수 있고, 경로는 연결되면 만들 수 있어요';
+  document.body.appendChild(bar);
+  const sync = () => { bar.hidden = navigator.onLine; };
+  addEventListener('online', sync); addEventListener('offline', sync); sync();
+})();
