@@ -46,14 +46,15 @@
 
     <div class="state" id="state-loading"><p class="mu">경로를 불러오는 중…</p></div>
     <div class="state" id="state-reroute"><p class="note err" id="rerouteText"></p></div>
-    <div class="state" id="state-gps-denied"><p class="note err">위치 권한이 없어 GPS를 쓸 수 없어요. 시뮬레이션으로 돌아가요</p></div>
+    <div class="state" id="state-gps-denied"><p class="note err">위치 권한이 없어 GPS를 쓸 수 없어요. 연습 모드로 돌아가요</p></div>
 
     <div class="nav-opts" id="modeBox">
       <span class="mu">위치</span>
-      <button class="chip on" data-mode="sim">시뮬레이션</button>
+      <button class="chip on" data-mode="sim">연습</button>
       <button class="chip" data-mode="gps">실제 GPS</button>
       <button class="chip on grow" id="voiceBtn"></button>
     </div>
+    <p class="mu" id="simNote" style="margin-top:var(--sp2)">연습 모드예요. 경로 길이와 상관없이 약 1분 안에 훑어 보는 가상 주행이라 음성은 나오지 않아요. 음성 안내는 실제 GPS에서 나와요</p>
     <div class="nav-opts" id="speedBox">
       <span class="mu">속도</span>
       <button class="chip on" data-speed="1">1배</button>
@@ -72,10 +73,6 @@
     </section>
   </main>
 
-  <footer class="foot">
-    출처 · 도로교통공단 지자체별 교통사고 다발지역<br>
-    데이터에 없는 곳이 안전하다는 뜻은 아니에요
-  </footer>
 
   <div class="cta-bar">
     <button class="btn" id="resetBtn">처음부터</button>

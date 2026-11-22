@@ -1,5 +1,6 @@
 /* drive.js — 안내(내비) 화면: 경로 지도 · 회전 안내 · 위험 구간 알림 · 재탐색
-   모드: 시뮬레이션(가상 위치) / 실제 GPS(폰 위치). 위치가 바뀔 때마다 update()가 같은 로직으로 안내한다. */
+   모드: 연습(가상 위치, 경로 길이와 상관없이 약 1분에 훑어 보기 → 음성 없음) / 실제 GPS(폰 위치 → 음성 안내).
+   위치가 바뀔 때마다 update()가 같은 로직으로 안내한다. */
 const q = qs();
 const o = q.get('origin'), d = q.get('destination');
 const type = q.get('type') === 'fast' ? 'fast' : 'safe';
@@ -19,7 +20,7 @@ const NS = 'http://www.w3.org/2000/svg';
 const svg = $('#map');
 
 function speak(text) {
-  if (!voice || !('speechSynthesis' in window)) return;
+  if (mode !== 'gps' || !voice || !('speechSynthesis' in window)) return;   // 연습은 속도·길이가 실제와 달라 말과 화면이 어긋나므로 음성은 실제 GPS에서만
   try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; speechSynthesis.speak(u); } catch {}
 }
 
@@ -120,7 +121,7 @@ function paint() {
   const left = Math.max(1 - pos / total, 0);
   $('#pvLeft').textContent = `${(total * left / 1000).toFixed(1)}km`;
   $('#pvEta').textContent = `${Math.round(route.minutes * left)}분`;
-  $('#pvSpeed').textContent = mode === 'gps' ? `${Math.round(gpsSpeed)}km/h` : (timer ? `가상 ×${speedMult}` : '정지');
+  $('#pvSpeed').textContent = mode === 'gps' ? `${Math.round(gpsSpeed)}km/h` : (timer ? `연습 ×${speedMult}` : '정지');
   $('#pvPassed').textContent = `${hz.filter(x => x.state === 'done').length}/${hz.length}`;
 
   hz.forEach((x, i) => {
@@ -232,6 +233,7 @@ function setMode(m) {
   mode = m;
   $$('#modeBox [data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
   $('#speedBox').hidden = m === 'gps';
+  $('#voiceBtn').hidden = m !== 'gps'; $('#simNote').hidden = m === 'gps';   // 음성 버튼은 실제 GPS에서만 보인다
   if (m === 'gps') startGps(); else { stopGps(); reset(); }
 }
 
@@ -262,7 +264,7 @@ $('#voiceBtn').addEventListener('click', () => {
   voice = !voice; paintVoice();
   if (!voice) try { speechSynthesis.cancel(); } catch {}
 });
-paintVoice();
+paintVoice(); $('#voiceBtn').hidden = true;     // 처음은 연습 모드
 $('#viewBtn').addEventListener('click', e => {
   view = view === 'follow' ? 'all' : 'follow'; if (tm) { tm.view = null; tm.hz.forEach(c => c.setStyle({ color: '#fff', weight: 2 })); }
   e.currentTarget.textContent = view === 'follow' ? '전체 보기' : '따라가기'; paint();

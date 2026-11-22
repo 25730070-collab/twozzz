@@ -118,3 +118,5 @@
 .data-actions .btn{flex:1;min-width:140px;margin-top:var(--sp2)}
 
 .page > .detail-hd{margin-top:var(--sp4)}
+
+.menu-row.static{cursor:default}

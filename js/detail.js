@@ -43,8 +43,13 @@ if (seg.pnt && seg.pnt.detail) {
     || '<p class="mu">사고 유형 정보가 없어요</p>';
   $('#pntCas').innerHTML = PNT_SUM.map(([k, l]) => `<div><b>${dt[k] ?? 0}명</b><span class="mu">${l}</span></div>`).join('');
   $('#pntNote').textContent = `국토교통부 사고다발지점 「${p.name}」 기준 · ${p.year}년까지 과거 3년 · 개별 사고 ${dt.accidents}건 · 이 구간에서 약 ${p.distM}m`;
-  $('#pntBox').hidden = false; $('#pntSrc').hidden = false;
+  $('#pntBox').hidden = false;
 }
+
+/* 출처 한 줄 (구간 데이터의 종류에 맞게) */
+$('#metaSum').textContent = seg.source === 'user'
+  ? '사용자가 제보한 구간이에요. 확인되지 않은 정보일 수 있어요'
+  : '사고 건수 출처 · 도로교통공단 지자체별 교통사고 다발지역. 위험등급은 수집한 구간의 사고 건수를 비교한 상대 등급이에요';
 
 /* 같은 구의 다른 구간 */
 const sameGu = (await loadHazards()).filter(s => s.segmentId !== seg.segmentId && guOf(s) === guOf(seg));
