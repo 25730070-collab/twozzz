@@ -8,7 +8,7 @@
   },
   "datasets": [
     { "id": "segments_static", "label": "위험 구간 (J)", "flag": "J", "file": "data/segments_static.json", "storage": "GitHub data/ 폴더", "origin": "한국도로교통공단 지자체별 교통사고 다발지역 (공공데이터포털 API로 수집)", "expectedCount": 100 },
-    { "id": "segments_api", "label": "위험 구간 (A)", "flag": "A", "file": "data/segments_api.json", "storage": "GitHub data/ 폴더", "origin": "같은 API, J에 없는 구간만", "expectedCount": 247 },
+    { "id": "segments_api", "label": "위험 구간 (A)", "flag": "A", "file": "data/segments_api.json", "storage": "GitHub data/ 폴더", "origin": "같은 API, J에 없는 구간만", "expectedCount": 397 },
     { "id": "reports_user", "label": "내 제보", "flag": "U", "file": "reports_user.json", "storage": "브라우저 LocalStorage (sd_reports)", "origin": "사용자가 제보 화면에서 입력 (검증 전)" },
     { "id": "favorites_user", "label": "즐겨찾기", "flag": "U", "file": "favorites_user.json", "storage": "브라우저 LocalStorage (sd_favorites)", "origin": "사용자가 저장한 구간·경로" },
     { "id": "recent_searches_user", "label": "최근 검색", "flag": "U", "file": "recent_searches_user.json", "storage": "브라우저 LocalStorage (sd_recent)", "origin": "사용자의 구간·경로 검색 기록 (최대 10건)" }

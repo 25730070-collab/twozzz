@@ -8,7 +8,7 @@
                                        ├─< reports         내 제보(위험 구간)
                                        └─< recent_searches 최근 검색
      email_codes      이메일 인증번호(가입·비밀번호 재설정). 회원과 이메일로만 이어진다(가입 전에도 쓰므로 FK 없음)
-     segments         공공데이터 위험 구간 347건 (배치 작업 tools/batch_sync.mjs 가 채운다)
+     segments         공공데이터 위험 구간(J·A) (배치 작업 tools/batch_sync.mjs 가 채운다)
      batch_runs       배치 실행 기록
 
    키 규칙: 안쪽 id(id)는 순번(AUTO_INCREMENT)이고 밖으로 내보내지 않는다. 밖에는 public_id(무작위 문자열)만 쓴다. */

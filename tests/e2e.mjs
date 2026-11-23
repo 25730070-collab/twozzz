@@ -10,6 +10,11 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const FX = path.join(ROOT, 'tests', 'fixtures');
+/* ---------- 시험 기준 데이터: 저장소의 실제 data/*.json 을 읽어 기대값을 계산한다 (데이터를 새로 받아도 시험이 깨지지 않게) ---------- */
+const DJ = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'segments_static.json'), 'utf8')), DA = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'segments_api.json'), 'utf8'));
+const DALL = [...DJ, ...DA], LATEST = Math.max(...DALL.map(r => r.year)), N_LATEST = DALL.filter(r => r.year === LATEST).length;
+const TS = DJ.find(r => r.year === LATEST) || DALL.find(r => r.year === LATEST), TSID = TS.segmentId;      // 구간 상세 시험에 쓰는 구간 (최신 연도)
+
 const MIME = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.webmanifest': 'application/manifest+json' };
 
 /* ---------- 정적 서버 ---------- */
@@ -38,7 +43,7 @@ async function mkContext(browser, { stub = false, width = 393, keyOk = true, dir
   const ctx = await browser.newContext({ viewport: { width, height: 852 }, ...(geo ? { permissions: ['geolocation'], geolocation: { latitude: 37.5547, longitude: 126.9707 } } : {}) });
   const log = { local: [], dir: [], errs: [] }; ALL_LOGS.push(log);
   await ctx.route('**/js/config.local.js', r => r.fulfill({ contentType: 'text/javascript', body: keyOk ? "CONFIG.KAKAO_REST_KEY = 'TEST_KEY_NOT_REAL';" : '' }));
-  await ctx.route('**/data/pntfr_points.json', r => pnt ? r.fulfill({ contentType: 'application/json', body: fs.readFileSync(path.join(FX, 'pntfr_points.json')) }) : r.fulfill({ status: 404, body: 'not found' }));
+  await ctx.route('**/data/pntfr_points.json', r => pnt ? r.fulfill({ contentType: 'application/json', body: JSON.stringify(JSON.parse(fs.readFileSync(path.join(FX, 'pntfr_points.json'), 'utf8')).map(x => ({ ...x, lat: TS.lat + 0.0003, lng: TS.lng }))) }) : r.fulfill({ status: 404, body: 'not found' }));
   await ctx.route('**/data/speed_cameras.json', r => cams ? r.fulfill({ contentType: 'application/json', body: JSON.stringify(cams) }) : r.fulfill({ status: 404, body: 'not found' }));
   await ctx.route('**/dapi.kakao.com/**', r => {
     const q = decodeURIComponent(new URL(r.request().url()).searchParams.get('query')); log.local.push(q);
@@ -94,7 +99,7 @@ try {
     await p.click('.rt-card[data-type="fast"]');
     check('카드를 누르면 선택이 바뀌고 안내 링크도 바뀐다', (await p.getAttribute('#goDrive', 'href')).includes('type=fast'));
     const years = await p.evaluate(async () => { const r = await loadHazards(); return { ys: [...new Set(r.filter(x => x.source !== 'user').map(x => x.year))], all: (await loadAllHazards()).length, n: r.length }; });
-    check('위험 구간은 가장 최신 연도 하나(2023)로 통일된다 (전체 347건 중 75건)', years.ys.length === 1 && years.ys[0] === 2023 && years.n === 75 && years.all === 347, JSON.stringify(years));
+    check('위험 구간은 가장 최신 연도 하나로 통일된다 (전체 중 최신 연도만)', years.ys.length === 1 && years.ys[0] === LATEST && years.n === N_LATEST && years.all === DALL.length, JSON.stringify(years));
     check('지도가 설명·경로 선택보다 위에 있다', await p.evaluate(() => { const m = document.getElementById('cmpMap'), c = document.getElementById('routeCards'); return !!(m.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING); }));
     check('공유 버튼이 있다', await p.locator('#shareRoute').isVisible());
     const nBasis = Number(/후보 경로 (\d+)개/.exec(await p.textContent('#candBox summary'))[1]);
@@ -286,7 +291,7 @@ try {
   {
     const { ctx, mkPage } = await mkContext(await browser);
     const p = await mkPage();
-    await p.goto(`${B}pages/detail.html?seg=seg-2023-11650001`); await p.waitForTimeout(1200);
+    await p.goto(`${B}pages/detail.html?seg=${TSID}`); await p.waitForTimeout(1200);
     const adv = t => p.evaluate(x => pntAdvice({ pnt: { detail: { types: { [x]: 3, '기타': 1 } } } }), t);
     check('횡단 → 보행자', (await adv('차대사람 · 횡단중')) === '보행자를 주의하세요');
     check('후미추돌 → 앞차 간격', (await adv('차대차 · 후미추돌')) === '앞차와 간격을 넓히세요');
@@ -297,7 +302,7 @@ try {
     check('연결된 사고 유형이 있으면 안내 문구는 숨는다', await p.locator('#pntNone').isHidden());
     await p.goto(`${B}pages/detail.html?seg=api-2019-11305001`); await p.waitForTimeout(1000);
     check('가까이 연결된 지점이 없으면 이유를 알려 준다', (await p.locator('#pntNone').isVisible()) && (await p.textContent('#pntNone')).includes('연결된 사고 유형'));
-    await p.goto(`${B}pages/detail.html?seg=seg-2023-11650001`); await p.waitForTimeout(1000);
+    await p.goto(`${B}pages/detail.html?seg=${TSID}`); await p.waitForTimeout(1000);
     check('구간 상세에 운전 팁이 보인다(가짜 시험 데이터 연결)', (await p.locator('#pntTip').isVisible()) && (await p.textContent('#pntTip')).includes('보행자를 주의하세요'));
     await ctx.close();
   }
@@ -305,7 +310,7 @@ try {
   {
     const { ctx, mkPage } = await mkContext(await browser, { pnt: false });
     const p = await mkPage();
-    await p.goto(`${B}pages/detail.html?seg=seg-2023-11650001`); await p.waitForTimeout(1200);
+    await p.goto(`${B}pages/detail.html?seg=${TSID}`); await p.waitForTimeout(1200);
     check('사고 유형 파일이 없으면 "불러오지 못했어요"라고 알려 준다', (await p.locator('#pntNone').isVisible()) && (await p.textContent('#pntNone')).includes('불러오지 못했어요') && await p.locator('#pntBox').isHidden());
     await ctx.close();
   }
@@ -340,17 +345,17 @@ try {
   {
     const { ctx, mkPage } = await mkContext(await browser, { stub: true });
     const p = await mkPage();
-    await p.goto(`${B}pages/detail.html?seg=seg-2023-11650001`); await p.waitForTimeout(1200);
+    await p.goto(`${B}pages/detail.html?seg=${TSID}`); await p.waitForTimeout(1200);
     check('구간 상세: 지도가 맨 위(첫 번째)에 있다', await p.evaluate(() => document.querySelector('main').firstElementChild.id === 'heroMap') && await p.locator('#heroMap').isVisible());
     check('구간 상세: 좌표 대체 카드는 숨는다', await p.locator('#mapView').isHidden());
     await p.goto(`${B}pages/list.html`); await p.waitForTimeout(1200);
-    check('위험 구간 목록: 지도에 최신 연도(2023) 75곳이 점으로 찍힌다', (await p.evaluate(() => window.__lcalls.circle)) === 75);
+    check('위험 구간 목록: 지도에 최신 연도 구간 전부가 점으로 찍힌다', (await p.evaluate(() => window.__lcalls.circle)) === N_LATEST);
     await ctx.close();
   }
   {
     const { ctx, mkPage } = await mkContext(await browser);                       // 지도 라이브러리를 못 불러오는 상황
     const p = await mkPage();
-    await p.goto(`${B}pages/detail.html?seg=seg-2023-11650001`); await p.waitForTimeout(1200);
+    await p.goto(`${B}pages/detail.html?seg=${TSID}`); await p.waitForTimeout(1200);
     check('지도를 못 불러오면 좌표 안내 카드가 보인다', await p.locator('#heroMap').isHidden() && await p.locator('#mapView').isVisible());
     await ctx.close();
   }
@@ -367,7 +372,7 @@ try {
     await ctx.setOffline(true); await p.waitForTimeout(300);
     check('오프라인 안내 띠가 보인다', await p.locator('.offline').isVisible());
     await p.goto(`${B}pages/list.html`); await p.waitForTimeout(1200);
-    check('오프라인에서도 위험 구간 목록이 열린다', /75/.test(await p.textContent('#resultCount')));
+    check('오프라인에서도 위험 구간 목록이 열린다', new RegExp(String(N_LATEST)).test(await p.textContent('#resultCount')));
     await p.goto(`${B}index.html`); await p.waitForTimeout(1000);
     check('오프라인에서도 홈이 열린다', (await p.locator('#topList .card').count()) >= 5);
     await ctx.setOffline(false); await p.waitForTimeout(300);
@@ -379,7 +384,7 @@ try {
   {
     const { ctx, mkPage } = await mkContext(await browser, { stub: true });
     const p = await mkPage();
-    const pages = ['index.html', 'pages/route.html', 'pages/list.html', 'pages/my.html', 'pages/data.html', 'pages/detail.html?seg=seg-2023-11650001', 'pages/report.html', 'pages/signup.html',
+    const pages = ['index.html', 'pages/route.html', 'pages/list.html', 'pages/my.html', 'pages/data.html', `pages/detail.html?seg=${TSID}`, 'pages/report.html', 'pages/signup.html',
       'pages/compare.html?origin=A점&destination=B점', 'pages/preview.html?origin=A점&destination=B점', 'pages/drive.html?origin=A점&destination=B점&type=safe'];
     let footers = 0, header = 0;
     for (const u of pages) { await p.goto(B + u); await p.waitForTimeout(500); footers += await p.locator('.foot').count(); header += await p.locator('#infoBtn').count(); }
@@ -562,10 +567,10 @@ try {
     const [d2] = await Promise.all([p.waitForEvent('download'), p.click('.dl[data-id="segments_static"]')]);
     const [d3] = await Promise.all([p.waitForEvent('download'), p.click('.dl[data-id="segments_api"]')]);
     const [jj, ja] = [await read(d2), await read(d3)];
-    check('J · A 데이터 JSON 내려받기: 건수 100 · 247, 모두 source 가 맞다', jj.length === 100 && ja.length === 247 && jj.every(x => x.source === 'static') && ja.every(x => x.source === 'api'), `${jj.length} / ${ja.length}`);
+    check('J · A 데이터 JSON 내려받기: 건수가 저장 파일과 같고 모두 source 가 맞다', jj.length === DJ.length && ja.length === DA.length && jj.every(x => x.source === 'static') && ja.every(x => x.source === 'api'), `${jj.length} / ${ja.length}`);
     const [d4] = await Promise.all([p.waitForEvent('download'), p.click('#dlAll')]);
     const all = await read(d4);
-    check('전체 내려받기: manifest + 모든 데이터셋이 한 파일에 들어 있다', !!all.manifest?.exportedAt && all.reports_user.length === 2 && all.favorites_user.length === 1 && all.segments_static.length === 100 && all.segments_api.length === 247);
+    check('전체 내려받기: manifest + 모든 데이터셋이 한 파일에 들어 있다', !!all.manifest?.exportedAt && all.reports_user.length === 2 && all.favorites_user.length === 1 && all.segments_static.length === DJ.length && all.segments_api.length === DA.length);
     check('데이터 관리 화면에 예상 건수와 다르다는 경고가 없다', (await p.locator('#dsList .note.err').count()) === 0);
     /* 가져오기 : 삭제 → 되살리기 → 중복 건너뜀 → 잘못된 파일 */
     const fs_ = fs, tmp = os.tmpdir() + '/sd-user.json';

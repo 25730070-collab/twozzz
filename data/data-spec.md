@@ -14,7 +14,7 @@
 | meta | object | 아래 참고 | 관리용 |
 | casualtyCount 등 | number | 응답에 있을 때만: casualtyCount·deathCount·seriousCount·minorCount·injuryReportCount | 실제 |
 
-- 전체 = J 100건 + A 247건 (J와 A는 겹치지 않음, 같은 장소는 주소+좌표 기준 최근 연도 1건)
+- 전체 = J 100건 + A 397건 (2026-11-23 갱신: 2019~2025년, 497건) (J와 A는 겹치지 않음, 같은 장소는 주소+좌표 기준 최근 연도 1건)
 - 더미 데이터 없음. 최근 검색·즐겨찾기·제보는 사용자 상태(LocalStorage)이며 JSON 파일이 아님.
 
 ## meta (관리용 필드, 화면에 직접 보여주지 않음)

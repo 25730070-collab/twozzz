@@ -48,5 +48,5 @@ test('형식이 틀린 파일·잘못된 옵션은 오류', async () => {
 test('실제 data/segments_api.json 이 형식 검사를 통과하고 자기 자신과는 차이가 없다', async () => {
   const f = path.join(path.dirname(new URL(import.meta.url).pathname), '..', 'data', 'segments_api.json');
   const r = await main(['--old', f, '--new', f, '--report', path.join(tmp, 'r3.md')]);
-  assert.equal(r.d.unchanged, 247);
+  assert.equal(r.d.unchanged, JSON.parse(fs.readFileSync(f, 'utf8')).length);
 });
