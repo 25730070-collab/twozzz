@@ -31,9 +31,9 @@ badge.textContent = `${seg.riskLevel}등급`;
 $('#srcBadge').innerHTML = srcBadge(seg);
 
 /* 응답에 있을 때만 보이는 실제 부가 필드 (없으면 영역 자체를 숨김) */
-const EXTRA_LABEL = { casualtyCount: '사상자', deathCount: '사망자', seriousCount: '중상자', minorCount: '경상자', injuryReportCount: '부상신고자' };
+const EXTRA_LABEL = { casualtyCount: '사상자', deathCount: '사망자', seriousCount: '중상자', minorCount: '경상자', injuryReportCount: '부상신고' };
 const ex = Object.keys(EXTRA_LABEL).filter(k => !isNil(seg[k]));
-$('#extraList').innerHTML = ex.map(k => `<div><b>${seg[k]}명</b><span class="mu">${EXTRA_LABEL[k]}</span></div>`).join('');
+$('#extraList').innerHTML = ex.map(k => `<div><b>${seg[k]}<small>명</small></b><span class="mu">${EXTRA_LABEL[k]}</span></div>`).join('');
 $('#extraBox').hidden = ex.length === 0;
 
 /* 사고 유형 · 인명 피해 (국토교통부 사고다발지점, 구간 좌표 150m 안에서 가장 가까운 지점) */
@@ -41,7 +41,7 @@ if (seg.pnt && seg.pnt.detail) {
   const p = seg.pnt, dt = p.detail, types = Object.entries(dt.types || {}).sort((a, b) => b[1] - a[1]), top = types.length ? types[0][1] : 1;
   $('#pntTypes').innerHTML = types.slice(0, 6).map(([n, c]) => `<div class="tb"><span class="tn">${esc(n)}</span><span class="tv">${c}건</span><span class="bar"><i style="width:${Math.max(c / top * 100, 4)}%"></i></span></div>`).join('')
     || '<p class="mu">사고 유형 정보가 없어요</p>';
-  $('#pntCas').innerHTML = PNT_SUM.map(([k, l]) => `<div><b>${dt[k] ?? 0}명</b><span class="mu">${l}</span></div>`).join('');
+  $('#pntCas').innerHTML = PNT_SUM.map(([k, l]) => `<div><b>${dt[k] ?? 0}<small>명</small></b><span class="mu">${l}</span></div>`).join('');
   $('#pntNote').textContent = `국토교통부 사고다발지점 「${p.name}」 기준 · ${p.year}년까지 과거 3년 · 개별 사고 ${dt.accidents}건 · 이 구간에서 약 ${p.distM}m`;
   const tip = pntAdvice(seg), topName = types.length ? types[0][0].split(' · ').pop() : '';
   if (tip) { $('#pntTip').textContent = `운전 팁 · ${tip} (가장 많은 사고 유형: ${topName})`; $('#pntTip').hidden = false; }
