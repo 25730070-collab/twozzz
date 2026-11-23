@@ -1,0 +1,36 @@
+[
+ {
+  "afos_fid": 6649919,
+  "afos_id": "2020087",
+  "bjd_cd": "1111017500",
+  "spot_cd": "11110001",
+  "sido_sgg_nm": "서울특별시 종로구1",
+  "spot_nm": "서울특별시 종로구 숭인동(동묘앞역 인근)",
+  "occrrnc_cnt": 46,
+  "caslt_cnt": 58,
+  "dth_dnv_cnt": 0,
+  "se_dnv_cnt": 16,
+  "sl_dnv_cnt": 32,
+  "wnd_dnv_cnt": 10,
+  "geom_json": "(생략)",
+  "lo_crd": "127.015634326964",
+  "la_crd": "37.573022777180"
+ },
+ {
+  "afos_fid": 6649920,
+  "afos_id": "2020087",
+  "bjd_cd": "1111016400",
+  "spot_cd": "11110002",
+  "sido_sgg_nm": "서울특별시 종로구2",
+  "spot_nm": "서울특별시 종로구 창신동(동대문로터리흥인지문 인근)",
+  "occrrnc_cnt": 39,
+  "caslt_cnt": 53,
+  "dth_dnv_cnt": 0,
+  "se_dnv_cnt": 9,
+  "sl_dnv_cnt": 35,
+  "wnd_dnv_cnt": 9,
+  "geom_json": "(생략)",
+  "lo_crd": "127.009387346450",
+  "la_crd": "37.570663180962"
+ }
+]
