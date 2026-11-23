@@ -2,16 +2,16 @@
 
 /* ---------- 홈 ---------- */
 .home-grid{display:block}
-.hero{position:relative;overflow:hidden;border-radius:var(--rl);background:var(--brand-t);padding:var(--sp5) var(--sp4) 0}
+.hero{position:relative;border-radius:var(--rl);background:var(--brand-t);padding:var(--sp5) var(--sp4) var(--sp4)}
 .hero h1{font-size:var(--fs-h1);line-height:1.28;letter-spacing:-.8px;color:var(--tx)}
 .hero h1 em{font-style:normal;color:var(--brand)}
 .hero p{margin-top:var(--sp2);color:var(--tx2);font-size:var(--fs-body)}
-.hero svg{display:block;width:100%;height:auto;margin-top:var(--sp3)}
+.hero > svg{display:block;width:100%;height:auto;margin-top:var(--sp2);border-radius:var(--rm);overflow:hidden}
 .legend{display:flex;flex-wrap:wrap;gap:var(--sp3);padding:var(--sp2) 0 var(--sp4);font-size:var(--fs-cap);color:var(--tx2)}
 .legend i{display:inline-block;width:20px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
 .legend i.dash{background:repeating-linear-gradient(90deg,#8b938f 0 4px,transparent 4px 8px)}
 .legend i.dot{width:10px;height:10px;border-radius:50%;background:var(--r4)}
-.route-box{margin-top:var(--sp3);padding:var(--sp4)}
+.route-box{margin-top:var(--sp3);padding:var(--sp3);background:var(--pn);border-radius:var(--rl);box-shadow:0 2px 10px rgba(11,132,87,.12)}
 .route-box .fld{position:relative;margin-top:var(--sp2)}
 .route-box .fld:first-child{margin-top:0}
 .route-box .fld .in{margin-top:0;padding-left:44px}
@@ -168,7 +168,7 @@
 
 /* 화면 등장 효과 (v0.6): 카드·상자가 아래에서 살짝 올라오며 나타난다 (모션 줄이기 설정이면 꺼짐) */
 @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.hero,.route-box,.verdict,.rt-grid .rt-card,.list-box > .card:nth-child(-n+8),.box,.section{animation:rise .35s ease both}
+.hero,.verdict,.rt-grid .rt-card,.list-box > .card:nth-child(-n+8),.box,.section{animation:rise .35s ease both}
 .rt-grid .rt-card:nth-child(2),.list-box > .card:nth-child(2){animation-delay:.05s}
 .list-box > .card:nth-child(3){animation-delay:.1s}
 .list-box > .card:nth-child(4){animation-delay:.15s}
