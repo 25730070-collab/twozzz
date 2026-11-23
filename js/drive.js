@@ -32,9 +32,9 @@ function speak(text) {
    · 멀리(화면 위쪽)는 안개처럼 흐리게 덮는다. 타일은 가까운 곳만 불러오므로 불러오는 개수가 크게 늘지 않는다.
    전체 보기·다발지점 보기·북쪽 고정은 눕히지 않은 북쪽이 위인 지도다. 나침반 버튼으로 오간다. */
 const CAR_SVG = '<svg viewBox="-14 -18 28 34" width="28" height="34" style="transform-origin:50% 50%"><polygon points="0,-16 11,12 0,6 -11,12" fill="#2b6fff" stroke="#fff" stroke-width="2.5"/></svg>';
-const PITCH = 52, PERSP = 700;                                // 눕힌 각도(°)와 원근 거리(px). 각도가 클수록 더 눕고 멀리 보인다
+const PITCH = 45, PERSP = 700;                                // 눕힌 각도(°)와 원근 거리(px). 각도가 클수록 더 눕고 멀리 보인다
 const ANCHOR = 0.68;                                          // 차가 놓이는 세로 위치 (0=맨 위, 1=맨 아래) — 앞길을 많이 보여 주려고 아래쪽
-const FADE = 0.30;                                            // 화면 위쪽 이 비율은 안개로 덮는다(그 위는 타일을 불러오지 않아도 된다)
+const FADE = 0.30;                                            // (안개 높이는 css .navmap.tilt::after 와 맞춘다. 지도는 이제 화면 맨 위까지 덮는다)
 const spin = () => view === 'follow' && headUp;                // 지도를 돌리고 눕히는 상태
 const wrap = x => ((x % 360) + 540) % 360 - 180;               // 각도 차이를 -180~180 으로: 350°→10° 가 340° 를 거꾸로 돌지 않고 20° 만 돈다
 
@@ -50,10 +50,10 @@ function layoutTiles() {
   const w = box.clientWidth, h = box.clientHeight;
   box.style.setProperty('--anchor', ANCHOR);                                 // 화면에 고정된 차 그림(.carfix)의 세로 위치
   if (!spin() || !w || !h) { el.classList.remove('rot'); ['width', 'height', 'left', 'top', 'transform'].forEach(k => { el.style[k] = ''; }); return; }
-  const cx = w / 2, cy = h * ANCHOR, top = h * FADE;
+  const cx = w / 2, cy = h * ANCHOR, top = 0;                              // 화면 맨 위까지 지도가 빈틈없이 덮이게 (예전에는 안개 아래까지만 덮어서 위쪽에 지도 끝선이 보였다)
   let R = 0;                                                              // 차에서 '안개 아래 보이는 화면' 네 모서리까지 지도 위 거리 중 가장 먼 것
   for (const [sx, sy] of [[0, top], [w, top], [0, h], [w, h]]) { const [px, py] = planeOf(sx - cx, sy - cy); R = Math.max(R, Math.hypot(px, py)); }
-  const D = Math.min(Math.ceil(2 * R) + 8, 1800);                         // 어느 방향으로 돌려도 그 범위가 덮이는 정사각형 크기
+  const D = Math.min(Math.ceil(2 * R) + 8, 2400);                         // 어느 방향으로 돌려도 그 범위가 덮이는 정사각형 크기
   el.classList.add('rot');
   Object.assign(el.style, { width: D + 'px', height: D + 'px', left: (cx - D / 2) + 'px', top: (cy - D / 2) + 'px' });
 }

@@ -76,17 +76,18 @@ function drawCompare(m, F, S, same, onPick) {
   const all = items.flatMap(([, r]) => r.path);
   map.fitBounds(L.latLngBounds(all), { padding: [28, 28] });
   const api = {
-    update(sel) {
+    update(sel) {                                           // 고른 경로만 지도에 보여 준다 (안전 경로를 고르면 안전 경로, 빠른 경로를 고르면 빠른 경로)
       const pick = lines[sel] ? sel : Object.keys(lines)[0];
       Object.entries(lines).forEach(([type, o]) => {
         const on = type === pick;
-        o.casing.setStyle({ weight: on ? 10 : 7, opacity: on ? .95 : .6 });
-        o.line.setStyle({ weight: on ? 6 : 4, opacity: on ? 1 : .55 });
+        o.casing.setStyle({ weight: 10, opacity: on ? .95 : 0 });
+        o.line.setStyle({ weight: 6, opacity: on ? 1 : 0 });
+        if (o.casing.options) { o.casing.options.interactive = on; o.line.options.interactive = on; }
       });
       if (lines[pick].casing.bringToFront) { lines[pick].casing.bringToFront(); lines[pick].line.bringToFront(); }
-      dots.forEach(({ seg, c }) => {                         // 고른 경로가 지나지 않는 다발지점은 흐리게
+      dots.forEach(({ seg, c }) => {                         // 고른 경로가 지나는 다발지점만 보인다
         const on = lines[pick].ids.has(seg.segmentId);
-        c.setStyle({ fillOpacity: on ? 1 : .3, opacity: on ? 1 : .5 });
+        c.setStyle({ fillOpacity: on ? 1 : 0, opacity: on ? 1 : 0 });
         if (on && c.bringToFront) c.bringToFront();
       });
     }

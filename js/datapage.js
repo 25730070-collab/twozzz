@@ -21,7 +21,8 @@ function paint() {
   const u = ['reports_user', 'favorites_user', 'recent_searches_user'].reduce((n, id) => n + contentOf(id).length, 0);
   $('#dsStats').innerHTML = `<div><b>${by.J + by.A}</b><span class="mu">위험 구간</span></div><div><b>${by.J}</b><span class="mu">J 구간</span></div><div><b>${by.A}</b><span class="mu">A 구간</span></div><div><b>${u}</b><span class="mu">내 데이터</span></div>`;
 
-  $('#dsPnt').textContent = DATA_STATUS.pnt === 'ok' ? `사고 유형·인명 피해를 연결한 구간 ${DATA_STATUS.pntMatched}곳 (구간 좌표 150m 안의 국토교통부 사고다발지점)` : DATA_STATUS.pnt === 'fail' ? '사고 유형·인명 피해 파일(pntfr_points.json)을 불러오지 못했어요' : '';
+  const yr = DATA_STATUS.year ? `화면(목록·경로 비교·안내)은 가장 최신 연도인 ${DATA_STATUS.year}년 자료만 써요 (${rows.filter(r => +r.year === DATA_STATUS.year).length}곳). 아래 건수는 모든 연도를 합친 원본이에요. ` : '';
+  $('#dsPnt').textContent = yr + DATA_STATUS.pnt === 'ok' ? `사고 유형·인명 피해를 연결한 구간 ${DATA_STATUS.pntMatched}곳 (구간 좌표 150m 안의 국토교통부 사고다발지점)` : DATA_STATUS.pnt === 'fail' ? '사고 유형·인명 피해 파일(pntfr_points.json)을 불러오지 못했어요' : '';
 
   $('#dsList').innerHTML = manifest.datasets.map(d => {
     const n = contentOf(d.id).length;
@@ -91,6 +92,6 @@ $('#copyBtn').addEventListener('click', async () => {
 });
 $('#pasteBtn').addEventListener('click', () => { const v = $('#pasteBox').value.trim(); if (v) doImport(v); else { show('state-error'); $('#errorMsg').textContent = '붙여넣을 내용이 없어요'; } });
 
-Promise.all([fetch('../data/data_manifest.json').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }), loadHazards()])
+Promise.all([fetch('../data/data_manifest.json').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }), loadAllHazards()])
   .then(([m, r]) => { manifest = m; rows = r; $('#state-loading').classList.remove('on'); paint(); })
   .catch(err => { $('#state-loading').classList.remove('on'); $('main').insertAdjacentHTML('beforeend', emptyState({ title: '데이터 정보를 불러오지 못했어요', tips: [esc(err.message), '배포 주소에서 열었는지 확인해 주세요'], actions: [{ href: 'data.html', label: '다시 시도' }] })); });

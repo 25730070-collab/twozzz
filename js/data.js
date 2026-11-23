@@ -1,5 +1,5 @@
 /* data.js — 데이터셋 불러오기 : JSON(J) + API(A) + 사용자 제보(U), 상태 기록, 데이터 점검 */
-let _hazards = null;
+let _hazards = null, _all = null;
 const DATA_STATUS = { static: 'wait', api: 'wait', user: 0, pnt: 'wait', pntMatched: 0 };   // static/api : ok | empty | fail
 
 function fromFallback(prefix, src) {
@@ -93,10 +93,16 @@ async function loadHazards() {
   const mine = typeof getReports === 'function' ? getReports() : [];
   DATA_STATUS.user = mine.length;
   rows.push(...mine);
-  _hazards = rows;                      // 더미 대체 없음: 못 불러오면 빈 배열 → 화면에서 불러오기 실패 안내
-  checkData(_hazards);
+  _all = rows;                          // 더미 대체 없음: 못 불러오면 빈 배열 → 화면에서 불러오기 실패 안내
+  checkData(_all);
+  /* 기준 연도 통일: 연도마다 따로 모은 자료라 섞어 쓰면 같은 곳이 여러 해로 겹치고 기준이 제각각이 된다.
+     화면(목록·홈·경로 비교·안내)은 데이터에 있는 가장 최근 연도만 쓴다. 제보(연도 없음)는 그대로 포함. 전체 연도는 loadAllHazards() (데이터 관리·구간 상세 링크용) */
+  const years = rows.filter(r => r.source !== 'user' && r.year != null).map(r => +r.year);
+  DATA_STATUS.year = years.length ? Math.max(...years) : null;
+  _hazards = DATA_STATUS.year ? rows.filter(r => r.source === 'user' || +r.year === DATA_STATUS.year) : rows;
   return _hazards;
 }
+async function loadAllHazards() { await loadHazards(); return _all; }
 
 /* 데이터 점검 : F12 Console 의 [데이터 점검] 그룹에서 확인 (건수 · 출처 · 중복 · 자료형 · null) */
 function checkData(rows) {
@@ -122,5 +128,5 @@ function checkData(rows) {
 
 /* 구간 id로 구간 찾기 : 샘플 → 전체 데이터셋 순 */
 async function findSegment(id) {
-  return (await loadHazards()).find(s => s.segmentId === id) || null;
+  return (await loadAllHazards()).find(s => s.segmentId === id) || null;      // 예전 연도 구간의 링크도 열린다
 }

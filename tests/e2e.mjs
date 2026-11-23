@@ -93,8 +93,11 @@ try {
     if (process.env.SHOT) await p.screenshot({ path: '/tmp/cmp.png' });
     await p.click('.rt-card[data-type="fast"]');
     check('카드를 누르면 선택이 바뀌고 안내 링크도 바뀐다', (await p.getAttribute('#goDrive', 'href')).includes('type=fast'));
+    const years = await p.evaluate(async () => { const r = await loadHazards(); return { ys: [...new Set(r.filter(x => x.source !== 'user').map(x => x.year))], all: (await loadAllHazards()).length, n: r.length }; });
+    check('위험 구간은 가장 최신 연도 하나(2023)로 통일된다 (전체 347건 중 75건)', years.ys.length === 1 && years.ys[0] === 2023 && years.n === 75 && years.all === 347, JSON.stringify(years));
+    check('지도가 설명·경로 선택보다 위에 있다', await p.evaluate(() => { const m = document.getElementById('cmpMap'), c = document.getElementById('routeCards'); return !!(m.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING); }));
     check('공유 버튼이 있다', await p.locator('#shareRoute').isVisible());
-    const nBasis = Number(/후보 (\d+)개/.exec(await p.textContent('#basis'))[1]);
+    const nBasis = Number(/후보 경로 (\d+)개/.exec(await p.textContent('#candBox summary'))[1]);
     check('후보 목록의 개수가 안내 문구의 후보 수와 같다', (await p.locator('#candList li').count()) === nBasis, `${nBasis}개`);
     await p.click('#candBox summary');
     check('후보 목록에 선택된 안전 경로와 탈락 이유가 보인다', (await p.locator('#candList li.on').count()) === 1 && /시간 초과|사고가 줄지 않음|더 안전한 후보|빠른 경로/.test(await p.locator('#candList').innerText()));
@@ -103,10 +106,11 @@ try {
   {
     const { ctx, mkPage } = await mkContext(await browser);
     const p = await mkPage();
-    await p.goto(compareUrl('강남역', '서울역')); await p.waitForSelector('.rt-card', { timeout: 15000 });
-    check('더 안전한 후보가 없으면 솔직하게 알린다', (await p.textContent('#verdict')).includes('대안 경로를 찾지 못했어요'));
-    check('출발지·도착지 근처라 피하기 어려운 지점을 설명한다', (await p.textContent('#verdict')).includes('피하기 어려워요'));
-    check('같은 경로라는 표시가 안전 경로 카드에 붙는다', (await p.locator('.rt-card[data-type="safe"]').innerText()).includes('빠른 경로와 같아요'));
+    await p.goto(compareUrl('강남역', '서울역')); await p.waitForSelector('#verdict:not([hidden])', { timeout: 15000 });
+    check('더 안전한 길이 없으면 솔직하게 알린다', (await p.textContent('#verdict')).includes('더 안전한 길을 찾지 못했어요'));
+    check('출발지·도착지 근처라 피하기 어려운 지점을 설명한다', (await p.textContent('#verdict')).includes('어떤 길로 가도'));
+    check('같은 경로일 땐 고르는 카드 없이 설명 상자에 시간·거리·사고가 합쳐진다', (await p.locator('.rt-card').count()) === 0 && (await p.locator('#verdict .delta > div').count()) === 3);
+    check('설명 상자는 지도 바로 아래에 있다', await p.evaluate(() => document.getElementById('cmpMap').nextElementSibling.id === 'verdict'));
     await ctx.close();
   }
   {
@@ -350,7 +354,7 @@ try {
     check('구간 상세: 지도가 맨 위(첫 번째)에 있다', await p.evaluate(() => document.querySelector('main').firstElementChild.id === 'heroMap') && await p.locator('#heroMap').isVisible());
     check('구간 상세: 좌표 대체 카드는 숨는다', await p.locator('#mapView').isHidden());
     await p.goto(`${B}pages/list.html`); await p.waitForTimeout(1200);
-    check('위험 구간 목록: 지도에 347곳이 점으로 찍힌다', (await p.evaluate(() => window.__lcalls.circle)) === 347);
+    check('위험 구간 목록: 지도에 최신 연도(2023) 75곳이 점으로 찍힌다', (await p.evaluate(() => window.__lcalls.circle)) === 75);
     await ctx.close();
   }
   {
@@ -373,7 +377,7 @@ try {
     await ctx.setOffline(true); await p.waitForTimeout(300);
     check('오프라인 안내 띠가 보인다', await p.locator('.offline').isVisible());
     await p.goto(`${B}pages/list.html`); await p.waitForTimeout(1200);
-    check('오프라인에서도 위험 구간 목록이 열린다', /347/.test(await p.textContent('#resultCount')));
+    check('오프라인에서도 위험 구간 목록이 열린다', /75/.test(await p.textContent('#resultCount')));
     await p.goto(`${B}index.html`); await p.waitForTimeout(1000);
     check('오프라인에서도 홈이 열린다', (await p.locator('#topList .card').count()) >= 5);
     await ctx.setOffline(false); await p.waitForTimeout(300);

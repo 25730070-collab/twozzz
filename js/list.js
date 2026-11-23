@@ -109,6 +109,7 @@ loadHazards().then(rows => {
   $('#filterGuPanel').innerHTML = gus.map(g => `<button class="chip opt" data-gu-opt="${esc(g)}">${esc(g)}</button>`).join('');
   const years = [...new Set(rows.map(r => r.year).filter(y => y != null))].sort((a, b) => b - a);
   $('#filterYearPanel').innerHTML = years.map(y => `<button class="chip opt" data-year-opt="${y}">${y}년</button>`).join('');
+  if (years.length <= 1) $('#filterYearBtn').hidden = true;                       // 최신 연도 하나로 통일했으니 연도 고르기는 필요 없다
   $('#q').value = st.q;
   if (!rows.length) { $('#state-error').classList.add('on'); $('#resultWrap').hidden = true; $('#resultCount').textContent = ''; return; }
   render();

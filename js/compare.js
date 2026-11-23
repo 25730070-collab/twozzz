@@ -24,12 +24,14 @@ function card(st, max) {
 /* 선택한 경로가 지나는 주요 사고 다발지점 */
 function names(st) {
   const n = [...st.hazards].sort((a, b) => b.seg.accidentCount - a.seg.accidentCount).slice(0, 3).map(h => esc(h.seg.roadName)).join(' · ');
-  return n ? `<b>${TYPE_LABEL[st.type]}</b>의 주요 지점 · ${n}` : `<b>${TYPE_LABEL[st.type]}</b>은 지나는 사고 다발지점이 없어요`;
+  const nm = res.same ? '이 경로' : TYPE_LABEL[st.type];
+  return n ? `<b>${nm}</b>의 주요 지점 · ${n}` : '';
 }
 
 function render() {
   const F = res.fast, S = res.safe, max = Math.max(F.score, S.score, 1);
-  $('#routeCards').innerHTML = card(S, max) + card(F, max);      // 안전 경로가 왼쪽(먼저)
+  if (res.same) { sel = 'safe'; $('#routeCards').innerHTML = ''; }                // 같은 경로면 고를 게 없다: 설명 상자에 합쳐 보여 준다
+  else $('#routeCards').innerHTML = card(S, max) + card(F, max);              // 안전 경로가 왼쪽(먼저)
   $('#selNames').innerHTML = names(sel === 'safe' ? S : F);
   $('#ctaBar').hidden = false;   // 경로를 불러왔을 때만 예습·안내 버튼을 보여 준다
   $('#goPreview').href = previewUrl({ origin: o, destination: d }, sel);
@@ -59,6 +61,7 @@ function paintCandidates() {
     return `<li class="${c.isSafe ? 'on' : ''}"><div><b>${name}</b><span class="mu">${c.minutes}분 · ${c.km}km</span></div>
       <div class="r"><b>${c.hazards}곳 · ${c.score}건</b><span class="mu">${why(c)}</span></div></li>`;
   }).join('');
+  $('#candBox').querySelector('summary').textContent = `비교한 후보 경로 ${list.length}개 보기`;
   $('#candBox').hidden = false;
 }
 
@@ -69,11 +72,14 @@ async function run() {
   $('#state-loading').classList.remove('on');
   addRecentRoute(o, d);                                   // 경로를 만든 검색만 최근 검색에 기록
   const F = res.fast, S = res.safe, diff = S.minutes - F.minutes;
-  const over = Math.round((CONFIG.SAFE_TIME_LIMIT - 1) * 100);
-  if (res.same) {
+    if (res.same) {
+    const fx = res.fixed && res.fixed.n;
     $('#verdict').innerHTML = F.hazards.length
-      ? `<b>더 안전한 대안 경로를 찾지 못했어요</b><p>길찾기 후보 ${res.count}개를 비교했지만, 빠른 경로보다 ${over}% 넘게 오래 걸리지 않는 선에서 이보다 사고가 적은 길은 없었어요. 이 경로는 사고 다발지점 ${F.hazards.length}곳(사고 ${F.score}건)을 지나요${res.fixed && res.fixed.n ? `. 그중 ${res.fixed.n}곳(사고 ${res.fixed.score}건)은 출발지·도착지 300m 안에 있어 어떤 길로 가도 피하기 어려워요` : ''}</p>`
-      : '<b>지나는 사고 다발지점이 없어요</b><p>이 경로 주변에는 데이터에 등록된 사고 다발지점이 없어요</p>';
+      ? `<b>더 안전한 길을 찾지 못했어요</b>
+        <p>다른 길도 비교해 봤지만, 이 길보다 사고가 적으면서 많이 돌아가지 않는 길은 없었어요.${fx ? ` 사고 다발지점 ${fx}곳은 출발지·도착지 근처라 어떤 길로 가도 지나요.` : ''}</p>
+        <div class="delta"><div><b>${F.minutes}분</b><span>소요 시간</span></div><div><b>${F.km}km</b><span>거리</span></div><div><b>${F.hazards.length}곳 · ${F.score}건</b><span>지나는 사고</span></div></div>`
+      : `<b>지나는 사고 다발지점이 없어요</b><p>이 길 주변에는 등록된 사고 다발지점이 없어요.</p>
+        <div class="delta"><div><b>${F.minutes}분</b><span>소요 시간</span></div><div><b>${F.km}km</b><span>거리</span></div></div>`;
   } else {
     const dh = F.hazards.length - S.hazards.length, ds = F.score - S.score;
     $('#verdict').innerHTML = `<b>안전 경로가 더 안전해요</b>
@@ -84,7 +90,7 @@ async function run() {
       </div>`;
   }
   $('#verdict').hidden = false;
-  $('#basis').textContent = `안전 경로는 빠른 경로보다 ${over}% 넘게 오래 걸리지 않는 후보 중, 지나는 사고 다발지점의 사고 건수가 가장 적은 경로예요. 길찾기 후보 ${res.count}개${res.detourCount ? `(위험 지점을 피해 경유지를 둔 우회 경로 ${res.detourCount}개 포함)` : ''}를 비교했어요. 공공 사고 데이터 기준이며 안전을 보장하지는 않아요`;
+  $('#basis').textContent = `안전 경로는 시간이 많이 늘지 않는 길 중 사고 기록이 가장 적은 길이에요. ${DATA_STATUS.year ? DATA_STATUS.year + '년 ' : ''}공공 사고 데이터 기준이며 안전을 보장하지는 않아요.`;
   $('#basis').hidden = false;
   paintCandidates();
   paintMap();
