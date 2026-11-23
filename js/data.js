@@ -18,6 +18,15 @@ async function loadPnt(prefix) {
   try { const r = await fetch(prefix + 'pntfr_points.json'); if (!r.ok) throw new Error('HTTP ' + r.status); const l = await r.json(); return Array.isArray(l) && l.length ? l : null; }
   catch (e) { console.info('[사고 상세] pntfr_points.json 을 불러오지 못했어요 —', e.message); return null; }
 }
+/* 서울 단속 카메라(위치·제한속도) : 공공데이터 파일을 tools/build_cameras.mjs 로 바꿔 만든 data/speed_cameras.json.
+   파일이 없으면 null — 그때는 제한속도·카메라 안내를 아예 보여 주지 않는다 (없는 값을 지어내지 않는다) */
+async function loadCams(prefix) {
+  try {
+    const r = await fetch(prefix + 'speed_cameras.json'); if (!r.ok) throw new Error('HTTP ' + r.status);
+    const l = await r.json();
+    return Array.isArray(l) ? (l.filter(c => isFinite(c.lat) && isFinite(c.lng)).length ? l.filter(c => isFinite(c.lat) && isFinite(c.lng)) : null) : null;
+  } catch (e) { console.info('[단속 카메라] speed_cameras.json 을 불러오지 못했어요 —', e.message); return null; }
+}
 function pntDist(a, b) {                                   // 두 점 사이 거리(m)
   const R = 6371000, r = x => x * Math.PI / 180, dl = r(b[0] - a[0]), dg = r(b[1] - a[1]);
   return 2 * R * Math.asin(Math.sqrt(Math.sin(dl / 2) ** 2 + Math.cos(r(a[0])) * Math.cos(r(b[0])) * Math.sin(dg / 2) ** 2));
@@ -38,6 +47,24 @@ function pntBrief(s) {
   if (p.detail.death) parts.push(`사망 ${p.detail.death}`);
   if (p.detail.serious) parts.push(`중상 ${p.detail.serious}`);
   return parts.join(' · ');
+}
+
+/* 가장 많은 사고 유형에 맞춘 한 줄 주의 안내.
+   유형 이름(국토교통부 분류)에 들어 있는 낱말로만 찾고, 맞는 게 없으면 빈 문자열을 돌려 준다.
+   유형은 데이터 값이고, 안내 문구는 일반적인 안전 운전 수칙이다 */
+const TYPE_ADVICE = [
+  [/횡단|보도|사람/, '보행자를 주의하세요'],
+  [/후미|추돌/, '앞차와 간격을 넓히세요'],
+  [/측면|직각|교차/, '교차로에서 좌우를 살피세요'],
+  [/정면/, '마주 오는 차량에 주의하세요'],
+  [/전도|전복|단독|이탈|공작물/, '속도를 줄이세요']
+];
+function pntAdvice(s) {
+  const p = s && s.pnt; if (!p || !p.detail) return '';
+  const top = Object.entries(p.detail.types || {}).sort((a, b) => b[1] - a[1])[0];
+  if (!top) return '';
+  const hit = TYPE_ADVICE.find(([re]) => re.test(top[0]));
+  return hit ? hit[1] : '';
 }
 
 async function loadHazards() {
@@ -62,6 +89,7 @@ async function loadHazards() {
   const pts = await loadPnt(prefix);
   DATA_STATUS.pnt = pts ? 'ok' : 'fail'; DATA_STATUS.pntMatched = 0;
   if (pts) rows.forEach(r => { const m = nearestPnt(r, pts); if (m) { r.pnt = m; DATA_STATUS.pntMatched++; } });
+  if (typeof syncDown === 'function') await syncDown();         // 로그인 중이면 서버의 내 제보를 먼저 받아 온다 (못 받으면 이 기기의 복사본)
   const mine = typeof getReports === 'function' ? getReports() : [];
   DATA_STATUS.user = mine.length;
   rows.push(...mine);

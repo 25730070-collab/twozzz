@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" type="image/png" href="../asset/icon-192.png">
+  <link rel="apple-touch-icon" href="../asset/icon-180.png">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Safe Drive">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safe Drive · 안내</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="drive" data-base="">
+<div class="app has-cta">
+  <header class="app-header"></header>
+  <div class="subhead"><button class="ic" id="backBtn" data-fallback="preview.html" aria-label="뒤로">←</button><b id="headerTitle">안내</b><span class="right"><span id="typeBadge"></span></span></div>
+
+  <main class="page navpage">
+    <!-- 다음 회전 안내 : 가장 크게, 스크롤해도 상단에 고정 -->
+    <div class="turn" id="turn">
+      <span class="turn-ic" id="turnIc"></span>
+      <div><b id="turnText">경로 준비 중…</b><span id="turnDist"></span></div>
+    </div>
+
+    <div class="navmap">
+      <svg id="map" viewBox="-600 -400 1200 800" preserveAspectRatio="xMidYMid slice"></svg>
+      <div class="alert" id="alert"><b id="alertText"></b><span id="alertAdvice"></span></div>
+      <button class="chip map-btn" id="viewBtn">전체 보기</button>
+      <button class="compass" id="compassBtn" type="button" aria-pressed="true" aria-label="지도 방향: 진행 방향이 위예요. 누르면 북쪽을 위로 고정해요" hidden>
+        <svg viewBox="-17 -17 34 34" width="38" height="38" aria-hidden="true"><circle r="15.5" fill="#fff" stroke="#cfd6d2"/><polygon points="0,-12 5.5,0 -5.5,0" fill="#161616"/><polygon points="0,12 5.5,0 -5.5,0" fill="#c9d1cc"/></svg>
+      </button>
+      <svg class="carfix" viewBox="-18 -22 36 44" width="38" height="46" aria-hidden="true"><ellipse cx="0" cy="14" rx="14" ry="5" fill="rgba(16,24,20,.22)"/><polygon points="0,-18 13,15 0,8 -13,15" fill="#2b6fff" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg>
+      <span class="osm-attr">© OpenStreetMap</span>
+      <!-- 앞으로 갈 길의 교통 상황 막대 (아래 = 지금 위치, 위 = 도착). 교통 정보가 없으면 숨는다 -->
+      <div class="tbar" id="tbar" role="img" aria-label="앞으로 갈 길의 교통 상황" hidden><div class="tb-hz" id="tbHz"></div></div>
+      <!-- 단속 카메라가 가까워지면 나오는 제한속도 표지 -->
+      <div class="limit" id="limitSign" hidden role="status"><b id="limitNum">-</b><span id="limitDist"></span></div>
+      <!-- 아래 안내 패널 : 남은 시간 · 남은 거리 · 도착 시각 · 속도 -->
+      <div class="navpanel" id="navPanel">
+        <div class="np-main"><b id="npTime">-</b><span id="npSub">-</span></div>
+        <div class="np-spd" id="npSpd"><b id="npSpeed">-</b><i id="npUnit">km/h</i></div>
+      </div>
+    </div>
+
+    <div class="pv-stats">
+      <div><b id="pvPassed">0/0</b><span class="mu">통과한 다발지점</span></div>
+      <div><b id="pvMode">정지</b><span class="mu">위치</span></div>
+    </div>
+    <p class="mu" id="infoNote" style="margin-top:var(--sp2)"></p>
+
+    <div class="state" id="state-loading"><p class="mu">경로를 불러오는 중…</p></div>
+    <div class="state" id="state-reroute"><p class="note err" id="rerouteText"></p></div>
+    <div class="state" id="state-gps-denied"><p class="note err">위치 권한이 없어 GPS를 쓸 수 없어요. 연습 모드로 돌아가요</p></div>
+
+    <div class="nav-opts" id="modeBox">
+      <span class="mu">위치</span>
+      <button class="chip on" data-mode="sim">연습</button>
+      <button class="chip" data-mode="gps">실제 GPS</button>
+      <button class="chip on grow" id="voiceBtn"></button>
+    </div>
+    <p class="mu" id="simNote" style="margin-top:var(--sp2)">연습 모드예요. 경로 길이와 상관없이 약 1분 안에 훑어 보는 가상 주행이라 음성은 나오지 않아요. 음성 안내는 실제 GPS에서 나와요</p>
+    <div class="nav-opts" id="speedBox">
+      <span class="mu">속도</span>
+      <button class="chip on" data-speed="1">1배</button>
+      <button class="chip" data-speed="2">2배</button>
+      <button class="chip" data-speed="4">4배</button>
+    </div>
+
+    <div class="state" id="state-done">
+      <p class="note ok" id="doneText"></p>
+      <button class="btn" onclick="location.href='../index.html'">새 경로 검색하기</button>
+    </div>
+
+    <section class="section">
+      <div class="section-hd"><h3>사고 다발지점</h3></div>
+      <div class="list-box" id="pointList"></div>
+    </section>
+  </main>
+
+
+  <div class="cta-bar">
+    <button class="btn" id="resetBtn">처음부터</button>
+    <button class="btn dk" id="playBtn">시작</button>
+  </div>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/config.local.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/route-api.js"></script>
+<script src="../js/navinfo.js"></script>
+<script src="../js/map.js"></script>
+<script src="../js/drive.js"></script>
+</body>
+</html>

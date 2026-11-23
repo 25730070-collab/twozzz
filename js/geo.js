@@ -11,6 +11,13 @@ function bearing(a, b) {
   const x = Math.cos(rad(a[0])) * Math.sin(rad(b[0])) - Math.sin(rad(a[0])) * Math.cos(rad(b[0])) * Math.cos(rad(b[1] - a[1]));
   return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
 }
+/* 점 p에서 방위 brg(도) 방향으로 m미터 떨어진 좌표 */
+function destPoint(p, brg, m) {
+  const d = m / EARTH, b = rad(brg), la = rad(p[0]), lo = rad(p[1]);
+  const la2 = Math.asin(Math.sin(la) * Math.cos(d) + Math.cos(la) * Math.sin(d) * Math.cos(b));
+  const lo2 = lo + Math.atan2(Math.sin(b) * Math.sin(d) * Math.cos(la), Math.cos(d) - Math.sin(la) * Math.sin(la2));
+  return [la2 * 180 / Math.PI, lo2 * 180 / Math.PI];
+}
 /* 점 사이를 step(m) 간격으로 촘촘하게 */
 function densify(path, step = 40) {
   const out = [path[0]];

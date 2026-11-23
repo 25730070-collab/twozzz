@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" type="image/png" href="asset/icon-192.png">
+  <link rel="apple-touch-icon" href="asset/icon-180.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Safe Drive">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safe Drive · 홈</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body data-page="home" data-base="pages/">
+<div class="app">
+  <header class="app-header"></header>
+
+  <main class="page">
+    <div class="home-grid">
+      <div class="home-main">
+        <section class="hero">
+          <h1>초행길도 안심하고,<br><em>사고 위험이 낮은 경로</em>를<br>확인하세요</h1>
+          <p>사고 다발 구간 데이터로 빠른 경로와 안전 경로를 비교해요</p>
+          <svg viewBox="0 0 360 150" role="img" aria-label="빠른 경로와 사고 다발지점을 피해 가는 안전 경로 예시">
+            <g stroke="#cfe3d8" stroke-width="10" stroke-linecap="round" fill="none"><path d="M-10 118 L120 92 L250 112 L370 70"/><path d="M60 160 L96 60 L150 -10"/><path d="M210 160 L238 76 L300 -10"/></g>
+            <path d="M40 112 C110 96 190 96 322 52" fill="none" stroke="#8b938f" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round"/>
+            <path d="M40 112 C80 70 150 40 228 48 S290 50 322 52" fill="none" stroke="#0b8457" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="170" cy="92" r="15" fill="#c0282d" fill-opacity=".18"/><circle cx="170" cy="92" r="6" fill="#c0282d" stroke="#fff" stroke-width="2"/>
+            <circle cx="40" cy="112" r="9" fill="#fff" stroke="#0b8457" stroke-width="5"/>
+            <circle cx="322" cy="52" r="9" fill="#fff" stroke="#c0282d" stroke-width="5"/>
+          </svg>
+          <div class="legend"><span><i style="background:#0b8457"></i>안전 경로</span><span><i class="dash"></i>빠른 경로</span><span><i class="dot"></i>사고 다발지점</span></div>
+        </section>
+
+        <section class="box route-box" id="route" aria-label="경로 비교">
+          <div class="fld"><span class="dot" aria-hidden="true"></span><input class="in" id="ro" type="search" enterkeyhint="next" placeholder="출발지" aria-label="출발지" autocomplete="off"></div>
+          <div class="fld"><span class="dot end" aria-hidden="true"></span><input class="in" id="rd" type="search" enterkeyhint="go" placeholder="도착지" aria-label="도착지" autocomplete="off"></div>
+          <button class="btn dk" id="goRoute" disabled>경로 비교 시작</button>
+          <button class="me" id="useMe" type="button"><svg class="ico s" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22"/></svg>내 위치에서 출발</button>
+        </section>
+
+
+
+        <section class="section" id="favBox" hidden>
+          <div class="section-hd"><h3>즐겨찾기</h3><a class="more" href="pages/my.html" aria-label="즐겨찾기 더 보기"></a></div>
+          <div class="list-box" id="favPreview"></div>
+        </section>
+      </div>
+
+      <div class="home-side">
+        <section class="section">
+          <div class="section-hd"><h3>사고 많은 구간</h3><a class="more" href="pages/list.html" aria-label="위험 구간 전체 보기"></a></div>
+          <div class="list-box" id="topList"></div>
+        </section>
+
+        <section class="section">
+          <div class="section-hd"><h3>지역별 사고 건수</h3><a class="more" href="pages/list.html" aria-label="지역별로 보기"></a></div>
+          <div class="box" style="margin-top:0" id="guStats"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+
+  <nav class="tabbar"></nav>
+</div>
+
+<script src="js/storage.js"></script>
+<script src="js/config.js"></script>
+<script src="js/config.local.js"></script>
+<script src="js/common.js"></script>
+<script src="js/data.js"></script>
+<script src="js/route-api.js"></script>
+<script src="js/suggest.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" type="image/png" href="../asset/icon-192.png">
+  <link rel="apple-touch-icon" href="../asset/icon-180.png">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Safe Drive">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safe Drive · 위험 구간</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="list" data-base="">
+<div class="app">
+  <header class="app-header"></header>
+
+  <div class="page" style="padding-bottom:0">
+    <div class="list-head"><h1>위험 구간</h1><a class="chip" href="report.html"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>제보</a></div>
+  </div>
+
+  <!-- 검색 + 필터 : 헤더 아래 고정 -->
+  <div class="subbar">
+    <label class="searchbar"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" enterkeyhint="search" placeholder="동·도로명·구 (예: 강남구 논현)" aria-label="구간 검색" autocomplete="off"></label>
+    <div class="filters" role="toolbar" aria-label="필터와 정렬">
+      <button class="chip" id="filterRiskBtn" data-panel="filterRiskPanel" data-label="위험등급">위험등급</button>
+      <button class="chip" id="filterGuBtn" data-panel="filterGuPanel" data-label="지역">지역</button>
+      <button class="chip" id="filterYearBtn" data-panel="filterYearPanel" data-label="연도">연도</button>
+      <button class="chip" id="sortChip">기본순</button>
+    </div>
+    <div class="fpanels">
+      <div class="panel" id="filterRiskPanel">
+        <button class="chip opt" data-risk-opt="4">4등급</button>
+        <button class="chip opt" data-risk-opt="3">3등급</button>
+        <button class="chip opt" data-risk-opt="2">2등급</button>
+        <button class="chip opt" data-risk-opt="1">1등급</button>
+      </div>
+      <div class="panel" id="filterGuPanel"></div>
+      <div class="panel" id="filterYearPanel"></div>
+    </div>
+  </div>
+
+  <main class="page">
+    <div class="listmap skel" id="listMap" hidden></div>
+    <div class="result-bar"><p class="mu" id="resultCount"></p><button class="chip bd" id="resetFilter" hidden>초기화</button></div>
+    <p class="note" id="srcNote" hidden></p>
+
+    <div class="state" id="state-loading" role="status" aria-label="불러오는 중"><div class="skel skel-card"></div><div class="skel skel-card"></div><div class="skel skel-card"></div><div class="skel skel-card"></div><div class="skel skel-card"></div></div>
+    <div class="state" id="state-empty"></div>
+    <div class="state" id="state-error">
+      <p class="mu">위험 구간 데이터를 불러오지 못했어요</p>
+      <button class="btn" id="retryList">다시 시도</button>
+    </div>
+
+    <div id="resultWrap">
+      <div class="list-box" id="resultList"></div>
+      <button class="btn" id="moreBtn" hidden>더 보기</button>
+    </div>
+  </main>
+
+
+  <nav class="tabbar"></nav>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/map.js"></script>
+<script src="../js/list.js"></script>
+</body>
+</html>

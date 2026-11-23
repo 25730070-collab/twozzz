@@ -1,2 +1,6 @@
 js/config.local.js
 node_modules/
+server/.env
+server/node_modules/
+server/*.sqlite
+server/*.sqlite-*

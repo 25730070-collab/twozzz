@@ -36,7 +36,9 @@ const ICON_PATH = {
   left: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 6 6v5"/>',
   right: '<path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0-6 6v5"/>',
   uturn: '<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
-  flag: '<path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/>'
+  flag: '<path d="M5 21V4"/><path d="M5 4h12l-2 4 2 4H5"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.8v.01"/>',
+  share: '<path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>'
 };
 const ico = (n, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICON_PATH[n] || ''}</svg>`;
 
@@ -114,7 +116,30 @@ function toast(msg) {
 }
 const flash = msg => { try { sessionStorage.setItem('sd_flash', msg); } catch {} };
 
-function logout() {                                   // 서버 인증이 없으므로 이 기기의 가입 정보만 지운다 (즐겨찾기·제보는 그대로)
+/* 회원 서버 주소·로그인 토큰 (account.js 와 로그아웃이 같이 쓴다) */
+const TOKEN_KEY = 'sd_token';
+const apiBase = () => (typeof CONFIG !== 'undefined' && CONFIG.API_URL ? String(CONFIG.API_URL).replace(/\/+$/, '') : '');
+const getToken = () => { try { return localStorage.getItem(TOKEN_KEY); } catch { return null; } };
+/* 서버 호출 한 곳. authed 면 로그인 토큰을 붙인다. 실패하면 Error(message, {code, status, data}) */
+async function apiCall(method, path, body, authed, timeoutMs = 15000) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (authed) { const t = getToken(); if (t) headers.Authorization = 'Bearer ' + t; }
+  let res;
+  try { res = await fetch(apiBase() + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(timeoutMs) }); }
+  catch { throw Object.assign(new Error('서버에 연결하지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요'), { code: 'network' }); }
+  let j = null; try { j = await res.json(); } catch {}
+  if (!res.ok || !j || j.ok === false) throw Object.assign(new Error((j && j.message) || '요청을 처리하지 못했어요'), { code: (j && j.error) || 'http_' + res.status, status: res.status, data: j || {} });
+  return j;
+}
+
+async function logout() {                            // 이 기기의 로그인 정보를 지운다. 즐겨찾기는 그대로, 제보·최근 검색의 이 기기 사본은 지운다(서버 계정에는 남아 있다)
+  const tk = getToken();
+  if (tk) {
+    try { await Promise.race([syncUp(), new Promise(ok => setTimeout(ok, 3000))]); } catch {}      // 아직 서버에 못 올린 것이 있으면 한 번 올려 본다
+    try { fetch(apiBase() + '/api/auth/logout', { method: 'POST', headers: { Authorization: 'Bearer ' + tk }, keepalive: true }).catch(() => {}); } catch {}
+    try { localStorage.removeItem(TOKEN_KEY); } catch {}
+    store.remove(KEY.report); store.remove(KEY.recent);            // 다음 사람이 이 기기에서 내 제보·검색 기록을 보지 않게
+  }
   store.remove(KEY.user);
   flash('로그아웃했어요');
   location.reload();
@@ -132,7 +157,7 @@ function buildShell() {
   addEventListener('keydown', e => { if (e.key === 'Escape') closeConfirm(); });
   /* 로그아웃 확인 */
   const md = document.createElement('div'); md.className = 'modal'; md.id = 'logoutModal'; md.setAttribute('role', 'dialog'); md.setAttribute('aria-modal', 'true'); md.setAttribute('aria-label', '로그아웃 확인');
-  md.innerHTML = `<div class="modal-box"><h3>로그아웃할까요?</h3><p class="mu">이 기기의 가입 정보만 지워져요. 즐겨찾기와 제보는 그대로 남아요.</p>
+  md.innerHTML = `<div class="modal-box"><h3>로그아웃할까요?</h3><p class="mu">이 기기의 로그인 정보가 지워져요. 즐겨찾기와 제보는 그대로 남아요.</p>
     <div class="row"><button class="btn" id="lgNo">취소</button><button class="btn dk" id="lgYes">로그아웃</button></div></div>`;
   document.body.appendChild(md);
   const openConfirm = () => { md.classList.add('on'); $('#lgNo').focus(); };
@@ -145,7 +170,7 @@ function buildShell() {
   /* 하단 탭바 (모바일) */
   const tb = $('.tabbar');
   if (tb) {
-    const tab = (id, label, icon, href) => `<a href="${href}" class="${TAB_ON[document.body.dataset.page] === id ? 'on' : ''}">${ico(icon)}${label}</a>`;
+    const tab = (id, label, icon, href) => { const on = TAB_ON[document.body.dataset.page] === id; return `<a href="${href}" class="${on ? 'on' : ''}"${on ? ' aria-current="page"' : ''}>${ico(icon)}${label}</a>`; };
     tb.setAttribute('aria-label', '하단 메뉴');
     tb.innerHTML = tab('home', '홈', 'home', HREF.home) + tab('route', '경로 찾기', 'route', HREF.route) + tab('list', '위험 구간', 'pin', HREF.list) + tab('my', '마이', 'user', HREF.my);
   }
@@ -154,7 +179,42 @@ function buildShell() {
   /* 로그아웃 직후 안내 */
   try { const m = sessionStorage.getItem('sd_flash'); if (m) { sessionStorage.removeItem('sd_flash'); toast(m); } } catch {}
 }
+/* ---------- 데이터 안내 시트 : 화면마다 붙이던 출처·유의 문구를 한 곳에 모아, ⓘ 버튼이나 마이에서 연다 ---------- */
+function buildInfoSheet() {
+  const lim = typeof CONFIG !== 'undefined' && CONFIG.SAFE_TIME_LIMIT ? CONFIG.SAFE_TIME_LIMIT : 1.35;
+  const sh = document.createElement('div'); sh.className = 'sheet'; sh.id = 'infoSheet'; sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-modal', 'true'); sh.setAttribute('aria-label', '데이터 안내');
+  sh.innerHTML = `<div class="sheet-box"><span class="grab" aria-hidden="true"></span>
+    <div class="sheet-hd"><h3>데이터 안내</h3><button class="hd-btn" id="infoClose" aria-label="닫기">${ico('close')}</button></div>
+    <h4>어떤 데이터를 쓰나요</h4>
+    <ul class="info-list">
+      <li><b>사고 다발지점</b><span>도로교통공단 지자체별 교통사고 다발지역 (서울). 구간마다 기준 연도가 달라요</span></li>
+      <li><b>사고 유형 · 인명 피해</b><span>국토교통부 사고다발지점 (과거 3년 기준). 구간 좌표에서 가장 가까운 지점을 연결했어요</span></li>
+      <li><b>경로 · 소요 시간</b><span>카카오모빌리티 길찾기</span></li>
+      <li><b>지도</b><span>© OpenStreetMap 기여자</span></li>
+    </ul>
+    <h4>안전 경로는 이렇게 골라요</h4>
+    <p class="mu">빠른 경로보다 ${Math.round((lim - 1) * 100)}% 넘게 오래 걸리지 않는 후보 중, 지나는 사고 다발지점의 사고 건수 합이 가장 적은 경로예요. 위험 지점을 피하는 우회 경로도 후보에 넣어 비교해요.</p>
+    <h4>알아 두세요</h4>
+    <ul class="info-list plain">
+      <li>데이터에 없는 곳이 안전하다는 뜻은 아니에요.</li>
+      <li>과거 사고 기록이라 지금의 위험이나 교통 상황을 알려 주지는 않아요.</li>
+      <li>위험등급은 수집한 구간끼리 비교한 상대 등급이에요.</li>
+      <li>구간 옆 J · A · U 표시는 데이터를 받은 방식이에요. J는 저장된 JSON 파일, A는 공공 API, U는 사용자 제보예요.</li>
+      <li>즐겨찾기 · 최근 검색 · 제보는 이 기기에만 저장돼요. 회원 서버가 연결된 경우에만 가입 정보(닉네임 · 이메일)가 서버에 저장되고, 탈퇴하면 삭제돼요.</li>
+    </ul>
+    <a class="btn" href="${BASE}data.html" style="margin-top:var(--sp4)">데이터 현황 보기</a></div>`;
+  document.body.appendChild(sh);
+  let opener = null;
+  const close = () => { sh.classList.remove('on'); document.body.classList.remove('lock'); if (opener && opener.focus) opener.focus(); };
+  window.openInfo = el => { opener = el || null; sh.classList.add('on'); document.body.classList.add('lock'); $('#infoClose').focus(); };
+  sh.addEventListener('click', e => { if (e.target === sh) close(); });
+  $('#infoClose').addEventListener('click', close);
+  addEventListener('keydown', e => { if (e.key === 'Escape' && sh.classList.contains('on')) close(); });
+  document.addEventListener('click', e => { const t = e.target.closest('[data-info]'); if (t) { e.preventDefault(); openInfo(t); } });
+}
 buildShell();
+buildInfoSheet();
+$$('.state').forEach(el => { if (!el.hasAttribute('aria-live')) el.setAttribute('aria-live', 'polite'); });   // 불러오는 중·오류 문구가 바뀌면 보조기기가 읽어 준다
 $$('.more').forEach(a => { a.innerHTML = ico('next'); });   // 더보기는 글자 대신 화살표 아이콘
 
 /* 서브 화면 뒤로가기 (로고는 항상 홈으로) */
@@ -173,7 +233,6 @@ document.body.appendChild(topBtn);
 addEventListener('scroll', () => topBtn.classList.toggle('show', scrollY > 400));
 topBtn.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
 
-console.log('Safe Drive loaded —', document.body.dataset.page, '| state areas:', $$('.state').map(s => s.id));
 
 /* ---------- 경로 ---------- */
 const routeCard = (r, extra = '') => `<div class="card" data-href="${BASE}compare.html?origin=${encodeURIComponent(r.origin)}&destination=${encodeURIComponent(r.destination)}">
@@ -186,10 +245,25 @@ const driveUrl = (r, type) => `${BASE}drive.html?${pair(r.origin, r.destination)
 /* 경로를 만들 수 없을 때 표준 안내 */
 function failView(e, back = '../index.html') {
   const l = $('#state-loading'); if (l) l.classList.remove('on');
-  const host = $('main') || document.body;
-  host.insertAdjacentHTML('afterbegin', emptyState({ title: '경로를 만들 수 없어요',
-    tips: [esc(e && e.message ? e.message : String(e)), '출발지와 도착지를 확인하고 다시 시도해 주세요'], actions: [{ href: back, label: '다시 입력하기' }] }));
+  const html = emptyState({ title: '경로를 만들 수 없어요',
+    tips: [esc(e && e.message ? e.message : String(e)), '출발지와 도착지를 확인하고 다시 시도해 주세요'], actions: [{ id: 'retryRoute', label: '다시 시도' }, { href: back, label: '다시 입력하기' }] });
+  const title = $('main .route-title'), bar = $('#favRow');             // 제목 아래에 놓는다 (제목이 오류 카드 뒤로 밀리지 않게)
+  if (bar) bar.hidden = true;                                           // 경로를 못 만들었으면 즐겨찾기·공유 버튼은 숨김
+  if (title) title.insertAdjacentHTML('afterend', html); else ($('main') || document.body).insertAdjacentHTML('afterbegin', html);
+  const retry = $('#retryRoute'); if (retry) retry.addEventListener('click', () => location.reload());
   console.warn('[경로 실패]', e);
 }
 /* 사고 다발지점 요약 문구 (실제 사고 건수 합) */
 const hazardSum = st => st.hazards.length ? `사고 다발지점 ${st.hazards.length}곳 · 사고 ${st.score}건` : '지나는 사고 다발지점 없음';
+
+/* ---------- 오프라인 지원 : 서비스 워커 등록 + 오프라인 안내 띠 (https 또는 localhost 에서만 동작) ---------- */
+if ('serviceWorker' in navigator && window.isSecureContext) {                        // https · localhost · 127.0.0.1 에서만
+  addEventListener('load', () => navigator.serviceWorker.register((document.body.dataset.base ? '' : '../') + 'sw.js').catch(() => {}));
+}
+(() => {
+  const bar = document.createElement('div'); bar.className = 'offline'; bar.setAttribute('role', 'status'); bar.hidden = true;
+  bar.textContent = '오프라인이에요 · 저장된 사고 데이터는 볼 수 있고, 경로는 연결되면 만들 수 있어요';
+  document.body.appendChild(bar);
+  const sync = () => { bar.hidden = navigator.onLine; };
+  addEventListener('online', sync); addEventListener('offline', sync); sync();
+})();

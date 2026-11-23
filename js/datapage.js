@@ -50,7 +50,7 @@ function paint() {
 
 const show = id => $$('#state-confirm,#state-result,#state-error').forEach(s => s.classList.toggle('on', s.id === id));
 
-document.addEventListener('click', e => {
+document.addEventListener('click', async e => {
   const t = e.target;
   const dl = t.closest('.dl');
   if (dl) { download(dl.dataset.file, contentOf(dl.dataset.id)); return; }
@@ -61,24 +61,35 @@ document.addEventListener('click', e => {
   }
   if (t.id === 'clearBtn') show('state-confirm');
   if (t.id === 'clearNo') show('');
-  if (t.id === 'clearYes') { clearUserData(); show('state-result'); $('#resultMsg').textContent = '내 데이터를 모두 삭제했어요'; paint(); }
+  if (t.id === 'clearYes') { await clearUserData(); show('state-result'); $('#resultMsg').textContent = '내 데이터를 모두 삭제했어요'; paint(); }
 });
 
-$('#importFile').addEventListener('change', async e => {
-  const f = e.target.files[0]; e.target.value = '';
-  if (!f) return;
+/* 파일·붙여넣기 공통 가져오기: JSON 검사 → importUser(형식이 맞는 새 항목만) → 로그인 중이면 서버로 올림 */
+async function doImport(text) {
   try {
-    const obj = JSON.parse(await f.text());
-    const r = importUser(obj.favorites_user || obj.reports_user || obj.recent_searches_user ? obj : (() => { throw new Error('즐겨찾기·최근 검색·제보 항목이 없는 파일이에요'); })());
+    const obj = JSON.parse(text);
+    if (!(obj.favorites_user || obj.reports_user || obj.recent_searches_user)) throw new Error('즐겨찾기·최근 검색·제보 항목이 없는 파일이에요');
+    const r = importUser(obj);
+    if (typeof syncUp === 'function') await syncUp();           // 서버 계정이면 가져온 제보·검색도 DB에 올린다 (즐겨찾기는 이 기기에만)
     const added = Object.entries(r.added).map(([k, n]) => `${USER_DATASETS[k].label} ${n}건`).join(' · ');
     show('state-result');
     $('#resultMsg').textContent = `추가: ${added || '없음'}${r.skipped ? ` · 건너뜀 ${r.skipped}건 (형식이 다르거나 이미 있음)` : ''}`;
     paint();
   } catch (err) {
     show('state-error');
-    $('#errorMsg').textContent = err instanceof SyntaxError ? 'JSON 파일이 아니에요. 내려받은 파일을 그대로 선택해 주세요' : err.message;
+    $('#errorMsg').textContent = err instanceof SyntaxError ? 'JSON 형식이 아니에요. 내려받은 내용을 그대로 넣어 주세요' : err.message;
   }
+}
+$('#importFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (f) doImport(await f.text());
 });
+$('#copyBtn').addEventListener('click', async () => {
+  const text = JSON.stringify(Object.fromEntries(['favorites_user', 'reports_user', 'recent_searches_user'].map(id => [id, contentOf(id)])), null, 2);
+  try { await navigator.clipboard.writeText(text); show('state-result'); $('#resultMsg').textContent = '내 데이터를 복사했어요. 다른 기기에서 붙여넣기로 가져오세요'; }
+  catch { $('#pasteBox').value = text; $('#pasteBox').select(); show('state-result'); $('#resultMsg').textContent = '복사 권한이 없어서 아래 칸에 채웠어요. 직접 복사해 주세요'; }
+});
+$('#pasteBtn').addEventListener('click', () => { const v = $('#pasteBox').value.trim(); if (v) doImport(v); else { show('state-error'); $('#errorMsg').textContent = '붙여넣을 내용이 없어요'; } });
 
 Promise.all([fetch('../data/data_manifest.json').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }), loadHazards()])
   .then(([m, r]) => { manifest = m; rows = r; $('#state-loading').classList.remove('on'); paint(); })

@@ -2,7 +2,16 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <link rel="icon" href="data:,">
+  <link rel="icon" type="image/png" href="../asset/icon-192.png">
+  <link rel="apple-touch-icon" href="../asset/icon-180.png">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Safe Drive">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Safe Drive · 데이터 관리</title>
   <link rel="stylesheet" href="../css/base.css">
@@ -51,9 +60,13 @@
         <div class="data-actions">
           <label class="btn" for="importFile" style="cursor:pointer">가져오기</label>
           <input type="file" id="importFile" accept="application/json,.json" hidden>
+          <button class="btn" id="copyBtn">복사</button>
           <button class="btn warn" id="clearBtn">모두 삭제</button>
         </div>
-        <div class="state" id="state-confirm"><p class="note err">즐겨찾기·최근 검색·제보가 모두 삭제돼요. 계속할까요?</p>
+        <p class="mu" style="margin-top:var(--sp3)">즐겨찾기는 기기마다 따로 저장돼요. 다른 기기로 옮기려면 여기서 복사한 뒤 그 기기에서 아래에 붙여넣으세요</p>
+        <textarea class="in" id="pasteBox" rows="3" aria-label="가져올 JSON 붙여넣기" placeholder="복사한 JSON을 붙여넣어요" style="width:100%"></textarea>
+        <div class="data-actions"><button class="btn" id="pasteBtn">붙여넣어 가져오기</button></div>
+        <div class="state" id="state-confirm"><p class="note err">이 기기의 즐겨찾기와 (로그인 중이면) 서버의 제보·최근 검색이 모두 삭제돼요. 계속할까요?</p>
           <div class="data-actions"><button class="btn" id="clearNo">취소</button><button class="btn dk" id="clearYes">삭제</button></div></div>
         <div class="state" id="state-result"><p class="note ok" id="resultMsg"></p></div>
         <div class="state" id="state-error"><p class="note err" id="errorMsg"></p></div>
@@ -61,14 +74,12 @@
     </section>
   </main>
 
-  <footer class="foot">
-    내 데이터는 이 기기에만 저장돼요
-  </footer>
 
   <nav class="tabbar"></nav>
 </div>
 
 <script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
 <script src="../js/common.js"></script>
 <script src="../js/data.js"></script>
 <script src="../js/datapage.js"></script>

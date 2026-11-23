@@ -1,0 +1,158 @@
+/* pages.css — 화면별 전용 스타일 (공통 규격은 components.css, 여기서는 배치만) */
+
+/* ---------- 홈 ---------- */
+.home-grid{display:block}
+.hero{position:relative;overflow:hidden;border-radius:var(--rl);background:var(--brand-t);padding:var(--sp5) var(--sp4) 0}
+.hero h1{font-size:var(--fs-h1);line-height:1.28;letter-spacing:-.8px;color:var(--tx)}
+.hero h1 em{font-style:normal;color:var(--brand)}
+.hero p{margin-top:var(--sp2);color:var(--tx2);font-size:var(--fs-body)}
+.hero svg{display:block;width:100%;height:auto;margin-top:var(--sp3)}
+.legend{display:flex;flex-wrap:wrap;gap:var(--sp3);padding:var(--sp2) 0 var(--sp4);font-size:var(--fs-cap);color:var(--tx2)}
+.legend i{display:inline-block;width:20px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+.legend i.dash{background:repeating-linear-gradient(90deg,#8b938f 0 4px,transparent 4px 8px)}
+.legend i.dot{width:10px;height:10px;border-radius:50%;background:var(--r4)}
+.route-box{margin-top:var(--sp3);padding:var(--sp4)}
+.route-box .fld{position:relative;margin-top:var(--sp2)}
+.route-box .fld:first-child{margin-top:0}
+.route-box .fld .in{margin-top:0;padding-left:44px}
+.route-box .dot{position:absolute;left:16px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;border:3px solid var(--brand);background:var(--pn)}
+.route-box .dot.end{border-color:var(--r4)}
+.route-box .btn.dk{margin-top:var(--sp3)}
+.route-box .me{display:inline-flex;align-items:center;gap:6px;margin-top:var(--sp2);padding:0;height:36px;border:0;background:none;color:var(--brand);font-weight:600;font-size:var(--fs-cap)}
+
+/* ---------- 위험 구간 목록 ---------- */
+.list-head{display:flex;align-items:baseline;gap:var(--sp2);margin-bottom:var(--sp3)}
+.list-head h1{margin-right:auto}
+.filters{display:flex;gap:var(--sp2);overflow-x:auto;scrollbar-width:none;margin:var(--sp3) calc(var(--gut) * -1) 0;padding:0 var(--gut)}
+.filters::-webkit-scrollbar{display:none}
+.filters .chip{flex:none}
+.filters .chip .ico{width:14px;height:14px}
+.result-bar{display:flex;align-items:center;gap:var(--sp2);margin:var(--sp3) 0 var(--sp2);min-height:32px}
+.result-bar .mu{margin-right:auto}
+.result-bar .chip{height:30px}
+
+/* ---------- 구간 상세 ---------- */
+.detail-hd{display:flex;align-items:center;gap:var(--sp2);flex-wrap:wrap}
+.detail-hd h1{font-size:var(--fs-page)}
+.where{display:flex;align-items:center;gap:var(--sp2);margin-top:var(--sp3);padding:var(--sp3) var(--sp4);background:var(--pn);border:1px solid var(--line);border-radius:var(--rm);color:var(--tx2);font-size:var(--fs-cap)}
+.where .ico{color:var(--brand)}
+
+/* ---------- 마이 ---------- */
+.profile{display:flex;align-items:center;gap:var(--sp3);background:var(--pn);border:1px solid var(--line);border-radius:var(--rl);padding:var(--sp4);margin-top:var(--sp3)}
+.avatar{flex:none;width:48px;height:48px;border-radius:50%;background:var(--brand-t);color:var(--brand);display:flex;align-items:center;justify-content:center}
+.profile > div{flex:1;min-width:0}
+.profile b,.profile .mu{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile .chip{flex:none}
+.menu-row{display:flex;align-items:center;gap:var(--sp3);min-height:56px;padding:0 var(--sp4);background:var(--pn);border:1px solid var(--line);border-radius:var(--rl);margin-top:var(--sp4);font-weight:600;cursor:pointer}
+.menu-row .ico:first-child{color:var(--brand)}
+.menu-row span{flex:1}
+.menu-row .ico:last-child{color:var(--tx2)}
+
+/* ---------- 입력 폼 (가입 · 제보) ---------- */
+.field{margin-top:var(--sp4)}
+.field label{display:block;font-weight:600;font-size:14px;margin-bottom:var(--sp2)}
+.field label i{font-style:normal;color:var(--r4);margin-left:2px}
+.field label small{font-weight:400;color:var(--tx2);margin-left:4px;font-size:var(--fs-cap)}
+.field .row{margin-top:0;flex-wrap:nowrap}
+.field .row .in{flex:1;margin-top:0;width:auto;min-width:0}
+.field .row .btn{width:auto;margin-top:0;flex:none;padding:0 var(--sp3);font-size:var(--fs-cap);height:48px}
+.field .mu{margin-top:6px}
+.field .mu.bad{color:var(--r4)}
+.page-lead{margin-top:var(--sp1);color:var(--tx2)}
+
+/* ---------- 경로 비교 · 예습 ---------- */
+.route-title{display:flex;align-items:center;gap:var(--sp2);flex-wrap:wrap}
+.route-title h1{font-size:var(--fs-page)}
+.fav-btn{display:inline-flex;align-items:center;gap:6px}
+.fav-btn.on{color:var(--brand);border-color:var(--brand);background:var(--brand-t)}
+.fav-btn.on .ico{fill:currentColor}
+
+/* ---------- 주행 안내 : 큰 글씨 · 최소 정보 ---------- */
+.navpage{padding-top:0}
+.turn{position:sticky;top:calc(var(--hd) + var(--st) + var(--sub));z-index:85;display:flex;align-items:center;gap:var(--sp4);margin:0 calc(var(--gut) * -1);padding:var(--sp4) var(--gut);background:#12372a;color:#fff}
+.turn-ic{flex:none;width:56px;height:56px;border-radius:var(--rm);background:#fff;color:#12372a;display:flex;align-items:center;justify-content:center}
+.turn-ic .ico{width:34px;height:34px;stroke-width:2.4}
+.turn b{display:block;font-size:var(--fs-sec);line-height:1.3}
+.turn #turnDist{font-size:var(--fs-body);opacity:.85}
+.navmap{--np:68px;position:relative;margin:0 calc(var(--gut) * -1);height:clamp(400px,62vh,540px);background:#e8efe9;overflow:hidden}   /* --np : 아래 안내 패널 높이 */
+.navmap > svg#map{width:100%;height:100%;display:block}
+.navmap svg#map path{vector-effect:non-scaling-stroke}
+.navmap #tmap{position:absolute;inset:0;z-index:0;isolation:isolate;background:#e8efe9}
+.navmap.tiles #map{display:none}
+/* 진행 방향이 위로 가는 지도 : 화면보다 큰 정사각형 지도를 통째로 돌리고, 화면은 그 가운데를 보여 준다 (크기·위치는 drive.js 가 계산) */
+.navmap #tmap.rot{inset:auto;transform-origin:50% 50%;transition:transform .45s linear;will-change:transform}
+/* 눕힌(3D) 상태: 차는 지도 위가 아니라 화면에 고정, 먼 곳은 안개로 덮는다 */
+.carfix{display:none;position:absolute;left:50%;top:calc(var(--anchor,.76) * 100%);transform:translate(-50%,-62%);z-index:1;pointer-events:none}
+.navmap.tilt .carfix{display:block}
+.navmap.tilt .carm{visibility:hidden}
+.navmap.tilt::after{content:'';position:absolute;left:0;right:0;top:0;height:34%;z-index:1;pointer-events:none;background:linear-gradient(to bottom,#e8efe9 0,#e8efe9 12%,rgba(232,239,233,0) 100%)}
+.navmap #tmap .leaflet-control-container{display:none}
+.carm{background:none;border:0}
+.carm svg{transition:transform .45s linear;filter:drop-shadow(0 1px 2px rgba(16,24,20,.35))}
+.compass{display:none;position:absolute;right:var(--sp3);bottom:calc(var(--np) + var(--sp3) + 46px);z-index:2;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:transparent;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(16,24,20,.22)}
+.compass svg{transition:transform .45s linear;display:block}
+.navmap.tiles .compass:not([hidden]){display:flex}
+.osm-attr{display:none;position:absolute;left:0;bottom:var(--np);z-index:2;padding:1px 6px;font-size:10px;line-height:1.5;color:#33403a;background:rgba(255,255,255,.8);pointer-events:none}
+.navmap.tiles .osm-attr{display:block}
+@media (prefers-reduced-motion:reduce){.navmap #tmap.rot,.carm svg,.compass svg{transition:none}}
+.app .leaflet-container{font:inherit;-webkit-tap-highlight-color:transparent}
+.app .leaflet-control-attribution{font-size:10px}
+.routemap,.listmap{position:relative;height:240px;margin-top:var(--sp3);border-radius:var(--rm);overflow:hidden;border:1px solid var(--line);background:#e8efe9;isolation:isolate}
+.routemap[hidden],.listmap[hidden]{display:none}
+.listmap{margin-top:0;height:220px}
+/* 구간 상세 맨 위 지도 : 화면 폭을 꽉 채운다 */
+.hero-map{position:relative;height:260px;margin:calc(var(--sp4) * -1) calc(var(--gut) * -1) 0;background:#e8efe9;border-bottom:1px solid var(--line);isolation:isolate;overflow:hidden}
+.hero-map[hidden]{display:none}
+.hero-map[hidden] + .where{margin-top:0}
+.hero-cap{position:absolute;left:var(--sp3);top:var(--sp3);z-index:500;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.95);box-shadow:0 1px 4px rgba(16,24,20,.18);font-size:var(--fs-cap);font-weight:600;color:var(--tx);pointer-events:none}
+/* 불러오는 자리 표시 (반짝이는 바탕) */
+.skel{background:linear-gradient(100deg,#e8efe9 30%,#f5f9f6 50%,#e8efe9 70%);background-size:300% 100%;animation:shimmer 1.4s linear infinite}
+@keyframes shimmer{from{background-position:100% 0}to{background-position:0 0}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
+.app .leaflet-popup-content-wrapper{border-radius:var(--rm)}
+.app .leaflet-popup-content{margin:10px 14px;font-size:var(--fs-cap);line-height:1.5}
+.pinmap{height:200px;margin-top:var(--sp3);border-radius:var(--rm);overflow:hidden;border:1px solid var(--line);isolation:isolate}
+.hzc{stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke;fill:var(--tx2)}
+.hzc.r1{fill:var(--r1)}.hzc.r2{fill:var(--r2)}.hzc.r3{fill:var(--r3)}.hzc.r4{fill:var(--r4)}
+.hzc.done{opacity:.3}
+.alert{display:none;background:var(--r4);color:#fff;padding:var(--sp3) var(--sp4);border-radius:var(--rm)}
+.alert.on{display:block}
+.alert[data-lv="1"]{background:var(--r1)}
+.alert[data-lv="2"]{background:var(--r2);color:#171c1a}
+.alert[data-lv="3"]{background:var(--r3)}
+.alert b{display:block;font-size:var(--fs-card)}
+.navmap .alert{position:absolute;left:var(--sp3);right:var(--sp3);top:var(--sp3);margin:0;z-index:2}
+.navmap .map-btn{position:absolute;right:var(--sp3);bottom:calc(var(--np) + var(--sp3));z-index:2;box-shadow:0 1px 4px rgba(16,24,20,.18)}
+.navpage .pv-stats b{font-size:var(--fs-card)}
+/* 아래 안내 패널 : 남은 시간 · 거리 · 도착 시각 · 속도 (실제 내비처럼 지도 위에 얹는다) */
+.navpanel{position:absolute;left:0;right:0;bottom:0;z-index:3;height:var(--np);display:flex;align-items:center;justify-content:space-between;gap:var(--sp3);padding:0 var(--gut);background:#fff;border-top:1px solid var(--line);box-shadow:0 -2px 8px rgba(16,24,20,.10)}
+.np-main{min-width:0}
+.np-main b{display:block;font-size:26px;line-height:1.1;font-weight:700;color:var(--tx);white-space:nowrap}
+.np-main span{display:block;margin-top:3px;font-size:var(--fs-cap);color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.np-spd{flex:none;width:54px;height:54px;border-radius:50%;border:3px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;background:#fff;color:var(--tx)}
+.np-spd b{font-size:19px;font-weight:700}
+.np-spd i{margin-top:2px;font-size:9px;font-style:normal;color:var(--tx2)}
+.np-spd.near{border-color:#f2c31b}
+.np-spd.over{border-color:#d6322f;background:#d6322f;color:#fff}
+.np-spd.over i{color:#fff}
+/* 교통 막대 : 아래가 지금 위치, 위가 도착. 칠하는 색은 drive.js 가 정한다 */
+.tbar{position:absolute;left:10px;top:12px;bottom:calc(var(--np) + 12px);width:12px;z-index:2;border-radius:6px;border:2px solid #fff;box-shadow:0 1px 4px rgba(16,24,20,.3);background:#cfd6d2}
+.tb-hz{position:absolute;inset:0}
+.tb-hz i{position:absolute;left:50%;width:14px;height:14px;margin:0 0 -7px -9px;border-radius:50%;border:2px solid #fff;background:var(--tx2);box-shadow:0 0 0 1px rgba(16,24,20,.25)}
+.tb-hz i.done{opacity:.35}
+/* 제한속도 표지 (단속 카메라가 가까울 때) */
+.limit{position:absolute;left:34px;bottom:calc(var(--np) + 28px);z-index:2;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
+.limit[hidden]{display:none}
+.limit b{display:flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:50%;background:#fff;border:6px solid #d6322f;font-size:22px;line-height:1;font-weight:700;color:#161616;box-shadow:0 1px 4px rgba(16,24,20,.3)}
+.limit b.nolimit{font-size:12px;line-height:1.15;text-align:center}
+.limit span{padding:1px 8px;border-radius:999px;background:rgba(16,24,20,.78);color:#fff;font-size:var(--fs-cap);font-weight:600;white-space:nowrap}
+.nav-opts{display:flex;align-items:center;gap:var(--sp2);flex-wrap:wrap;margin-top:var(--sp3)}
+.nav-opts .mu{margin-right:var(--sp1)}
+.nav-opts .grow{margin-left:auto}
+
+/* ---------- 데이터 관리 ---------- */
+.data-actions{display:flex;gap:var(--sp2);flex-wrap:wrap}
+.data-actions .btn{flex:1;min-width:140px;margin-top:var(--sp2)}
+
+.page > .detail-hd{margin-top:var(--sp4)}
+

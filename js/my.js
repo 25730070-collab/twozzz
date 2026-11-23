@@ -1,11 +1,42 @@
 /* my.js — 마이: 프로필 · 즐겨찾기 / 최근검색 / 내 제보 (눌러서 이동 · 삭제) */
+/* ab***@gmail.com — 앞 2글자만 보인다 */
+const maskEmail = e => { const [a, d] = String(e).split('@'); return a && d ? `${a.slice(0, 2)}${'*'.repeat(Math.max(a.length - 2, 1))}@${d}` : e; };
 const user = store.get(KEY.user);
 $('#avatar').innerHTML = ico('user');
 if (user) {
   $('#profileName').textContent = `${user.nickname} 님`;
-  $('#profileSub').textContent = user.email;
+  $('#profileSub').textContent = user.server ? maskEmail(user.email) : user.email;      // 화면을 누가 어깨 너머로 봐도 이메일 전체는 안 보이게
   $('#profileBtn').textContent = '로그아웃';
   $('#profileBtn').dataset.action = 'logout';
+}
+
+/* 회원 서버 계정이면: 로그인이 아직 유효한지 확인하고, 회원 탈퇴를 보여 준다 */
+if (user && user.server) {
+  $('#withdrawRow').hidden = false;
+  $('#storeNote').textContent = '닉네임·이메일·비밀번호(해시)·최근 검색·제보는 회원 서버 DB에 저장돼서 다른 기기에서도 볼 수 있어요. 즐겨찾기는 이 기기에만 저장돼요 (다른 기기로는 데이터 관리에서 옮겨요)';
+  Account.me().catch(e => {                            // 만료·삭제된 계정이면 이 기기의 로그인 정보를 정리한다 (네트워크 오류일 땐 그대로 둔다)
+    if (e.status === 401) { Account.clearSession(); flash('로그인이 만료됐어요. 다시 로그인해 주세요'); location.reload(); }
+  });
+  const md = document.createElement('div'); md.className = 'modal'; md.id = 'withdrawModal'; md.setAttribute('role', 'dialog'); md.setAttribute('aria-modal', 'true'); md.setAttribute('aria-label', '회원 탈퇴 확인');
+  md.innerHTML = `<div class="modal-box"><h3>정말 탈퇴할까요?</h3><p class="mu">서버에 저장된 닉네임·이메일·비밀번호와 제보·최근 검색·로그인 기록이 바로 삭제돼요. 되돌릴 수 없어요. 이 기기의 즐겨찾기는 그대로 남아요.</p>
+    <label class="mu" for="wdPw" style="display:block;margin-top:var(--sp3)">비밀번호를 입력해 주세요</label>
+    <input class="in" id="wdPw" type="password" autocomplete="current-password" maxlength="64">
+    <p class="note err" id="wdErr" role="alert" hidden></p>
+    <div class="row"><button class="btn" id="wdNo">취소</button><button class="btn dk" id="wdYes">탈퇴하기</button></div></div>`;
+  document.body.appendChild(md);
+  const close = () => md.classList.remove('on');
+  $('#withdrawRow').addEventListener('click', e => { e.preventDefault(); $('#wdErr').hidden = true; $('#wdPw').value = ''; md.classList.add('on'); $('#wdPw').focus(); });
+  $('#wdNo').addEventListener('click', close);
+  md.addEventListener('click', e => { if (e.target === md) close(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  $('#wdYes').addEventListener('click', async () => {
+    const b = $('#wdYes'); b.disabled = true;
+    try { await Account.withdraw($('#wdPw').value); Account.clearSession(); flash('탈퇴했어요. 서버의 계정·제보·검색 기록을 삭제했어요'); location.reload(); }
+    catch (e) {
+      if (e.status === 401) { Account.clearSession(); flash('이미 로그아웃된 상태예요'); return location.reload(); }
+      $('#wdErr').textContent = e.message; $('#wdErr').hidden = false; b.disabled = false;
+    }
+  });
 }
 
 const delBtn = (id, kind, label) => `<button class="chip del" data-id="${id}" data-kind="${kind}" aria-label="${label}">${ico('close', 's')}</button>`;
@@ -55,15 +86,14 @@ document.addEventListener('click', e => {
   }
   const del = t.closest('.chip.del');
   if (del) {
-    const k = del.dataset.kind;
-    store.set(KEY_OF[k], GET_OF[k]().filter(x => (x.id || x.segmentId) !== del.dataset.id));
+    removeItem(del.dataset.kind, del.dataset.id).then(() => paint());
     paint(); return;
   }
-  if (t.id === 'clearAllRecent') { store.set(KEY.recent, []); paint(); return; }
+  if (t.id === 'clearAllRecent') { clearRecent(); paint(); return; }
   if (t.id === 'profileBtn') {
     if (t.dataset.action === 'logout') openLogoutConfirm();
     else location.href = 'signup.html';
   }
 });
 
-loadHazards().then(paint, paint);
+syncUp().finally(() => loadHazards().then(paint, paint));       // 서버 계정이면: 못 올린 것을 올리고, 서버 것을 받아 온 뒤 그린다

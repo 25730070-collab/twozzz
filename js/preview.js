@@ -25,7 +25,7 @@ function render() {
   if (!res) return;
   const st = res[type];
   $('#headerTitle').textContent = `${o} → ${d}`;
-  $$('#typeTabs button').forEach(b => b.classList.toggle('on', b.dataset.type === type));
+  $$('#typeTabs button').forEach(b => { const on = b.dataset.type === type; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
   $('#pvStats').innerHTML = `
     <div><b>${st.minutes}분</b><span class="mu">소요 시간</span></div>
     <div><b>${st.km}km</b><span class="mu">거리</span></div>

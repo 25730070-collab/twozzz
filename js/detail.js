@@ -8,17 +8,19 @@ $$('.roadName').forEach(el => { el.textContent = seg.roadName; });
 $('#accCell').innerHTML = isNil(seg.accidentCount) ? `정보 없음${typeTag('미입력', 'nil')}` : `${seg.accidentCount}건`;
 $('#yearCell').innerHTML = isNil(seg.year) ? `정보 없음${typeTag('미입력', 'nil')}` : `${seg.year}년`;
 $('.address').innerHTML = infoText(seg.address);
-/* 지도 이미지가 없을 때 : 좌표 또는 표준 대체 화면 */
+/* 지도 : 가장 위. 불러오는 동안 자리를 먼저 잡아 두고(깜빡임 방지), 못 불러오면 좌표 안내 카드를 보여 준다 */
 $('#mapView').innerHTML = isNil(seg.lat) || isNil(seg.lng)
   ? `${ico('pin')}위치 정보가 없어요`
   : `${ico('pin')}위도 ${(+seg.lat).toFixed(4)} · 경도 ${(+seg.lng).toFixed(4)}`;
-if (!isNil(seg.lat) && !isNil(seg.lng)) {                 // 실제 지도를 불러오면 위 좌표 문구를 지도로 바꾼다 (실패하면 문구 유지)
-  const holder = document.createElement('div'); holder.className = 'pinmap'; holder.hidden = true;
-  $('#mapView').after(holder);
-  createMap(holder, { center: [seg.lat, seg.lng], zoom: 16, dragging: true }).then(m => {
-    if (!m) return holder.remove();
-    holder.hidden = false; $('#mapView').hidden = true;
-    m.L.circleMarker([seg.lat, seg.lng], { radius: 10, color: '#fff', weight: 3, fillColor: RISK_COLOR[seg.riskLevel] || '#5b6560', fillOpacity: 1 }).addTo(m.map);
+if (!isNil(seg.lat) && !isNil(seg.lng)) {
+  const hero = $('#heroMap'); hero.hidden = false; $('#mapView').hidden = true;
+  createMap(hero, { center: [seg.lat, seg.lng], zoom: 15.5, lite: true }).then(async m => {
+    if (!m) { hero.hidden = true; $('#mapView').hidden = false; return; }          // 실패하면 좌표 문구로 되돌린다
+    hero.classList.remove('skel');
+    const near = (await loadHazards()).filter(s => s.segmentId !== seg.segmentId && !isNil(s.lat) && !isNil(s.lng) && hav([seg.lat, seg.lng], [+s.lat, +s.lng]) <= 1000);
+    near.forEach(s => hazardDot(m, s, { radius: 6 }));
+    hazardDot(m, seg, { current: true });
+    const cap = $('#heroCap'); cap.textContent = near.length ? `주변 1km 다발지점 ${near.length}곳` : '주변 1km에 다른 다발지점 없음'; cap.hidden = false;
     m.map.invalidateSize();
   });
 }
@@ -41,8 +43,21 @@ if (seg.pnt && seg.pnt.detail) {
     || '<p class="mu">사고 유형 정보가 없어요</p>';
   $('#pntCas').innerHTML = PNT_SUM.map(([k, l]) => `<div><b>${dt[k] ?? 0}명</b><span class="mu">${l}</span></div>`).join('');
   $('#pntNote').textContent = `국토교통부 사고다발지점 「${p.name}」 기준 · ${p.year}년까지 과거 3년 · 개별 사고 ${dt.accidents}건 · 이 구간에서 약 ${p.distM}m`;
-  $('#pntBox').hidden = false; $('#pntSrc').hidden = false;
+  const tip = pntAdvice(seg), topName = types.length ? types[0][0].split(' · ').pop() : '';
+  if (tip) { $('#pntTip').textContent = `운전 팁 · ${tip} (가장 많은 사고 유형: ${topName})`; $('#pntTip').hidden = false; }
+  $('#pntBox').hidden = false;
 }
+
+else if (seg.source !== 'user') {                          // 사고 유형 칸이 없는 이유를 숨기지 않고 알려 준다
+  const n = $('#pntNone');
+  n.textContent = DATA_STATUS.pnt === 'fail' ? '사고 유형·인명 피해 데이터를 불러오지 못했어요' : '이 구간 가까이(150m 안)에 연결된 사고 유형·인명 피해 정보가 없어요';
+  n.hidden = false;
+}
+
+/* 출처 한 줄 (구간 데이터의 종류에 맞게) */
+$('#metaSum').textContent = seg.source === 'user'
+  ? '사용자가 제보한 구간이에요. 확인되지 않은 정보일 수 있어요'
+  : '사고 건수 출처 · 도로교통공단 지자체별 교통사고 다발지역. 위험등급은 수집한 구간의 사고 건수를 비교한 상대 등급이에요';
 
 /* 같은 구의 다른 구간 */
 const sameGu = (await loadHazards()).filter(s => s.segmentId !== seg.segmentId && guOf(s) === guOf(seg));

@@ -114,10 +114,10 @@
 .rt-card{display:block;background:var(--pn);border:1.5px solid var(--line);border-radius:var(--rl);padding:var(--sp4);margin-top:var(--sp3);cursor:pointer;position:relative}
 .rt-card input{position:absolute;opacity:0;pointer-events:none}
 .rt-card.on{border-color:var(--brand);box-shadow:0 0 0 3px var(--brand-t)}
-.rt-card[data-type="fast"].on{border-color:var(--tx2);box-shadow:0 0 0 3px var(--line)}
+.rt-card[data-type="fast"].on{border-color:#3d5a80;box-shadow:0 0 0 3px #e4eaf2}
 .rt-card::after{content:"";position:absolute;top:16px;right:16px;width:20px;height:20px;border-radius:50%;border:2px solid var(--line2);background:var(--pn)}
 .rt-card.on::after{border-color:var(--brand);background:var(--brand);box-shadow:inset 0 0 0 4px var(--pn)}
-.rt-card[data-type="fast"] .stat .bar i{background:#8b938f}
+.rt-card[data-type="fast"] .stat .bar i{background:#3d5a80}
 .rt-hd{padding-right:32px;display:flex;align-items:center;gap:var(--sp2);margin-bottom:var(--sp3)}
 .rt-hd b{font-size:var(--fs-card);margin-right:auto}
 .rt-hd .chip{height:24px;font-size:12px}
@@ -125,6 +125,17 @@
 .rt-stats > div{flex:1;background:var(--bg);border-radius:var(--rm);padding:10px 6px;text-align:center}
 .rt-stats b{display:block;font-size:var(--fs-sec)}
 .verdict{background:var(--brand-t);color:var(--brand-d);border-radius:var(--rl);padding:var(--sp3) var(--sp4);margin-top:var(--sp3);line-height:1.55;font-size:var(--fs-body)}
+.verdict[hidden]{display:none}
+.verdict > b{display:block;font-size:var(--fs-card)}
+.verdict > p{margin-top:var(--sp1);font-size:var(--fs-cap);color:var(--tx2)}
+.delta{display:flex;gap:var(--sp2);margin-top:var(--sp3)}
+.delta > div{flex:1;min-width:0;background:rgba(255,255,255,.75);border-radius:var(--rm);padding:10px 6px;text-align:center;color:var(--tx)}
+.delta b{display:block;font-size:var(--fs-sec);line-height:1.3}
+.delta span{display:block;font-size:12px;color:var(--tx2)}
+.delta .good b{color:var(--brand-d)}
+.rdot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none;margin-right:-2px}
+.rdot.fast{background:#3d5a80}.rdot.safe{background:var(--brand)}
+.skel-map{height:240px;border-radius:var(--rm);margin-bottom:var(--sp3)}
 
 /* 타임라인 (예습 · 안내) */
 .tl-item{display:flex;gap:var(--sp3);padding:14px 0;border-bottom:1px solid var(--line);align-items:flex-start;cursor:pointer}
@@ -152,3 +163,54 @@
 .tb .tv{color:var(--tx2);white-space:nowrap}
 .tb .bar{grid-column:1 / -1;height:8px;border-radius:99px;background:var(--bg);overflow:hidden}
 .tb .bar i{display:block;height:100%;background:var(--brand);border-radius:99px}
+
+.skel-card{height:68px;border-radius:var(--rm);margin-bottom:var(--sp2)}
+.state .skel-card{text-align:left}
+
+.tip{background:var(--brand-t);color:var(--brand-d);border-radius:var(--rm);padding:var(--sp3) var(--sp4);margin:0 0 var(--sp4);font-size:var(--fs-cap);font-weight:600;line-height:1.5}
+.tip[hidden]{display:none}
+
+/* 장소 자동완성 목록 */
+.sug{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:60;margin:0;padding:var(--sp1);list-style:none;background:var(--pn);border:1px solid var(--line);border-radius:var(--rm);box-shadow:0 6px 20px rgba(16,24,20,.14);max-height:300px;overflow-y:auto}
+.sug[hidden]{display:none}
+.sug li{padding:10px var(--sp3);border-radius:var(--rs);cursor:pointer;min-height:44px}
+.sug li b{display:block;font-size:var(--fs-body);font-weight:600}
+.sug li span{display:block;font-size:var(--fs-cap);color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sug li.on,.sug li:active{background:var(--brand-t)}
+
+/* 비교한 후보 경로 (펼치기) */
+.cand{margin-top:var(--sp3);background:var(--pn);border:1px solid var(--line);border-radius:var(--rl)}
+.cand[hidden]{display:none}
+.cand summary{display:flex;align-items:center;min-height:48px;padding:0 var(--sp4);font-size:var(--fs-body);font-weight:600;color:var(--brand);cursor:pointer;list-style:none}
+.cand summary::-webkit-details-marker{display:none}
+.cand summary::after{content:"";margin-left:auto;width:8px;height:8px;border-right:2px solid var(--tx2);border-bottom:2px solid var(--tx2);transform:rotate(45deg);transition:transform .15s}
+.cand[open] summary::after{transform:rotate(-135deg)}
+.cand-l{list-style:none;margin:0;padding:0 var(--sp4) var(--sp2)}
+.cand-l li{display:flex;justify-content:space-between;gap:var(--sp3);padding:10px 0;border-top:1px solid var(--line)}
+.cand-l li > div{display:flex;flex-direction:column;min-width:0}
+.cand-l li > div.r{text-align:right;align-items:flex-end}
+.cand-l li b{font-size:var(--fs-body)}
+.cand-l li.on b{color:var(--brand-d)}
+
+.pnt-none{margin-top:var(--sp3);text-align:center}
+.pnt-none[hidden]{display:none}
+
+/* 경로 비교: 좌우 2열 카드 (v0.6) */
+.rt-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp3);margin-top:var(--sp3)}
+.rt-grid .rt-card{margin-top:0;padding:var(--sp3);min-width:0}
+.rt-grid .rt-card::after{top:12px;right:12px;width:18px;height:18px}
+.rt-grid .rt-hd{padding-right:24px;margin-bottom:var(--sp1)}
+.rt-grid .rt-hd b{font-size:var(--fs-body);white-space:nowrap}
+.rt-tag{min-height:24px;margin-bottom:var(--sp1)}
+.rt-tag .chip{height:24px;font-size:12px}
+.rt-big{display:flex;align-items:baseline;gap:2px;margin-bottom:var(--sp2)}
+.rt-big b{font-size:32px;line-height:1.1;font-variant-numeric:tabular-nums}
+.rt-big span{font-size:var(--fs-body);color:var(--tx2)}
+.rt-dl > div{display:flex;justify-content:space-between;gap:var(--sp2);padding:6px 0;border-top:1px solid var(--line);font-size:var(--fs-cap)}
+.rt-dl dt{color:var(--tx2)}
+.rt-dl dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums}
+.rt-bar{display:block;height:6px;border-radius:3px;background:var(--bg);overflow:hidden;margin-top:var(--sp2)}
+.rt-bar i{display:block;height:100%;background:var(--brand)}
+.rt-card[data-type="fast"] .rt-bar i{background:#3d5a80}
+.rt-names{margin-top:var(--sp3);white-space:normal}
+.rt-names:empty{display:none}

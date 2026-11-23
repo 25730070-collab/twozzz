@@ -43,7 +43,6 @@
 .cta-bar .btn{margin-top:0;flex:1}
 .cta-bar .btn.fit{flex:none;width:auto;padding:0 var(--sp4)}
 
-.foot{margin-top:var(--sp6);padding:var(--sp4) var(--gut);color:var(--tx2);font-size:var(--fs-cap);line-height:1.7;text-align:center}
 
 .totop{position:fixed;bottom:calc(var(--tab) + env(safe-area-inset-bottom) + 12px);right:max(16px,calc(50% - var(--w) / 2 + 16px));width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--pn);box-shadow:0 2px 8px rgba(16,24,20,.12);color:var(--tx);display:none;align-items:center;justify-content:center;z-index:var(--z-top)}
 .totop.show{display:flex}
@@ -58,3 +57,23 @@
 .modal-box .btn{margin-top:0;flex:1}
 .toast{position:fixed;left:50%;bottom:calc(var(--tab) + env(safe-area-inset-bottom) + 20px);transform:translateX(-50%);z-index:var(--z-toast);max-width:calc(100% - 32px);padding:10px 16px;border-radius:999px;background:var(--tx);color:#fff;font-size:var(--fs-cap);white-space:nowrap}
 .has-cta ~ .toast{bottom:calc(var(--bar) + env(safe-area-inset-bottom) + 20px)}
+
+/* 바텀 시트 (아래에서 올라오는 안내) */
+.sheet{position:fixed;inset:0;z-index:var(--z-modal);display:none;background:rgba(16,24,20,.45)}
+.sheet.on{display:block}
+.sheet-box{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:var(--w);max-height:86vh;max-height:86dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--pn);border-radius:var(--rl) var(--rl) 0 0;padding:var(--sp3) var(--gut) calc(var(--sp5) + env(safe-area-inset-bottom));animation:sheetUp .22s ease}
+@keyframes sheetUp{from{transform:translate(-50%,28px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+.grab{display:block;width:36px;height:4px;border-radius:2px;background:var(--line2);margin:0 auto var(--sp2)}
+.sheet-hd{display:flex;align-items:center;margin-bottom:var(--sp1)}
+.sheet-hd h3{margin-right:auto}
+.sheet-hd .hd-btn{margin-right:-10px}
+.sheet h4{font-size:var(--fs-card);margin:var(--sp5) 0 var(--sp2)}
+.info-list{list-style:none;margin:0;padding:0}
+.info-list li{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-bottom:1px solid var(--line);font-size:var(--fs-body)}
+.info-list li:last-child{border-bottom:0}
+.info-list li > span{color:var(--tx2);font-size:var(--fs-cap);line-height:1.5}
+.info-list.plain li{display:block;padding:6px 0 6px 14px;position:relative;border:0;color:var(--tx2);font-size:var(--fs-cap);line-height:1.6}
+.info-list.plain li::before{content:"";position:absolute;left:2px;top:15px;width:4px;height:4px;border-radius:50%;background:var(--line2)}
+
+.offline{position:fixed;top:calc(var(--hd) + var(--st));left:50%;transform:translateX(-50%);width:100%;max-width:var(--w);z-index:var(--z-top);padding:8px var(--gut);background:#3a4540;color:#fff;font-size:var(--fs-cap);line-height:1.4;text-align:center}
+.offline[hidden]{display:none}

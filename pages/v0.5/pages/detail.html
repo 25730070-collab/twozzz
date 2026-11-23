@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" type="image/png" href="../asset/icon-192.png">
+  <link rel="apple-touch-icon" href="../asset/icon-180.png">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Safe Drive">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safe Drive · 구간 상세</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="detail" data-base="">
+<div class="app has-cta">
+  <header class="app-header"></header>
+  <div class="subhead"><button class="ic" id="backBtn" data-fallback="list.html" aria-label="뒤로">←</button><b id="headerTitle">구간 상세</b><span class="right"></span></div>
+
+  <main class="page">
+    <!-- 지도는 가장 위에 : 실제 지도를 못 불러오면 아래 좌표 안내 카드가 대신 보인다 -->
+    <div class="hero-map skel" id="heroMap" hidden><span class="hero-cap" id="heroCap" hidden></span></div>
+    <div class="where" id="mapView"></div>
+
+    <div class="detail-hd"><h1 class="roadName"></h1></div>
+    <div class="row" style="margin-top:var(--sp2)"><span class="bg r1 riskLevel" id="riskBadge" data-risk="1">1등급</span><span id="srcBadge"></span></div>
+    <p class="mu address" style="margin-top:var(--sp2)"></p>
+
+    <div class="kv">
+      <div><b id="accCell">0</b><span class="mu">사고 건수</span></div>
+      <div><b id="yearCell">-</b><span class="mu">기준 연도</span></div>
+    </div>
+
+    <section class="box" id="extraBox" hidden>
+      <h3 style="font-size:var(--fs-card)">피해 현황</h3>
+      <div class="kv" id="extraList"></div>
+    </section>
+
+    <section class="box" id="pntBox" hidden>
+      <p class="tip" id="pntTip" hidden></p>
+      <h3 style="font-size:var(--fs-card)">사고 유형</h3>
+      <div class="tbars" id="pntTypes"></div>
+      <h3 style="font-size:var(--fs-card);margin-top:var(--sp4)">인명 피해</h3>
+      <div class="pv-stats" id="pntCas" style="margin-top:var(--sp2)"></div>
+      <p class="mu" id="pntNote" style="margin-top:var(--sp3);white-space:normal"></p>
+    </section>
+
+    <p class="mu pnt-none" id="pntNone" hidden></p>
+    <p class="meta-sum" id="metaSum">위험등급은 수집한 구간의 사고 건수를 비교한 상대 등급이에요</p>
+
+    <section class="section">
+      <div class="section-hd"><h3 id="relatedTitle">다른 구간</h3></div>
+      <div class="list-box" id="relatedList"></div>
+    </section>
+  </main>
+
+
+  <div class="cta-bar">
+    <a class="btn" href="list.html">전체 구간</a>
+    <button class="btn dk" id="favBtn" data-fav="false">구간 즐겨찾기</button>
+  </div>
+</div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/geo.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/map.js"></script>
+<script src="../js/detail.js"></script>
+</body>
+</html>

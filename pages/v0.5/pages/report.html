@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" type="image/png" href="../asset/icon-192.png">
+  <link rel="apple-touch-icon" href="../asset/icon-180.png">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Safe Drive">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Safe Drive · 위험 구간 제보</title>
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/pages.css">
+</head>
+<body data-page="report" data-base="">
+<div class="app has-cta">
+  <header class="app-header"></header>
+  <div class="subhead"><button class="ic" id="backBtn" data-fallback="list.html" aria-label="뒤로">←</button><b id="headerTitle">위험 구간 제보</b><span class="right"></span></div>
+
+  <main class="page">
+    <h1>위험하다고 느낀 곳을<br>알려 주세요</h1>
+    <p class="page-lead">제보한 구간은 목록에 <span class="src u">U</span> 로 표시돼요</p>
+
+    <div class="field"><label for="roadName">도로명 · 구간 이름<i aria-hidden="true">*</i></label>
+      <input class="in" id="roadName" maxlength="30" placeholder="예: 테헤란로 3번 구간" autocomplete="off"></div>
+    <div class="field"><label for="address">주소<i aria-hidden="true">*</i></label>
+      <input class="in" id="address" maxlength="60" placeholder="예: 서울특별시 강남구 논현동" autocomplete="off"></div>
+    <div class="field"><label for="riskLevel">내가 느낀 위험도<i aria-hidden="true">*</i></label>
+      <select id="riskLevel"><option value="1">1등급 (낮음)</option><option value="2">2등급</option><option value="3">3등급</option><option value="4">4등급 (매우 높음)</option></select></div>
+    <div class="field"><label for="accidentCount">알고 있는 사고 건수<small>선택</small></label>
+      <input class="in" id="accidentCount" inputmode="numeric" maxlength="3" placeholder="모르면 비워 두세요" autocomplete="off"></div>
+
+    <div class="state" id="state-err"><p class="note err" id="errMsg"></p></div>
+    <div class="state" id="state-done"><p class="note ok">제보가 저장됐어요</p>
+      <button class="btn dk" onclick="location.href='list.html'">목록에서 확인하기</button></div>
+    <p class="mu" style="margin-top:var(--sp4)">이 기기에만 저장되며, 위치(좌표)는 받지 않아요</p>
+  </main>
+
+  <div class="cta-bar"><button class="btn dk" id="submit">제보하기</button></div>
+
+<script src="../js/storage.js"></script>
+<script src="../js/config.js"></script>
+<script src="../js/common.js"></script>
+<script src="../js/report.js"></script>
+</body>
+</html>
