@@ -31,10 +31,11 @@
           <p>사고 다발 구간 데이터로 빠른 경로와 안전 경로를 비교해요</p>
           <svg viewBox="0 0 360 150" role="img" aria-label="빠른 경로와 사고 다발지점을 피해 가는 안전 경로 예시">
             <g stroke="#cfe3d8" stroke-width="10" stroke-linecap="round" fill="none"><path d="M-10 118 L120 92 L250 112 L370 70"/><path d="M60 160 L96 60 L150 -10"/><path d="M210 160 L238 76 L300 -10"/></g>
-            <path d="M40 112 C110 96 190 96 322 52" fill="none" stroke="#8b938f" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round"/>
-            <path d="M40 112 C80 70 150 40 228 48 S290 50 322 52" fill="none" stroke="#0b8457" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="170" cy="92" r="15" fill="#c0282d" fill-opacity=".18"/><circle cx="170" cy="92" r="6" fill="#c0282d" stroke="#fff" stroke-width="2"/>
+            <path class="hr-fast" d="M40 112 C110 96 190 96 322 52" fill="none" stroke="#8b938f" stroke-width="4" stroke-dasharray="2 9" stroke-linecap="round"/>
+            <path class="hr-safe" pathLength="1" d="M40 112 C80 70 150 40 228 48 S290 50 322 52" fill="none" stroke="#0b8457" stroke-width="5" stroke-linecap="round"/>
+            <circle class="hr-pulse" cx="170" cy="92" r="15" fill="#c0282d" fill-opacity=".18"/><circle cx="170" cy="92" r="6" fill="#c0282d" stroke="#fff" stroke-width="2"/>
             <circle cx="40" cy="112" r="9" fill="#fff" stroke="#0b8457" stroke-width="5"/>
+            <circle class="hr-car" r="7" fill="#2b6fff" stroke="#fff" stroke-width="3"/>
             <circle cx="322" cy="52" r="9" fill="#fff" stroke="#c0282d" stroke-width="5"/>
           </svg>
           <div class="legend"><span><i style="background:#0b8457"></i>안전 경로</span><span><i class="dash"></i>빠른 경로</span><span><i class="dot"></i>사고 다발지점</span></div>

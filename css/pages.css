@@ -136,10 +136,6 @@
 .np-spd.over{border-color:#d6322f;background:#d6322f;color:#fff}
 .np-spd.over i{color:#fff}
 /* 교통 막대 : 아래가 지금 위치, 위가 도착. 칠하는 색은 drive.js 가 정한다 */
-.tbar{position:absolute;left:10px;top:12px;bottom:calc(var(--np) + 12px);width:12px;z-index:2;border-radius:6px;border:2px solid #fff;box-shadow:0 1px 4px rgba(16,24,20,.3);background:#cfd6d2}
-.tb-hz{position:absolute;inset:0}
-.tb-hz i{position:absolute;left:50%;width:14px;height:14px;margin:0 0 -7px -9px;border-radius:50%;border:2px solid #fff;background:var(--tx2);box-shadow:0 0 0 1px rgba(16,24,20,.25)}
-.tb-hz i.done{opacity:.35}
 /* 제한속도 표지 (단속 카메라가 가까울 때) */
 .limit{position:absolute;left:34px;bottom:calc(var(--np) + 28px);z-index:2;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none}
 .limit[hidden]{display:none}
@@ -156,3 +152,24 @@
 
 .page > .detail-hd{margin-top:var(--sp4)}
 
+
+/* 홈 히어로 모션 (v0.6): 안전 경로가 그려지고 → 차가 사고 다발지점을 피해 도착 → 다시 반복. 다발지점은 계속 깜빡임 */
+.hr-pulse{transform-box:fill-box;transform-origin:center;animation:hrPulse 2s ease-out infinite}
+.hr-fast{animation:hrFast 7s ease-in-out infinite}
+.hr-safe{stroke-dasharray:1;stroke-dashoffset:0;animation:hrDraw 7s ease-in-out infinite}
+.hr-car{opacity:0}
+@supports (offset-path:path("M0 0")){
+  .hr-car{offset-path:path("M40 112 C80 70 150 40 228 48 S290 50 322 52");offset-rotate:0deg;animation:hrCar 7s ease-in-out infinite}
+}
+@keyframes hrPulse{0%{transform:scale(.7);fill-opacity:.35}70%,100%{transform:scale(1.5);fill-opacity:0}}
+@keyframes hrDraw{0%{stroke-dashoffset:1;opacity:1}32%,88%{stroke-dashoffset:0;opacity:1}96%,100%{stroke-dashoffset:0;opacity:0}}
+@keyframes hrFast{0%,88%{opacity:1}96%,100%{opacity:.25}}
+@keyframes hrCar{0%,30%{offset-distance:0%;opacity:0}34%{opacity:1}82%{offset-distance:100%;opacity:1}88%,100%{offset-distance:100%;opacity:0}}
+
+/* 화면 등장 효과 (v0.6): 카드·상자가 아래에서 살짝 올라오며 나타난다 (모션 줄이기 설정이면 꺼짐) */
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.hero,.route-box,.verdict,.rt-grid .rt-card,.list-box > .card:nth-child(-n+8),.box,.section{animation:rise .35s ease both}
+.rt-grid .rt-card:nth-child(2),.list-box > .card:nth-child(2){animation-delay:.05s}
+.list-box > .card:nth-child(3){animation-delay:.1s}
+.list-box > .card:nth-child(4){animation-delay:.15s}
+.list-box > .card:nth-child(n+5){animation-delay:.2s}

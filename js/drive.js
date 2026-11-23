@@ -136,7 +136,6 @@ function setup() {
   const end = pts[pts.length - 1];
   $('#endPt').setAttribute('cx', end[0]); $('#endPt').setAttribute('cy', end[1]);
   camList = cams ? camsOnRoute(route, cams, CONFIG.CAMERA_RADIUS_M) : [];
-  $('#tbHz').innerHTML = route.hazards.map(h => `<i style="background:${RISK_COLOR[h.seg.riskLevel] || '#5b6560'}"></i>`).join('');
   hz.length = 0;
   route.hazards.forEach((h, i) => {
     const p = xy([h.seg.lat, h.seg.lng]), c = document.createElementNS(NS, 'circle');
@@ -178,30 +177,10 @@ function paintInfo() {
   $('#npSpeed').textContent = mode === 'gps' ? (gpsWeak || gpsSpeed === null ? '-' : Math.round(gpsSpeed)) : (timer ? '×' + speedMult : '-');
   $('#npUnit').textContent = mode === 'gps' ? (gpsWeak ? '신호 약함' : 'km/h') : '연습';
   sp.classList.toggle('near', lv === 'near'); sp.classList.toggle('over', lv === 'over');
-
-  /* 교통 막대 : 지금 위치(아래) → 도착(위). 길찾기 때 받은 도로별 교통 상태를 이어서 칠한다 */
-  const bar = $('#tbar'); bar.hidden = !hasTraffic(route);
-  if (!bar.hidden) {
-    const stops = [];
-    for (const g of trafficSegs(route)) {
-      const a = Math.max(g.from, m), b = g.to; if (b <= a || left <= 0) continue;
-      stops.push(`${trafficOf(g.st)?.color || '#cfd6d2'} ${((a - m) / left * 100).toFixed(2)}% ${((b - m) / left * 100).toFixed(2)}%`);
-    }
-    bar.style.background = stops.length ? `linear-gradient(to top, ${stops.join(',')})` : '#cfd6d2';
-    [...$('#tbHz').children].forEach((el, i) => {
-      const at = route.hazards[i].at, pct = left > 0 ? (at - m) / left * 100 : 0;
-      el.style.display = pct < -2 ? 'none' : ''; el.style.bottom = Math.min(Math.max(pct, 0), 100) + '%';
-      el.classList.toggle('done', hz[i] && hz[i].state === 'done');
-    });
-  }
 }
 function paintNote() {
   if (!route) return;
-  const t = ['남은 시간·도착 시각은 길찾기를 요청한 때의 교통 정보(카카오모빌리티) 기준 예상이에요. 실시간으로 바뀌지는 않아요.'];
-  t.push(hasTraffic(route) ? '왼쪽 막대는 앞으로 갈 길의 교통 상황이에요 (초록 원활 · 노랑 서행 · 주황 지체 · 빨강 정체).' : '이 경로는 교통 상황 정보가 없어 막대를 보여 주지 않아요.');
-  t.push(cams ? '제한속도 표지는 공공데이터의 단속 카메라 위치에서만 나와요. 모든 도로의 제한속도는 아니고, 반대 방향 카메라가 함께 보일 수 있어요.' : '단속 카메라·제한속도 데이터 파일이 없어 제한속도는 표시하지 않아요.');
-  if (mode !== 'gps') t.push('연습에서는 도착 시각을 지금 출발한다고 가정해 보여 줘요.');
-  $('#infoNote').textContent = t.join(' ');
+  $('#infoNote').textContent = `남은 시간·도착 시각은 길찾기 때의 예상이에요(카카오모빌리티). ${cams ? '제한속도는 단속 카메라 위치에서만 보여요.' : '제한속도 데이터가 없어 표시하지 않아요.'}`;
 }
 
 /* ---------- 화면 갱신 ---------- */

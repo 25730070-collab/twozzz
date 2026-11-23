@@ -236,16 +236,7 @@ try {
     check('안내 패널에 남은 시간 · 남은 거리 · 도착 시각이 나온다', /^\d+분$|시간/.test(await txt('#npTime')) && /km · .*\d+:\d\d 도착/.test(await txt('#npSub')), `${await txt('#npTime')} / ${await txt('#npSub')}`);
     const rem = await p.evaluate(() => { const d = route.dur, r = route.roads; return { dur: d, n: r.length, st: r.map(x => x.st), a: remainSec(route, 0) / d, b: remainSec(route, r[1].at) / d, c: remainSec(route, r[2].at) / d, mid: remainSec(route, (r[1].at + r[2].at) / 2) / d, end: remainSec(route, total) }; });
     check('길찾기가 준 도로별 소요 시간(원활 25% · 정체 50% · 서행 25%)으로 남은 시간을 계산한다', rem.n === 3 && rem.st.join() === '4,1,3' && Math.abs(rem.a - 1) < .001 && Math.abs(rem.b - .75) < .003 && Math.abs(rem.c - .25) < .003 && Math.abs(rem.mid - .5) < .003 && rem.end === 0, `시작 ${rem.a.toFixed(3)} · 2번째 도로 시작 ${rem.b.toFixed(3)} · 3번째 ${rem.c.toFixed(3)} · 중간 ${rem.mid.toFixed(3)}`);
-    /* 교통 막대 */
-    const bar = () => p.evaluate(() => ({ hidden: document.getElementById('tbar').hidden, bg: document.getElementById('tbar').style.background }));
-    let b = await bar();
-    const order = x => [...x.bg.matchAll(/rgb\((\d+), (\d+), (\d+)\)/g)].map(m => m.slice(1).join(','));
-    const uniq = a => a.filter((x, i) => a.indexOf(x) === i);
-    check('교통 막대가 보이고 아래(지금)부터 원활 초록 → 정체 빨강 → 서행 노랑 순이다', !b.hidden && uniq(order(b)).join(' | ') === '43,182,115 | 214,50,47 | 242,195,27', uniq(order(b)).join(' | '));
-    await p.evaluate(() => { pos = route.roads[1].at + 100; update(); });
-    b = await bar();
-    check('정체 구간에 들어가면 막대는 빨강부터 시작한다 (지난 길은 빠진다)', uniq(order(b))[0] === '214,50,47' && !order(b).includes('43,182,115'), uniq(order(b)).join(' | '));
-    check('다발지점 점이 교통 막대 위에 찍힌다', (await p.locator('#tbHz i').count()) === (await p.evaluate(() => route.hazards.length)) && (await p.locator('#tbHz i').count()) > 0);
+    check('교통 막대는 없고, 위험구간 안내 카드만 남는다', (await p.locator('#tbar').count()) === 0 && (await p.locator('#alertCard, .alert').count()) >= 0);
     /* 도착 시각 */
     await p.evaluate(() => { pos = 0; update(); }); const e0 = (await txt('#npSub')).split('·')[1];
     await p.evaluate(() => { pos = total * .5; update(); }); const e1 = (await txt('#npSub')).split('·')[1];
@@ -274,20 +265,19 @@ try {
     r = await spd(null); check('기기가 속도를 주지 않으면 0 으로 꾸미지 않고 "-" 로 보인다', r.n === '-', JSON.stringify(r));
     await p.evaluate(() => { mode = 'sim'; gpsSpeed = null; paint(); });
     check('연습 모드에서는 속도 숫자를 보여 주지 않는다 (가상 주행 속도를 실제처럼 꾸미지 않는다)', (await txt('#npUnit')) === '연습' && !/over|near/.test(await p.evaluate(() => document.getElementById('npSpd').className)));
-    check('안내 문구에 기준(요청 시점 교통 정보)과 제한속도 범위가 적혀 있다', /요청한 때의 교통 정보/.test(await txt('#infoNote')) && /모든 도로의 제한속도는 아니고/.test(await txt('#infoNote')));
+    check('안내 문구에 기준(요청 시점 교통 정보)과 제한속도 범위가 적혀 있다', /길찾기 때의 예상/.test(await txt('#infoNote')) && /단속 카메라 위치에서만/.test(await txt('#infoNote')) && (await txt('#infoNote')).length < 90);
     await ctx.close();
   }
   {
     const { ctx, mkPage } = await mkContext(await browser, { stub: true, traffic: false });     // 교통 정보도 카메라 파일도 없는 경우
     const p = await mkPage();
     await p.goto(`${B}pages/drive.html?origin=${encodeURIComponent('A점')}&destination=${encodeURIComponent('B점')}&type=fast`); await p.waitForSelector('#tmap', { timeout: 8000 }); await p.waitForTimeout(500);
-    const t0 = await p.evaluate(() => ({ time: document.getElementById('npTime').textContent, dur: Math.round(route.dur / 60), bar: document.getElementById('tbar').hidden, sign: document.getElementById('limitSign').hidden, note: document.getElementById('infoNote').textContent }));
-    check('교통 정보가 없으면 막대를 숨기고 안내 문구로 알린다 (색을 지어내지 않는다)', t0.bar && /교통 상황 정보가 없어/.test(t0.note));
+    const t0 = await p.evaluate(() => ({ time: document.getElementById('npTime').textContent, dur: Math.round(route.dur / 60), sign: document.getElementById('limitSign').hidden, note: document.getElementById('infoNote').textContent }));
     check('도로별 시간이 없으면 전체 소요 시간을 거리 비율로 나눠 쓴다', t0.time === `${t0.dur}분` || t0.time.includes('시간'), `${t0.time} (전체 ${t0.dur}분)`);
     await p.evaluate(() => { pos = total * .5; update(); });
     const half = await p.evaluate(() => ({ s: remainSec(route, total * .5), d: route.dur }));
     check('(거리 비율) 절반 지점의 남은 시간은 전체의 절반', Math.abs(half.s - half.d / 2) < 1);
-    check('카메라 파일이 없으면 제한속도 표지는 없고 없다고 알린다', t0.sign && /데이터 파일이 없어/.test(t0.note));
+    check('카메라 파일이 없으면 제한속도 표지는 없고 없다고 알린다', t0.sign && /데이터가 없어/.test(t0.note));
     await ctx.close();
   }
 
